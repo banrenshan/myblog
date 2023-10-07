@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://banrenshan.github.io/sitemap.xml
+Sitemap: https://banrenshan.github.io/myblog/sitemap.xml
