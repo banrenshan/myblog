@@ -1,0 +1,6 @@
+node_modules/
+exampleSite/
+.idea/
+.hugo_build.lock
+public/
+resources/
