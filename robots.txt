@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://banrenshan.github.io/sitemap.xml

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>spring-batch on</title><link>https://banrenshan.github.io/tags/spring-batch/</link><description>Recent content in spring-batch on</description><generator>Hugo -- gohugo.io</generator><language>zh-hans</language><copyright/><lastBuildDate>Fri, 02 Dec 2022 11:51:23 +0000</lastBuildDate><atom:link href="https://banrenshan.github.io/tags/spring-batch/index.xml" rel="self" type="application/rss+xml"/><item><title>spring-batch</title><link>https://banrenshan.github.io/blog/2022/12/spring-batch/</link><pubDate>Fri, 02 Dec 2022 11:51:23 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-batch/</guid><description>spring batch 核心概念 一个作业有一到多个步骤，每个步骤正好有一个ItemReader、一个ItemProcessor和一个ItemWriter。需要使用JobLauncher启动作业，JobRepository存储关于当前运行作业的元数据。
+作业（Job） 作业是封装整个批处理过程的实体。是整个层次结构的顶部，如下图所示：
+在SpringBatch中，作业只是步骤实例的容器。它将逻辑上属于一个流的多个步骤组合在一起，并允许配置所有步骤的全局属性，例如可重启性。作业配置包含：
+名称 步骤的顺序 作业是否需要重启 对于那些使用Java配置的人，SpringBatch以SimpleJob类的形式提供了作业接口的默认实现，它在作业之上创建了一些标准功能。使用基于java的配置时，可以使用构建器集合来实例化作业，如下例所示：
+@Bean public Job footballJob() { return this.jobBuilderFactory.get(&amp;#34;footballJob&amp;#34;) .start(playerLoad()) .next(gameLoad()) .next(playerSummarization()) .build(); } JobInstance JobInstance是job运行时的概念，这样说可能有些抽象。假如我们有个作业A，在每天快要结束的时候运行。那么一月一日运行该job就会创建一个JobInstance,一月二日则会创建一个新的JobInstance。
+但是，会有这样的情况，一月一日的JobInstance运行失败了，在一月二日会继续运行这个失败的JobInstance,同时一月二日的JobInstance照旧执行。
+因此，JobInstacen可能会多次执行（这是后面的JobExecution概念）。并且在给定时刻只能运行一个对应于特定作业和JobParameters的JobInstance。
+JobInstance的定义与要加载的数据完全没有关系。如何加载数据完全取决于ItemReader实现。使用新的JobInstance意味着“从头开始”，而使用现有实例通常意味着“从您停止的地方开始”。
+JobParameters 如何区分不同的JobInstance呢？答案：JobParameters。JobParameters对象包含一组用于启动批处理作业的参数。它们可用于识别，甚至在运行期间用作参考数据，如下图所示：
+并非所有作业参数都需要用于标识作业实例。默认情况下，它们会这样做。但是，该框架还允许提交带有不影响JobInstance标识的参数的作业。
+JobExecution JobExecution是指一次尝试运行作业的技术概念。执行可能以失败或成功结束，但对应的JobInstance不会被视为已完成，除非执行成功完成。假如任务A第一次执行失败，此时JobInstance会被标记会失败，当下次继续执行这个失败的JobInstance时，如果成功了，就会变更JobInstance为成功。
+Job定义了什么是作业以及如何执行作业，而JobInstance是一个纯粹的组织对象，用于将执行分组在一起，主要是为了实现正确的重启语义。然而，JobExecution是运行期间实际发生的事情的主要存储机制，它包含许多必须控制和持久化的属性，如下表所示：
+属性 定义 Status 指示执行状态的BatchStatus对象。运行时，状态为BatchStatus#STARTED。如果失败，则为BatchStatus#FAILED。如果成功完成，则为BatchStatus#COMPLETED startTime java.util.Date ,表示开始执行的时间，没有执行则为空 endTime java.util.Date,执行结束的时间 exitStatus 执行的结果，空代表还没有结束 createTime java.util.Date,创建的时间 lastUpdated java.util.Date executionContext 属性包，包含在执行之间需要的用户数据。 failureExceptions 作业执行期间遇到的异常列表 这些属性很重要，因为它们是持久化的，可用于完全确定执行状态。例如，如果01-01的EndOfDay作业在晚上9:00执行，但在9:30失败，则在批处理元数据表中创建以下条目：
+为了清晰和格式，列名可能已被缩写或删除。
+表：BATCH_JOB_INSTANCE
+JOB_INST_ID JOB_NAME 1 EndOfDayJob 表：BATCH_JOB_EXECUTION_PARAMS
+JOB_EXECUTION_ID TYPE_CD KEY_NAME DATE_VAL IDENTIFYING 1 DATE schedule.Date 2017-01-01 TRUE 表：BATCH_JOB_EXECUTION</description></item></channel></rss>

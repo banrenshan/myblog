@@ -1,0 +1,486 @@
+<!doctype html><html class=position-relative itemscope itemtype=https://schema.org/WebPage lang=zh-hans data-bs-theme=auto data-palette=purple><head><script src=/assets/init/bundle.min.d893010142cc6ee98760d32b7e1e90d3786505dcd396e888f1ee101971e02785.js integrity="sha256-2JMBAULMbumHYNMrfh6Q03hlBdzTluiI8e4QGXHgJ4U=" crossorigin=anonymous></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>nginx -</title><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_16x16_resize_q75_h2_box_2.webp sizes=16x16 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_32x32_resize_q75_h2_box_2.webp sizes=32x32 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_150x150_resize_q75_h2_box_2.webp sizes=150x150 type=image/webp><link rel=apple-touch-icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_180x180_resize_q75_h2_box_2.webp sizes=180x180 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_192x192_resize_q75_h2_box_2.webp sizes=192x192 type=image/webp><link rel=mask-icon href=/safari-pinned-tab.svg color=#6f42c1><meta name=keywords content="Hugo,Bootstrap,Blog Theme"><meta name=description content="访问日志解码请求参数 打印post请求的请求体信息 默认的日志打印不包含请求体的内容,如果要打印改值,只需要在log_format中添加$request_body 即可,更多日志打印变量参考官方文档
+另外,即使打印出来请求体,内容不支持中文,都是经过url编码后的字符串.
+添加或启动新模块 nginx不支持动态安装、加载模块的，所以当你安装第三方模块或者启动nginx本身的新模块功能的时候，都是覆盖nginx的；所以，一定要注意：首先查看你已经安装的nginx模块！然后安装新东西的时候，要把已安装的，再次配置。
+1.查看ngnix已经安装的模块./nginx -V
+2.执行configure和make
+./configure --prefix=/usr/local/nginx \ --with-http_stub_status_module \ --with-http_ssl_module --with-http_realip_module \ --with-http_image_filter_module \ --add-module=../ngx_pagespeed-master make 3.替换nginx二进制文件
+cp /root/nginx-1.8.1/objs/nginx /usr/local/nginx/sbin/nginx X-Forwarded-For 和 X-Real-IP X-Forwarded-For:被代理服务器使用,用来记录经过的代理服务信息. X-Real-IP:被代理服务器使用,用来记录客户端的真实IP地址.
+举例: 现在有ngnix代理服务器A和B,请求先请过A[10.187.144.41],然后B[10.187.112.151],最后到达服务器[10.176.175.149]处理该请求.
+A的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; B的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 服务器的响应
+x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 connection:close x-real-ip:114.141.166.125 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 变动1:如果B的配置也加上proxy_set_header X-Real-IP $remote_addr呢,服务器收到的请求头信息会是神马呢?
+x-real-ip:10.187.144.41 x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 需要注意的是x-forwarded-for并没有把最后一个代理添加上去
+我们看到x-real-ip的地址发生改变,不再是真实的客户端ip,而是代理A的ip,说明此时的$remote_addr的值是代理A的IP,如何修改这个值为真实的IP呢? 可以使用ngx_http_realip_module模块
+ngx_http_realip_module模块 安装请参考模块安装,A配置不变,B配置如下:
+set_real_ip_from 10.187.144.41 real_ip_header X-Real-IP ; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; set_real_ip_from:指定真实IP的地址是在哪个代理机器上 real_ip_header:真实IP所在的请求头字段"><meta name=twitter:card content="summary"><meta name=twitter:title content="nginx"><meta name=twitter:description content="访问日志解码请求参数 打印post请求的请求体信息 默认的日志打印不包含请求体的内容,如果要打印改值,只需要在log_format中添加$request_body 即可,更多日志打印变量参考官方文档
+另外,即使打印出来请求体,内容不支持中文,都是经过url编码后的字符串.
+添加或启动新模块 nginx不支持动态安装、加载模块的，所以当你安装第三方模块或者启动nginx本身的新模块功能的时候，都是覆盖nginx的；所以，一定要注意：首先查看你已经安装的nginx模块！然后安装新东西的时候，要把已安装的，再次配置。
+1.查看ngnix已经安装的模块./nginx -V
+2.执行configure和make
+./configure --prefix=/usr/local/nginx \ --with-http_stub_status_module \ --with-http_ssl_module --with-http_realip_module \ --with-http_image_filter_module \ --add-module=../ngx_pagespeed-master make 3.替换nginx二进制文件
+cp /root/nginx-1.8.1/objs/nginx /usr/local/nginx/sbin/nginx X-Forwarded-For 和 X-Real-IP X-Forwarded-For:被代理服务器使用,用来记录经过的代理服务信息. X-Real-IP:被代理服务器使用,用来记录客户端的真实IP地址.
+举例: 现在有ngnix代理服务器A和B,请求先请过A[10.187.144.41],然后B[10.187.112.151],最后到达服务器[10.176.175.149]处理该请求.
+A的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; B的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 服务器的响应
+x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 connection:close x-real-ip:114.141.166.125 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 变动1:如果B的配置也加上proxy_set_header X-Real-IP $remote_addr呢,服务器收到的请求头信息会是神马呢?
+x-real-ip:10.187.144.41 x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 需要注意的是x-forwarded-for并没有把最后一个代理添加上去
+我们看到x-real-ip的地址发生改变,不再是真实的客户端ip,而是代理A的ip,说明此时的$remote_addr的值是代理A的IP,如何修改这个值为真实的IP呢? 可以使用ngx_http_realip_module模块
+ngx_http_realip_module模块 安装请参考模块安装,A配置不变,B配置如下:
+set_real_ip_from 10.187.144.41 real_ip_header X-Real-IP ; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; set_real_ip_from:指定真实IP的地址是在哪个代理机器上 real_ip_header:真实IP所在的请求头字段"><meta property="og:title" content="nginx"><meta property="og:description" content="访问日志解码请求参数 打印post请求的请求体信息 默认的日志打印不包含请求体的内容,如果要打印改值,只需要在log_format中添加$request_body 即可,更多日志打印变量参考官方文档
+另外,即使打印出来请求体,内容不支持中文,都是经过url编码后的字符串.
+添加或启动新模块 nginx不支持动态安装、加载模块的，所以当你安装第三方模块或者启动nginx本身的新模块功能的时候，都是覆盖nginx的；所以，一定要注意：首先查看你已经安装的nginx模块！然后安装新东西的时候，要把已安装的，再次配置。
+1.查看ngnix已经安装的模块./nginx -V
+2.执行configure和make
+./configure --prefix=/usr/local/nginx \ --with-http_stub_status_module \ --with-http_ssl_module --with-http_realip_module \ --with-http_image_filter_module \ --add-module=../ngx_pagespeed-master make 3.替换nginx二进制文件
+cp /root/nginx-1.8.1/objs/nginx /usr/local/nginx/sbin/nginx X-Forwarded-For 和 X-Real-IP X-Forwarded-For:被代理服务器使用,用来记录经过的代理服务信息. X-Real-IP:被代理服务器使用,用来记录客户端的真实IP地址.
+举例: 现在有ngnix代理服务器A和B,请求先请过A[10.187.144.41],然后B[10.187.112.151],最后到达服务器[10.176.175.149]处理该请求.
+A的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; B的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 服务器的响应
+x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 connection:close x-real-ip:114.141.166.125 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 变动1:如果B的配置也加上proxy_set_header X-Real-IP $remote_addr呢,服务器收到的请求头信息会是神马呢?
+x-real-ip:10.187.144.41 x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 需要注意的是x-forwarded-for并没有把最后一个代理添加上去
+我们看到x-real-ip的地址发生改变,不再是真实的客户端ip,而是代理A的ip,说明此时的$remote_addr的值是代理A的IP,如何修改这个值为真实的IP呢? 可以使用ngx_http_realip_module模块
+ngx_http_realip_module模块 安装请参考模块安装,A配置不变,B配置如下:
+set_real_ip_from 10.187.144.41 real_ip_header X-Real-IP ; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; set_real_ip_from:指定真实IP的地址是在哪个代理机器上 real_ip_header:真实IP所在的请求头字段"><meta property="og:type" content="article"><meta property="og:url" content="https://banrenshan.github.io/blog/2022/12/nginx/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-12-02T12:51:30+00:00"><meta property="article:modified_time" content="2023-10-07T19:19:27+08:00"><meta itemprop=name content="nginx"><meta itemprop=description content="访问日志解码请求参数 打印post请求的请求体信息 默认的日志打印不包含请求体的内容,如果要打印改值,只需要在log_format中添加$request_body 即可,更多日志打印变量参考官方文档
+另外,即使打印出来请求体,内容不支持中文,都是经过url编码后的字符串.
+添加或启动新模块 nginx不支持动态安装、加载模块的，所以当你安装第三方模块或者启动nginx本身的新模块功能的时候，都是覆盖nginx的；所以，一定要注意：首先查看你已经安装的nginx模块！然后安装新东西的时候，要把已安装的，再次配置。
+1.查看ngnix已经安装的模块./nginx -V
+2.执行configure和make
+./configure --prefix=/usr/local/nginx \ --with-http_stub_status_module \ --with-http_ssl_module --with-http_realip_module \ --with-http_image_filter_module \ --add-module=../ngx_pagespeed-master make 3.替换nginx二进制文件
+cp /root/nginx-1.8.1/objs/nginx /usr/local/nginx/sbin/nginx X-Forwarded-For 和 X-Real-IP X-Forwarded-For:被代理服务器使用,用来记录经过的代理服务信息. X-Real-IP:被代理服务器使用,用来记录客户端的真实IP地址.
+举例: 现在有ngnix代理服务器A和B,请求先请过A[10.187.144.41],然后B[10.187.112.151],最后到达服务器[10.176.175.149]处理该请求.
+A的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; B的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 服务器的响应
+x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 connection:close x-real-ip:114.141.166.125 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 变动1:如果B的配置也加上proxy_set_header X-Real-IP $remote_addr呢,服务器收到的请求头信息会是神马呢?
+x-real-ip:10.187.144.41 x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 需要注意的是x-forwarded-for并没有把最后一个代理添加上去
+我们看到x-real-ip的地址发生改变,不再是真实的客户端ip,而是代理A的ip,说明此时的$remote_addr的值是代理A的IP,如何修改这个值为真实的IP呢? 可以使用ngx_http_realip_module模块
+ngx_http_realip_module模块 安装请参考模块安装,A配置不变,B配置如下:
+set_real_ip_from 10.187.144.41 real_ip_header X-Real-IP ; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; set_real_ip_from:指定真实IP的地址是在哪个代理机器上 real_ip_header:真实IP所在的请求头字段"><meta itemprop=datePublished content="2022-12-02T12:51:30+00:00"><meta itemprop=dateModified content="2023-10-07T19:19:27+08:00"><meta itemprop=wordCount content="1356"><meta itemprop=keywords content="java,"><meta property="og:image" content="https://banrenshan.github.io/images/logo.png"><meta name=twitter:image content="https://banrenshan.github.io/images/logo.png"><meta property="og:image:alt" content="nginx"><meta name=twitter:image:alt content="nginx"><link rel=manifest href=/manifest.json><link data-precache rel=stylesheet href="/assets/main/bundle.min.906e48a4015f207e7ad2852421d4b8e6fda8fb5c6d1fff31855591474e60da12.css" integrity="sha256-kG5IpAFfIH560oUkIdS45v2o+1xtH/8xhVWRR05g2hI=" crossorigin=anonymous><link data-precache rel=stylesheet href=/assets/viewer/bundle.min.eb914844636cd41f221f109e99c887bbc3b6b5ffb2af7c664b284cea2d1b54b7.css integrity="sha256-65FIRGNs1B8iHxCemciHu8O2tf+yr3xmSyhM6i0bVLc=" crossorigin=anonymous></head><body><header class="mb-4 sticky-top"><nav class="top-app-bar shadow navbar navbar-expand-xxl"><div class=container><a class="navbar-brand d-flex align-items-center flex-grow-1 flex-xxl-grow-0 justify-content-xxl-start ms-2 ms-xxl-0 mx-auto me-xxl-2" href=https://banrenshan.github.io/><picture><img class=logo alt=Logo src=https://banrenshan.github.io/images/logo.webp loading=lazy width=400 height=400></picture></a><div class="offcanvas-xxl offcanvas-end flex-grow-1" data-bs-scroll=true tabindex=-1 id=navbarMenus aria-labelledby=navbarMenusLabel><div class="offcanvas-header px-4 pb-0"><div class="offcanvas-title h5" id=navbarMenusLabel></div><button type=button class="btn-close btn-close-white" data-bs-dismiss=offcanvas data-bs-target=#navbarMenus aria-label=Close></button></div><div class="offcanvas-body p-4 pt-0 p-xxl-0"><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center me-auto"><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/docs/><span class="menu-icon me-1"><i class="fas fa-fw fa-book"></i></span>文档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/series/><span class="menu-icon me-1"><i class="fas fa-fw fa-columns"></i></span>专栏</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/categories/><span class="menu-icon me-1"><i class="fas fa-fw fa-folder"></i></span>分类</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/archives/><span class="menu-icon me-1"><i class="fas fa-fw fa-file-archive"></i></span>归档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/tags/><span class="menu-icon me-1"><i class="fas fa-fw fa-tags"></i></span>标签</a></li></ul><hr class=d-xxl-none><form class="search-bar ms-auto my-auto" action=/search/ novalidate><div class="input-group input-group-sm align-items-center"><span class="btn btn-search disabled position-absolute left-0 border-0 px-1"><i class="fas fa-fw fa-search fa-lg"></i></span>
+<input class="my-1 form-control border-white rounded-5 search-input bg-body" name=q type=search placeholder=搜索 aria-label=Search required>
+<span class="search-shortcut position-absolute end-0 top-0 me-2"><kbd class="bg-primary rounded shadow">/</kbd></span></div></form><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center ms-md-auto"><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=fontSizeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-font"></i>
+<span class=d-xxl-none>字体大小</span></a><ul class="font-size-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=fontSizeDropdown><li><button class="font-size-item dropdown-item" data-size=xs>
+特小号</button></li><li><button class="font-size-item dropdown-item" data-size=sm>
+小号</button></li><li><button class="font-size-item dropdown-item active" data-size=md>
+中等</button></li><li><button class="font-size-item dropdown-item" data-size=lg>
+大号</button></li><li><button class="font-size-item dropdown-item" data-size=xl>
+特大号</button></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=paletteDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-palette"></i>
+<span class=d-xxl-none>配色</span></a><ul class="palette-dropdown-menu dropdown-menu dropdown-menu-end px-2 row g-2" aria-labelledby=paletteDropdown><li class="col-4 my-1"><a role=button id=palette-blue aria-label=蓝色 class="btn btn-sm w-100 palette text-bg-blue" data-palette=blue></a></li><li class="col-4 my-1"><a role=button id=palette-blue-gray aria-label=蓝灰色 class="btn btn-sm w-100 palette text-bg-blue-gray" data-palette=blue-gray></a></li><li class="col-4 my-1"><a role=button id=palette-brown aria-label=棕色 class="btn btn-sm w-100 palette text-bg-brown" data-palette=brown></a></li><li class="col-4 my-1"><a role=button id=palette-cyan aria-label=青色 class="btn btn-sm w-100 palette text-bg-cyan" data-palette=cyan></a></li><li class="col-4 my-1"><a role=button id=palette-green aria-label=绿色 class="btn btn-sm w-100 palette text-bg-green" data-palette=green></a></li><li class="col-4 my-1"><a role=button id=palette-indigo aria-label=靛青色 class="btn btn-sm w-100 palette text-bg-indigo" data-palette=indigo></a></li><li class="col-4 my-1"><a role=button id=palette-orange aria-label=橙色 class="btn btn-sm w-100 palette text-bg-orange" data-palette=orange></a></li><li class="col-4 my-1"><a role=button id=palette-pink aria-label=粉色 class="btn btn-sm w-100 palette text-bg-pink" data-palette=pink></a></li><li class="col-4 my-1"><a role=button id=palette-purple aria-label=紫色 class="btn btn-sm w-100 palette text-bg-purple" data-palette=purple></a></li><li class="col-4 my-1"><a role=button id=palette-red aria-label=红色 class="btn btn-sm w-100 palette text-bg-red" data-palette=red></a></li><li class="col-4 my-1"><a role=button id=palette-teal aria-label=蓝绿色 class="btn btn-sm w-100 palette text-bg-teal" data-palette=teal></a></li><li class="col-4 my-1"><a role=button id=palette-yellow aria-label=黄色 class="btn btn-sm w-100 palette text-bg-yellow" data-palette=yellow></a></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=modeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="mode-icon fas fa-fw fa-adjust" id=modeIcon></i>
+<span class=d-xxl-none>模式</span></a><ul class="mode-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=modeDropdown><li class=mode-item data-color-mode=light data-icon=sun><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-sun"></i> 浅色</button></li><li class=mode-item data-color-mode=dark data-icon=moon><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-moon"></i> 深色</button></li><li class="mode-item active" data-color-mode=auto data-icon=adjust><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-adjust"></i> 自动</button></li></ul></li></ul></div></div><div class=d-flex><button class="navbar-toggler order-5 border-0" type=button data-bs-toggle=offcanvas data-bs-target=#navbarMenus aria-controls=navbarMenus aria-expanded=false aria-label="Toggle navigation">
+<i class="fas fa-ellipsis-h"></i></button></div></div></nav></header><main class=container><div class="row content"><noscript><div class="alert alert-danger" role=alert>你的浏览器不支持 JavaScript。</div></noscript><div class=col-xxl-8><div class=container><nav class="row card component" aria-label=breadcrumb><div class="card-body pb-0"><ol class="hbs-breadcrumb breadcrumb flex-nowrap"><li class="breadcrumb-item text-surface"><a href=/>主页</a></li><li class="breadcrumb-item text-surface"><a href=/blog/>Blogs</a></li><li class="breadcrumb-item active">Nginx</li></ol></div></nav><div class="post-panel-wrapper position-relative d-flex justify-content-center"><div class="d-flex flex-row justify-content-center rounded-5 border post-panel position-fixed px-3 py-1 surface shadow-1"><a class="action action-toc d-none d-xxl-block" href=#postTOC role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-toc d-block d-xxl-none" href=#post-toc-container role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-post-comments" href=#post-comments role=button aria-label=Comments title=Comments><i class="fas fa-fw fa-comments"></i></a>
+<a id=sidebarToggler class="action action-sidebar-toggler d-none d-xxl-block" role=button title="Sidebar toggler"><i class="fas fa-fw fa-expand-alt" data-fa-transform=rotate-45></i></a></div></div><article class="row card component mb-4 post"><div class=card-header><h1 class="card-title post-title my-2">Nginx</h1></div><div class=card-body><div class="post-meta mb-3"><span class="post-date me-1 mb-1" title="创建于 2022-12-02 12:51:30 +0000 UTC，更新于 2023-10-07 11:19:27 +0000 UTC。">2022年12月2日</span><span class="post-reading-time me-1 mb-1">7 分钟阅读</span><a href=/categories/%E6%8A%80%E6%9C%AF/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-category">
+<i class="fas fa-fw fa-folder me-1"></i>技术</a><a href=/tags/java/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-tag">Java</a></div><div class="mt-2 mb-3 d-block d-xxl-none"><h2 class="text-surface mb-3">目录</h2><div id=post-toc-container></div><hr class=text-secondary></div><div class="post-content mb-3" data-bs-spy=scroll data-bs-target=#TableOfContents tabindex=0><div id=post-content-body><h2 id=访问日志解码请求参数 data-numberify>访问日志解码请求参数<a class="anchor ms-1" href=#访问日志解码请求参数></a></h2><hr><h2 id=打印post请求的请求体信息 data-numberify>打印post请求的请求体信息<a class="anchor ms-1" href=#打印post请求的请求体信息></a></h2><p>默认的日志打印不包含请求体的内容,如果要打印改值,只需要在log_format中添加$request_body 即可,更多日志打印变量参考<a href=https://nginx.org/en/docs/http/ngx_http_log_module.html target=_blank rel="noopener noreferrer">官方文档<i class="fas fa-external-link-square-alt ms-1"></i></a></p><p>另外,即使打印出来请求体,内容不支持中文,都是经过url编码后的字符串.</p><h2 id=添加或启动新模块 data-numberify>添加或启动新模块<a class="anchor ms-1" href=#添加或启动新模块></a></h2><p>nginx不支持动态安装、加载模块的，所以当你安装第三方模块或者启动nginx本身的新模块功能的时候，都是覆盖nginx的；所以，一定要注意：首先查看你已经安装的nginx模块！然后安装新东西的时候，要把已安装的，再次配置。</p><p>1.查看ngnix已经安装的模块<code>./nginx -V</code></p><p>2.执行configure和make</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>./configure --prefix<span class=o>=</span>/usr/local/nginx <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span> --with-http_stub_status_module <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span> --with-http_ssl_module --with-http_realip_module <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span> --with-http_image_filter_module <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span> --add-module<span class=o>=</span>../ngx_pagespeed-master
+</span></span><span class=line><span class=cl>make
+</span></span></code></pre></div><p>3.替换nginx二进制文件</p><pre tabindex=0><code>cp /root/nginx-1.8.1/objs/nginx /usr/local/nginx/sbin/nginx
+</code></pre><h2 id=x-forwarded-for-和-x-real-ip data-numberify>X-Forwarded-For 和 X-Real-IP<a class="anchor ms-1" href=#x-forwarded-for-和-x-real-ip></a></h2><p>X-Forwarded-For:被代理服务器使用,用来记录经过的代理服务信息. X-Real-IP:被代理服务器使用,用来记录客户端的真实IP地址.</p><p>举例: 现在有ngnix代理服务器A和B,请求先请过A[10.187.144.41],然后B[10.187.112.151],最后到达服务器[10.176.175.149]处理该请求.</p><p>A的ngnix配置</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxy_set_header X-Forwarded-For <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>proxy_set_header X-Real-IP <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span></code></pre></div><p>B的ngnix配置</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></code></pre></div><p>服务器的响应</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>x-forwarded-for:114.141.166.125, 10.187.144.41
+</span></span><span class=line><span class=cl>host:10.176.175.149:8080
+</span></span><span class=line><span class=cl>connection:close
+</span></span><span class=line><span class=cl>x-real-ip:114.141.166.125
+</span></span><span class=line><span class=cl>getRemoteAddr:10.187.112.151
+</span></span><span class=line><span class=cl>getRemoteHost:10.187.112.151
+</span></span><span class=line><span class=cl>getServerName:10.176.175.149
+</span></span></code></pre></div><p>变动1:如果B的配置也加上proxy_set_header X-Real-IP $remote_addr呢,服务器收到的请求头信息会是神马呢?</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>x-real-ip:10.187.144.41
+</span></span><span class=line><span class=cl>x-forwarded-for:114.141.166.125, 10.187.144.41
+</span></span><span class=line><span class=cl>host:10.176.175.149:8080
+</span></span><span class=line><span class=cl>getRemoteAddr:10.187.112.151
+</span></span><span class=line><span class=cl>getRemoteHost:10.187.112.151
+</span></span><span class=line><span class=cl>getServerName:10.176.175.149
+</span></span></code></pre></div><p>需要注意的是x-forwarded-for并没有把最后一个代理添加上去</p><p>我们看到x-real-ip的地址发生改变,不再是真实的客户端ip,而是代理A的ip,说明此时的$remote_addr的值是代理A的IP,如何修改这个值为真实的IP呢? 可以使用ngx_http_realip_module模块</p><h2 id=ngx_http_realip_module模块 data-numberify>ngx_http_realip_module模块<a class="anchor ms-1" href=#ngx_http_realip_module模块></a></h2><p>安装请参考模块安装,A配置不变,B配置如下:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>set_real_ip_from 10.187.144.41
+</span></span><span class=line><span class=cl>real_ip_header X-Real-IP ;
+</span></span><span class=line><span class=cl>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span><span class=line><span class=cl>proxy_set_header X-Real-IP $remote_addr;
+</span></span></code></pre></div><p>set_real_ip_from:指定真实IP的地址是在哪个代理机器上 real_ip_header:真实IP所在的请求头字段</p><h2 id=httpgeoip模块 data-numberify>HttpGeoIP模块<a class="anchor ms-1" href=#httpgeoip模块></a></h2><p>1.安装</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>#下载免费的geo_city数据库
+</span></span><span class=line><span class=cl>wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+</span></span><span class=line><span class=cl>#下载免费的geo_coundty数据库
+</span></span><span class=line><span class=cl>wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+</span></span><span class=line><span class=cl>#在debian中安装libgeoip:
+</span></span><span class=line><span class=cl>sudo apt-get install libgeoip-dev
+</span></span><span class=line><span class=cl>#其它系统，你可以下载并编译一个源文件
+</span></span><span class=line><span class=cl>wget http://geolite.maxmind.com/download/geoip/api/c/GeoIP.tar.gz
+</span></span><span class=line><span class=cl>#编译
+</span></span><span class=line><span class=cl>./configure --with-http_geoip_module
+</span></span></code></pre></div><p>2.配置数据源</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>http {
+</span></span><span class=line><span class=cl>    geoip_country  GeoIP.dat; #放在ngnix home目录下面
+</span></span><span class=line><span class=cl>    geoip_city     GeoLiteCity.dat;
+</span></span></code></pre></div><p>3.使用举例</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>server {
+</span></span><span class=line><span class=cl>...
+</span></span><span class=line><span class=cl>        location / {
+</span></span><span class=line><span class=cl>            root   /home/vpsee/www;
+</span></span><span class=line><span class=cl>            if ($geoip_country_code = CN) {
+</span></span><span class=line><span class=cl>                root /home/vpsee/cn;
+</span></span><span class=line><span class=cl>            }
+</span></span><span class=line><span class=cl>            ...
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>...
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><p>这样，当来自中国的 IP 访问网站后就自动访问到预定的 /home/vpsee/cn 页面</p><h2 id=post_action请求后置处理器 data-numberify>post_action请求后置处理器<a class="anchor ms-1" href=#post_action请求后置处理器></a></h2><p>该指令可以在响应完成之后跳转到另外的location上,可用于接口调用统计等.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>server {
+</span></span><span class=line><span class=cl>        listen  80;
+</span></span><span class=line><span class=cl>        server_name www.a.com;
+</span></span><span class=line><span class=cl>        location /aa {
+</span></span><span class=line><span class=cl>                proxy_set_header Host &#34;www.a-upstream.com&#34;;
+</span></span><span class=line><span class=cl>                proxy_pass http://127.0.0.1:8000;
+</span></span><span class=line><span class=cl>                post_action @action;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>        location @action {
+</span></span><span class=line><span class=cl>                proxy_set_header Host &#34;www.a-post-action.com&#34;;
+</span></span><span class=line><span class=cl>                proxy_pass http://127.0.0.1:8001;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><p>上面的aa请求在发送给8000端口之后,也会发送给8001端口一份</p><h2 id=ngx_http_stub_status_module监控ngnix处理的请求数 data-numberify>ngx_http_stub_status_module监控ngnix处理的请求数<a class="anchor ms-1" href=#ngx_http_stub_status_module监控ngnix处理的请求数></a></h2><p>默认没有开启该模块，需要编译添加，添加之后,在文件中配置:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>location /basic_status {
+</span></span><span class=line><span class=cl>	stub_status;
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>Active connections: 291
+</span></span><span class=line><span class=cl>server accepts handled requests
+</span></span><span class=line><span class=cl>16630948 16630948 31070465
+</span></span><span class=line><span class=cl>Reading: 6 Writing: 179 Waiting: 106
+</span></span></code></pre></div><ol><li>Active connections: 活动状态的连接数；</li><li>accepts：已经接受的客户端握手的总数；accepts和handled相等，代表链接没有丢失</li><li>handled：已经处理完成的客户端请求的总数；</li><li>requests：客户端发来的总的请求数；</li><li>Reading：处于读取客户端请求报文首部的连接的连接数；</li><li>Writing：处于向客户端发送响应报文过程中的连接数；</li><li>Waiting：开启keepalive时，处于等待客户端发出请求的空闲连接数；此时连接已经处理完请求，但是并没有关闭，等待下一次请求重用该连接（需要客户端配合才可以）。</li></ol><h2 id=http_random_index_module-随机页面返回 data-numberify>http_random_index_module 随机页面返回<a class="anchor ms-1" href=#http_random_index_module-随机页面返回></a></h2><p>处理以斜杠（&rsquo;/&rsquo;）结尾的请求，并从目录中随机选择一个html文件作为返回。 该模块在ngx_http_index_module模块之前进行处理。 默认情况下未构建此模块，应使用—with-http_random_index_module配置参数启用它。</p><p>语法</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	random_index on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>random_index off;
+</span></span><span class=line><span class=cl>Context:	location
+</span></span></code></pre></div><p>示例</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>location / {
+</span></span><span class=line><span class=cl>    random_index on;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><h2 id=http_sub_module-替换响应 data-numberify>http_sub_module 替换响应<a class="anchor ms-1" href=#http_sub_module-替换响应></a></h2><p>ngx_http_sub_module模块是一个过滤器，它通过将一个指定的字符串替换为另一个指定的字符串来修改响应。 默认情况下未构建此模块，应使用—with-http_sub_module配置参数启用它。</p><h3 id=语法 data-numberify>语法<a class="anchor ms-1" href=#语法></a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	sub_filter string replacement;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>设置要替换的字符串和替换字符串。 替换忽略大小写。 要替换的字符串和替换字符串可以包含变量。 可以在一个配置级别上指定多个sub_filter伪指令。 当且仅当当前级别上未定义sub_filter指令时，这些指令才从上一级继承。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	sub_filter_once on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>sub_filter_once on;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>指示替换匹配的一个还是全部。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	sub_filter_last_modified on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>sub_filter_last_modified off;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 1.5.1.
+</span></span></code></pre></div><p>允许在替换期间从原始响应中保留“最后修改的”标头字段，以方便响应缓存。 默认情况下，在处理期间修改响应的内容时，将删除标头字段。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	sub_filter_types mime-type ...;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>sub_filter_types text/html;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>除了“ text / html”之外，还可以在具有指定MIME类型的响应中启用字符串替换。 特殊值“ *”与任何MIME类型（0.8.29）匹配。</p><p>示例</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>location / {
+</span></span><span class=line><span class=cl>    sub_filter &#39;&lt;a href=&#34;http://127.0.0.1:8080/&#39;  &#39;&lt;a href=&#34;https://$host/&#39;;
+</span></span><span class=line><span class=cl>    sub_filter &#39;&lt;img src=&#34;http://127.0.0.1:8080/&#39; &#39;&lt;img src=&#34;https://$host/&#39;;
+</span></span><span class=line><span class=cl>    sub_filter_once on;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><h2 id=ngx_http_limit_conn_module限制客户端连接数 data-numberify>ngx_http_limit_conn_module限制客户端连接数<a class="anchor ms-1" href=#ngx_http_limit_conn_module限制客户端连接数></a></h2><p>ngx_http_limit_conn_module模块用于限制每个已定义key的连接数，特别是来自单个IP地址的连接数.但是，并非所有连接都被计算在内 ，只有在服务器处理了请求并且整个请求头已经被读取的情况下才计算连接。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_conn_zone key zone=name:size;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http
+</span></span></code></pre></div><p>定义内存区域存储客户端的信息，例如指定key的当前连接数， key可以包含文本，变量及其组合。 key值为空的请求不予考虑。下面是一个示例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_conn_zone $binary_remote_addr zone=addr:10m;
+</span></span></code></pre></div><p>客户端IP作为key值，为什么不使用$remote_addr呢？</p><ul><li>$remote_addr大小为7~15byte。</li><li>$binary_remote_addr相对IPV4始终是4个字节，IPV6是16字节。</li><li>1M的区域可以保留大约3.2万个32字节状态或大约1.6万个64字节状态。 如果区域存储空间已用完，服务器将把错误返回给所有其他请求。</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_conn zone number;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>设置共享内存区域和最大允许连接数。 当超过此限制时，服务器将返回错误以回复请求。 例如</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_conn_zone $binary_remote_addr zone=addr:10m;
+</span></span><span class=line><span class=cl>server {
+</span></span><span class=line><span class=cl>    location /download/ {
+</span></span><span class=line><span class=cl>        limit_conn addr 1;
+</span></span><span class=line><span class=cl>    }
+</span></span></code></pre></div><p>同一时间只允许客户段IP有一个连接。</p><p>可能有几个limit_conn指令。 例如，以下配置将限制每个客户端IP与服务器的连接数，并同时限制与虚拟服务器的连接总数：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_conn_zone $binary_remote_addr zone=perip:10m;
+</span></span><span class=line><span class=cl>limit_conn_zone $server_name zone=perserver:10m;
+</span></span><span class=line><span class=cl>server {
+</span></span><span class=line><span class=cl>    ...
+</span></span><span class=line><span class=cl>    limit_conn perip 10;
+</span></span><span class=line><span class=cl>    limit_conn perserver 100;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><p>当且仅当当前级别上没有limit_conn指令时，这些指令才从上一级继承。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_conn_status code;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>limit_conn_status 503;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 1.3.15.
+</span></span></code></pre></div><p>连接被拒绝后，nginx的响应状态码。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_conn_log_level info | notice | warn | error;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>limit_conn_log_level error;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 0.8.18.
+</span></span></code></pre></div><p>连接被拒绝后，记录该请求的日志级别</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_conn_dry_run on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>limit_conn_dry_run off;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 1.17.6.
+</span></span></code></pre></div><p>启用空运行模式。 在这种模式下，连接数不受限制，但是，在共享内存区域中，过多连接的数将照常计算。</p><h2 id=http_limit_req_module-限制请求速率 data-numberify>http_limit_req_module 限制请求速率<a class="anchor ms-1" href=#http_limit_req_module-限制请求速率></a></h2><p>ngx_http_limit_req_module模块用于限制请求处理速率，特别是来自单个IP地址的请求的处理速率。 使用“漏斗”方法完成限制。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_req_zone key zone=name:size rate=rate [sync];
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http
+</span></span></code></pre></div><p>定义内存区域存储客户端的信息，例如指定key的当前请求数， key可以包含文本，变量及其组合。 key值为空的请求不予考虑。下面是一个示例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+</span></span></code></pre></div><p>请求速率是每秒一个。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_req zone=name [burst=number] [nodelay | delay=number];
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>设置共享内存区域和请求的最大突发大小。 如果请求速率超过为区域配置的速率，则会延迟其处理，以便以定义的速率处理请求。 过多的请求将被延迟，直到其数量超过最大突发大小为止，在这种情况下，该请求将因错误而终止。 默认情况下，最大突发大小等于零。 例如，指令</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+</span></span><span class=line><span class=cl>server {
+</span></span><span class=line><span class=cl>    location /search/ {
+</span></span><span class=line><span class=cl>        limit_req zone=one burst=5;
+</span></span><span class=line><span class=cl>    }
+</span></span></code></pre></div><p>平均每秒最多允许不超过1个请求，并且突发不超过5个请求。</p><p>如果不需要在限制请求时延迟过多的请求，则应使用参数nodelay：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_req zone=one burst=5 nodelay;
+</span></span></code></pre></div><p>delay参数指定一个限制，在该限制下，过多的请求将被延迟。 默认值为零，即所有多余的请求都会延迟。</p><p>可能有几个limit_req指令。 例如，以下配置将限制来自单个IP地址的请求的处理速度，同时限制虚拟服务器的请求处理速度：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>limit_req_zone $binary_remote_addr zone=perip:10m rate=1r/s;
+</span></span><span class=line><span class=cl>limit_req_zone $server_name zone=perserver:10m rate=10r/s;
+</span></span><span class=line><span class=cl>server {
+</span></span><span class=line><span class=cl>    ...
+</span></span><span class=line><span class=cl>    limit_req zone=perip burst=5 nodelay;
+</span></span><span class=line><span class=cl>    limit_req zone=perserver burst=10;
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>Syntax:	limit_req_status code;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>limit_req_status 503;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 1.3.15.
+</span></span></code></pre></div><p>请求被拒绝后，nginx的响应状态码。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_req_log_level info | notice | warn | error;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>limit_req_log_level error;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 0.8.18.
+</span></span></code></pre></div><p>请求被拒绝后，记录该请求的日志级别</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	limit_req_dry_run on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>limit_req_dry_run off;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 1.17.1.
+</span></span></code></pre></div><p>启用空运行模式。 在这种模式下，请求数不受限制，但是，在共享内存区域中，过多请求的数将照常计算。</p><h2 id=http_access_module-访问控制 data-numberify>http_access_module 访问控制<a class="anchor ms-1" href=#http_access_module-访问控制></a></h2><p>ngx_http_access_module模块允许限制对某些客户端地址的访问。</p><h3 id=语法-1 data-numberify>语法<a class="anchor ms-1" href=#语法-1></a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	allow address | CIDR | unix: | all;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location, limit_except
+</span></span></code></pre></div><p><code>允许访问</code> 指定的网络或地址。 如果指定特殊值unix：，则允许访问所有UNIX域套接字。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	deny address | CIDR | unix: | all;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location, limit_except
+</span></span></code></pre></div><p><code>拒绝访问</code> 指定的网络或地址。 如果指定了特殊值unix：，则拒绝所有UNIX域套接字的访问。</p><p>示例</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>location / {
+</span></span><span class=line><span class=cl>    deny  192.168.1.1;
+</span></span><span class=line><span class=cl>    allow 192.168.1.0/24;
+</span></span><span class=line><span class=cl>    allow 10.1.1.0/16;
+</span></span><span class=line><span class=cl>    allow 2001:0db8::/32;
+</span></span><span class=line><span class=cl>    deny  all;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><p>依次检查规则，直到找到第一个匹配项。 在此示例中，仅对IPv4网络 <code>10.1.1.0/16</code> 和 <code>192.168.1.0/24</code>（地址192.168.1.1除外）和IPv6网络 <code>2001:0db8::/32</code> 允许访问。 在有很多规则的情况下，最好使用ngx_http_geo_module模块变量。</p><table><thead><tr><th></th><th>该模块存在一定的局限性，如果应用经过一层代理，则真实IP不可达，需要我们在代理上配置一定规则将真是的IP传递</th></tr></thead><tbody><tr><td></td><td></td></tr></tbody></table><h2 id=http_auth_basic_module-认证用户 data-numberify>http_auth_basic_module 认证用户<a class="anchor ms-1" href=#http_auth_basic_module-认证用户></a></h2><p>ngx_http_auth_basic_module模块允许通过使用“ HTTP基本身份验证”协议验证用户名和密码来限制对资源的访问。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	auth_basic string | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>auth_basic off;
+</span></span><span class=line><span class=cl>Context:	http, server, location, limit_except
+</span></span></code></pre></div><p>使用“ HTTP基本认证”协议启用用户名和密码的验证。 指定的参数用作realm。 参数值可以包含变量。 特殊值off允许取消从先前配置级别继承的auth_basic指令的效果。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	auth_basic_user_file file;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location, limit_except
+</span></span></code></pre></div><p>以以下格式指定保存用户名和密码的文件：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl># comment
+</span></span><span class=line><span class=cl>name1:password1
+</span></span><span class=line><span class=cl>name2:password2:comment
+</span></span><span class=line><span class=cl>name3:password3
+</span></span></code></pre></div><p>file名称可以包含变量。 支持一下密码类型：</p><ul><li>用crypt（）函数加密； 可以使用Apache HTTP Server发行版中的“ htpasswd”实用程序或“ openssl passwd”命令生成。</li><li>使用基于MD5的密码算法（apr1）的Apache变体进行哈希处理； 可以使用相同的工具生成；</li><li>由RFC 2307中所述的“ {scheme} data”语法（1.0.3+）指定； 当前实施的方案包括一些软件包使用的PLAIN（不应该使用示例1），SHA（1.3.13）（不应该使用普通SHA-1哈希）和SSHA（盐化的SHA-1哈希）。 OpenLDAP和Dovecot）。</li></ul><p>示例</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>location / {
+</span></span><span class=line><span class=cl>    auth_basic           &#34;closed site&#34;;
+</span></span><span class=line><span class=cl>    auth_basic_user_file conf/htpasswd;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><table><thead><tr><th></th><th>由于密码认证是通过本地文件，所以速度慢，且不好管理。可以使用Lua脚本来做。</th></tr></thead><tbody><tr><td></td><td></td></tr></tbody></table><h2 id=secure_link_module data-numberify>secure_link_module<a class="anchor ms-1" href=#secure_link_module></a></h2><h2 id=索引静态目录 data-numberify>索引静态目录<a class="anchor ms-1" href=#索引静态目录></a></h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>location  /  { #不能是其他路径
+</span></span><span class=line><span class=cl>  autoindex  on;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></div><h2 id=nginx架构模型 data-numberify>nginx架构模型<a class="anchor ms-1" href=#nginx架构模型></a></h2><p>epoll模型 worker_processes 配置 use 配置 connection 配置</p><p>format日志变量</p><h2 id=静态资源 data-numberify>静态资源<a class="anchor ms-1" href=#静态资源></a></h2><h3 id=sendfile data-numberify>sendfile<a class="anchor ms-1" href=#sendfile></a></h3><p>指定是否使用sendfile系统调用来传输文件。 sendfile系统调用在两个文件描述符之间直接传递数据(完全在内核中操作)，从而避免了数据在内核缓冲区和用户缓冲区之间的拷贝，操作效率很高，被称之为零拷贝</p><h3 id=tcp_nopush-和-tcp_nodelay data-numberify>tcp_nopush 和 tcp_nodelay<a class="anchor ms-1" href=#tcp_nopush-和-tcp_nodelay></a></h3><h3 id=gzip-压缩 data-numberify>gzip 压缩<a class="anchor ms-1" href=#gzip-压缩></a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip off;
+</span></span><span class=line><span class=cl>Context:	http, server, location, if in location
+</span></span></code></pre></div><p>是否开启gzip压缩</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_buffers number size;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_buffers 32 4k|16 8k;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>设置用于压缩响应的缓冲区的数量和大小。 默认情况下，缓冲区大小等于一个内存页。 根据平台的不同，它可以是4K或8K。建议此项不设置，使用默认值。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_comp_level level;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_comp_level 1;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>设置压缩比率，最小为1；9为最大压缩比; 压缩比越大，压缩后的文件越小，但是压缩过程比较慢，消耗CPU</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_disable regex ...;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span><span class=line><span class=cl>This directive appeared in version 0.6.23.
+</span></span></code></pre></div><p>如果“User-Agent”头字段内容匹配任何指定的正则表达式，则禁用gzip。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_http_version 1.0 | 1.1;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_http_version 1.1;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>设置压缩响应所需的最低HTTP请求版本。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_min_length length;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_min_length 20;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>超过该长度的响应会被压缩。 长度仅由“ Content-Length”响应头字段确定。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_proxied off | expired | no-cache | no-store | private | no_last_modified | no_etag | auth | any ...;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_proxied off;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>根据请求或响应，决定反向代理是否对返回结果进行gzip压缩。是否进行gzip压缩是通过是否存在可变的请求头来决定的。该指令可以接受多个值。</p><ul><li>off:禁用压缩</li><li>expired：如果响应头中包含“ Expires”字段且其值禁用了缓存，则启用压缩；</li><li>no-cache：如果响应头包含带有“Cache-Control: no-cache”字段，则启用压缩；</li><li>no-store: 如果响应头包含带有“Cache-Control: no-store”字段，则启用压缩；</li><li>private: 如果响应头包含带有“Cache-Control: private”字段，则启用压缩；</li><li>no_last_modified: 如果响应头不包含“ Last-Modified”字段，则启用压缩；</li><li>no_etag: 如果响应头不包含“ ETag”字段，则启用压缩；</li><li>auth: 如果请求标头包含“ Authorization”字段，则启用压缩；</li><li>any: 为所有代理请求启用压缩。</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_types mime-type ...;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_types text/html;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>除了“text/html”之外，还对指定的MIME类型启用gzipping响应。 特殊值“*”与任何MIME类型匹配。 始终会压缩“text/html”类型的响应。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_vary on | off;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_vary off;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>如果指令gzip，gzip_static或gunzip处于活动状态，则启用或禁用插入“Vary：Accept-Encoding”响应标头字段。</p><h3 id=gzip_static_module-模块 data-numberify>gzip_static_module 模块<a class="anchor ms-1" href=#gzip_static_module-模块></a></h3><p>ngx_http_gzip_static_module模块允许优先发送扩展名为“.gz”的预压缩文件。简单来说，nginx会先查找相同目录下，是否存在该文件以“.gz”结尾的压缩文件，存在则返回，不存在则使用原文件。默认情况下未构建此模块，应使用—with-http_gzip_static_module配置参数启用它。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	gzip_static on | off | always;
+</span></span><span class=line><span class=cl>Default:
+</span></span><span class=line><span class=cl>gzip_static off;
+</span></span><span class=line><span class=cl>Context:	http, server, location
+</span></span></code></pre></div><p>启用（“ on”）或禁用（“ off”）检查是否存在预压缩文件。 还考虑了以下指令：gzip_http_version，gzip_proxied，gzip_disable和gzip_vary。</p><p>使用“always”值，在所有情况下都使用压缩文件，而无需检查客户端是否支持它。</p><p>可以使用gzip命令或任何其他兼容的命令压缩文件。 建议原始文件和压缩文件的修改日期和时间相同。</p><h3 id=gunzip_module-模块 data-numberify>gunzip_module 模块<a class="anchor ms-1" href=#gunzip_module-模块></a></h3><p>ngx_http_gunzip_module模块是一个过滤器，用于对不支持“gzip”编码方法的客户端使用“ Content-Encoding：gzip”解压缩后返回响应。 现在的客户端基本都支持，该模块用途很小。</p><h3 id=缓存 data-numberify>缓存<a class="anchor ms-1" href=#缓存></a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:    expires [modified]  time；
+</span></span><span class=line><span class=cl>           expires epoch|max|off；
+</span></span><span class=line><span class=cl>Default:   expires off；                 # 静态缓存
+</span></span><span class=line><span class=cl>Context:   http，server，location，if in location
+</span></span></code></pre></div><p>指定过期时间。会在响应头中添加“Expires”（http1.0之前的）和“Cache-Control”（http1.1之后）</p><p>time的值是负值，“Cache-Control: no-cache” time的值是正值t: <code>Cache-Control: max-age=t</code></p><p>“Expires”字段中的时间计算为当前时间与指令中指定的时间之和。</p><ul><li>epoch参数将“ Expires”设置为值“ Thu，1970年1月1日00:00:01 GMT”，将“ Cache-Control”设置为“ no-cache”。</li><li>max参数将“ Expires”设置为值“ Thu，2037年12月31日23:55:55 GMT”，将“ Cache-Control”设置为10年。</li><li>off参数禁用添加或修改“ Expires”和“ Cache-Control”响应头字段。</li></ul><h3 id=跨站 data-numberify>跨站<a class="anchor ms-1" href=#跨站></a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>add_header Access-Control-Allow-Origin *;
+</span></span><span class=line><span class=cl>    add_header Access-Control-Allow-Headers X-Requested-With;
+</span></span><span class=line><span class=cl>    add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
+</span></span></code></pre></div><h3 id=防盗链 data-numberify>防盗链<a class="anchor ms-1" href=#防盗链></a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Syntax:	valid_referers none | blocked | server_names | string ...;
+</span></span><span class=line><span class=cl>Default:	—
+</span></span><span class=line><span class=cl>Context:	server, location
+</span></span></code></pre></div><p>匹配请求头中的“Referer”，匹配则 <code>$valid_referers</code> 的值为空，否则为1.</p><ul><li>none:请求标头中缺少“ Referer”字段；</li><li>blocked: 请求标头中存在“ Referer”字段，但其值已被防火墙或代理服务器删除； 这些值是不以“ http：//”或“ https：//”开头的字符串；</li><li>server_names: “ Referer”请求标头字段包含任一服务器名称；</li><li>任意字符串：定义服务器名称和可选的URI前缀。 服务器名称的开头或结尾可以带有“ *”。 在检查过程中，“ Referer”字段中的服务器端口将被忽略；</li><li>正则：第一个符号应为“〜”。 应当注意，表达式将与“ http：//”或“ https：//”之后的文本匹配。</li></ul><p>示例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>valid_referers none blocked *.source.com source.com<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=o>(</span><span class=nv>$invalid_referer</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>     <span class=k>return</span> <span class=m>403</span> <span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><h2 id=反向代理 data-numberify>反向代理<a class="anchor ms-1" href=#反向代理></a></h2><h3 id=负载均衡 data-numberify>负载均衡<a class="anchor ms-1" href=#负载均衡></a></h3><h3 id=缓存-1 data-numberify>缓存<a class="anchor ms-1" href=#缓存-1></a></h3><h2 id=日志文件分割 data-numberify>日志文件分割<a class="anchor ms-1" href=#日志文件分割></a></h2><p>默认情况下,nginx的日志文件不支持按天或者按大小切分,这对我们排查错误非常不便.这里提供一种在配置文件中分割日志文件的方式(此外还有cron定时切分日志文件的方式):</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=k>if</span> <span class=o>(</span><span class=nv>$time_iso8601</span> ~ <span class=s2>&#34;^(\d{4})-(\d{2})-(\d{2})&#34;</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nb>set</span> <span class=nv>$year</span> <span class=nv>$1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nb>set</span> <span class=nv>$month</span> <span class=nv>$2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nb>set</span> <span class=nv>$day</span> <span class=nv>$3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>access_log /usr/local/nginx/logs/www.ttlsa.com-<span class=nv>$year</span>-<span class=nv>$month</span>-<span class=nv>$day</span>-access.log<span class=p>;</span>
+</span></span></code></pre></div><p>此外需要注意的是,默认情况下,ngnix的权限用户并不是root,那么将无法生成日志文件,所有需要指定user为root.例如:</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><h2 id=nginx灰度测试 data-numberify>nginx灰度测试<a class="anchor ms-1" href=#nginx灰度测试></a></h2><p>灰度发布是指在黑与白之间，能够平滑过渡的一种发布方式。AB test就是一种灰度发布方式，让一部分用户继续用A，一部分用户开始用B，如果用户对B没有什么反对意见，那么逐步扩大范围，把所有用户都迁移到B上面来。</p><p>灰度发布常见一般有三种方式:</p><ul><li>Nginx+LUA方式</li><li>根据Cookie实现灰度发布</li><li>根据来路IP实现灰度发布</li></ul><p>本文主要将讲解根据Cookie和来路IP这两种方式实现简单的灰度发布。这两种的实现原理是相同的,这里只介绍一种即可：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>upstream hilinux_01 <span class=o>{</span>
+</span></span><span class=line><span class=cl>    server 192.168.1.100:8080 <span class=nv>max_fails</span><span class=o>=</span><span class=m>1</span> <span class=nv>fail_timeout</span><span class=o>=</span>60<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>upstream hilinux_02 <span class=o>{</span>
+</span></span><span class=line><span class=cl>    server 192.168.1.200:8080 <span class=nv>max_fails</span><span class=o>=</span><span class=m>1</span> <span class=nv>fail_timeout</span><span class=o>=</span>60<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>upstream default <span class=o>{</span>
+</span></span><span class=line><span class=cl>    server 192.168.1.100:8080 <span class=nv>max_fails</span><span class=o>=</span><span class=m>1</span> <span class=nv>fail_timeout</span><span class=o>=</span>60<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>server <span class=o>{</span>
+</span></span><span class=line><span class=cl>    listen 80<span class=p>;</span>
+</span></span><span class=line><span class=cl>    server_name  www.hi-linux.com<span class=p>;</span>
+</span></span><span class=line><span class=cl>    access_log  logs/www.hi-linux.com.log  main<span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>#match cookie</span>
+</span></span><span class=line><span class=cl>    <span class=nb>set</span> <span class=nv>$group</span> <span class=s2>&#34;default&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>(</span><span class=nv>$http_cookie</span> ~* <span class=s2>&#34;version=V1&#34;</span><span class=o>){</span>
+</span></span><span class=line><span class=cl>          <span class=nb>set</span> <span class=nv>$group</span> hilinux_01<span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>(</span><span class=nv>$http_cookie</span> ~* <span class=s2>&#34;version=V2&#34;</span><span class=o>){</span>
+</span></span><span class=line><span class=cl>          <span class=nb>set</span> <span class=nv>$group</span> hilinux_02<span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    location / <span class=o>{</span>                       
+</span></span><span class=line><span class=cl>      proxy_pass http://<span class=nv>$group</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      proxy_set_header   Host             <span class=nv>$host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      proxy_set_header   X-Real-IP        <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      proxy_set_header   X-Forwarded-For  <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      index  index.html index.htm<span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl> <span class=o>}</span>
+</span></span></code></pre></div><h2 id=ngx_http_map_module data-numberify>ngx_http_map_module<a class="anchor ms-1" href=#ngx_http_map_module></a></h2><p>默认情况下安装 nginx 都会安装该模块。</p><p>map 的主要作用是创建自定义变量，通过使用 nginx 的内置变量，去匹配某些特定规则，如果匹配成功则设置某个值给自定义变量。 而这个自定义变量又可以作于他用。</p><p>直接看个例子理解起来比较清晰：</p><p>场景： 匹配请求 url 的参数，如果参数是 debug 则设置 $foo = 1 ，默认设置 $foo = 0</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>map <span class=nv>$args</span> <span class=nv>$foo</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    default 0<span class=p>;</span>
+</span></span><span class=line><span class=cl>    debug 1<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>$args 是nginx内置变量，就是获取的请求 url 的参数。 如果 $args 匹配到 debug 那么 $foo 的值会被设为 1 ，如果 $args 一个都匹配不到 $foo 就是default 定义的值，在这里就是 0.</p><p>使用map也可以用作灰度测试：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>upstream hilinux_01 <span class=o>{</span>
+</span></span><span class=line><span class=cl>    server 192.168.1.100:8080 <span class=nv>max_fails</span><span class=o>=</span><span class=m>1</span> <span class=nv>fail_timeout</span><span class=o>=</span>60<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>upstream hilinux_02 <span class=o>{</span>
+</span></span><span class=line><span class=cl>    server 192.168.1.200:8080 <span class=nv>max_fails</span><span class=o>=</span><span class=m>1</span> <span class=nv>fail_timeout</span><span class=o>=</span>60<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>upstream default <span class=o>{</span>
+</span></span><span class=line><span class=cl>    server 192.168.1.100:8080 <span class=nv>max_fails</span><span class=o>=</span><span class=m>1</span> <span class=nv>fail_timeout</span><span class=o>=</span>60<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>map <span class=nv>$COOKIE_version</span> <span class=nv>$group</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    ~*V1$ hilinux_01<span class=p>;</span>
+</span></span><span class=line><span class=cl>    ~*V2$ hilinux_02<span class=p>;</span>
+</span></span><span class=line><span class=cl>    default default<span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>server <span class=o>{</span>
+</span></span><span class=line><span class=cl>  listen 80<span class=p>;</span>
+</span></span><span class=line><span class=cl>  server_name  www.hi-linux.com<span class=p>;</span>
+</span></span><span class=line><span class=cl>  access_log  logs/www.hi-linux.com.log  main<span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  location / <span class=o>{</span>                       
+</span></span><span class=line><span class=cl>    proxy_pass http://<span class=nv>$group</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    proxy_set_header   Host             <span class=nv>$host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    proxy_set_header   X-Real-IP        <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    proxy_set_header   X-Forwarded-For <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    index  index.html index.htm<span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl> <span class=o>}</span>
+</span></span></code></pre></div><h2 id=使用nginx进行ab测试 data-numberify>使用nginx进行AB测试<a class="anchor ms-1" href=#使用nginx进行ab测试></a></h2><p>根据请求的路径来选择路由的首页:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>http <span class=o>{</span>
+</span></span><span class=line><span class=cl>    split_clients <span class=s2>&#34;</span><span class=si>${</span><span class=nv>remote_addr</span><span class=si>}</span><span class=s2>AAA&#34;</span> <span class=nv>$variant</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                   0.5%               .one<span class=p>;</span>
+</span></span><span class=line><span class=cl>                   2.0%               .two<span class=p>;</span>
+</span></span><span class=line><span class=cl>                   *                  <span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    server <span class=o>{</span>
+</span></span><span class=line><span class=cl>        location / <span class=o>{</span>
+</span></span><span class=line><span class=cl>            index index<span class=si>${</span><span class=nv>variant</span><span class=si>}</span>.html<span class=p>;</span>
+</span></span></code></pre></div><p>原始字符串的值使用MurmurHash2散列。 在给出的例子中，从0到21474835（0.5％）的散列值对应于$ variant变量的值“.one”，从21474836到107374180（2％）的散列值对应于值“.two”，散列值 从107374181到4294967295的值对应于值“”（一个空字符串）。</p><h2 id=nginx请求镜像 data-numberify>nginx请求镜像<a class="anchor ms-1" href=#nginx请求镜像></a></h2><p>请求镜像就是nginx在接受到客户端请求进行反向代理的时候分别代理到原地址和镜像地址一次。镜像地址的返回结果不会返回到客户端。看下图：</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p>利用这一功能我们就可以将线上实时访问流量拷贝至其它环境，基于这些流量可以做版本发布前的预先验证或者进行流量放大后的压测等等。</p><p>mirror模块配置分为两部分，源地址和镜像地址配置，配置位置可以为nginx配置文件的http, server, location上下文，配置示例为：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>location /user <span class=o>{</span>
+</span></span><span class=line><span class=cl>         mirror /mirror <span class=p>;</span>
+</span></span><span class=line><span class=cl>         mirror_request_body off<span class=p>;</span>
+</span></span><span class=line><span class=cl>         proxy_pass http://localhost:8080 <span class=p>;</span>
+</span></span><span class=line><span class=cl> <span class=o>}</span>
+</span></span><span class=line><span class=cl>location /mirror <span class=o>{</span>
+</span></span><span class=line><span class=cl>       internal<span class=p>;</span>
+</span></span><span class=line><span class=cl>       proxy_pass http://127.0.0.1:8081<span class=nv>$request_uri</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>       proxy_set_header X-Original-URI <span class=nv>$request_uri</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>1.original配置</p><ul><li>location /指定了源uri为/</li><li>mirror /mirror指定镜像uri为/mirror</li><li>mirror_request_body off | on 指定是否镜像请求body部分，此选项与proxy_request_buffering、fastcgi_request_buffering、scgi_request_buffering和 uwsgi_request_buffering冲突，一旦开启mirror_request_body为on，则请求自动缓存;</li></ul><p>2.mirror配置</p><ul><li>internal 指定此location只能被“内部的”请求调用，外部的调用请求会返回”Not found” (404)</li><li>proxy_pass 指定上游server的地址</li><li>proxy_set_header 设置镜像流量的头部</li></ul><h2 id=rewrite指令 data-numberify>rewrite指令<a class="anchor ms-1" href=#rewrite指令></a></h2><ul><li>last： url重写后，马上发起一个新的请求，再次进入server块，重试location匹配，超过10次匹配不到报500错误，地址栏url不变</li><li>break: url重写后，直接使用当前资源，执行location里余下的语句，完成本次请求(不会再次进入server块)，地址栏url不变</li><li>redirect ： 返回302临时重定向，地址栏显示重定向后的url，爬虫不会更新url（因为是临时）</li><li>permanent ： 返回301永久重定向, 地址栏显示重定向后的url，爬虫更新url</li></ul><p>nginx 的 rewrite log 是记录在 error log 文件中，而不是access log中。</p><p>nginx 开启 rewrite 日志的方法(在server段中添加）:首先，打开 error_log 日志：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>error_log logs/error.log notice<span class=p>;</span>
+</span></span></code></pre></div><p>然后打开 rewrite_log 开关:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>rewrite_log on<span class=p>;</span>
+</span></span></code></pre></div><h2 id=nginx文件上传 data-numberify>nginx文件上传<a class="anchor ms-1" href=#nginx文件上传></a></h2></div></div></div><div class=card-footer><div class="post-navs d-flex justify-content-evenly"><div class="post-nav post-prev"><i class="fas fa-fw fa-chevron-down post-prev-icon me-1" data-fa-transform=rotate-90></i>
+<a href=/blog/2022/12/spring-security/>Spring-Security</a></div><div class="post-nav post-next"><a href=/blog/2022/12/spring-cloud-discovery/>Spring-Cloud-Discovery</a>
+<i class="fas fa-fw fa-chevron-down post-next-icon ms-1" data-fa-transform=rotate-270></i></div></div></div></article><section class="related-posts row card component"><div class=card-header><h2 class="card-title fs-4 my-2 text-surface">相关文章</h2></div><div class="card-body slide px-1"><div class="slide-inner row gx-0"><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/spring-security/>Spring-Security</a><div class="post-meta mb-0">2022年12月2日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/completablefuture/>CompletableFuture</a><div class="post-meta mb-0">2022年12月2日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/guava/>Guava</a><div class="post-meta mb-0">2022年12月2日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/reactor/>Reactor</a><div class="post-meta mb-0">2022年12月2日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/oauth2/>Oauth2</a><div class="post-meta mb-0">2022年12月2日</div></div></div></div><button class=slide-control-left>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-90></i>
+<span class=visually-hidden>Left</span></button>
+<button class=slide-control-right>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-270></i>
+<span class=visually-hidden>Right</span></button></div></section><div class="card component row post-comments" id=post-comments><div class=card-header><h2 class="card-title my-2 fs-4 text-surface">评论</h2></div><div class=card-body></div></div></div></div><aside class="col-xxl-4 sidebar d-flex"><div class="container d-flex flex-column"><div class="accordion profile"><div class="accordion-item card row text-center component"><div class="accordion-header card-header border-0" id=profile-header><a class="accordion-button d-lg-none mb-2 shadow-none p-0 bg-transparent text-surface collapsed" role=button data-bs-toggle=collapse href=#profile aria-expanded=false aria-controls=profile>Profile</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=profile aria-labelledby=profile-header><div class="col-12 d-flex align-items-center justify-content-center"><picture><img class="profile-avatar rounded-circle" alt=小胖子 src=https://banrenshan.github.io/images/profile.webp loading=lazy data-viewer-invisible width=400 height=400></picture></div><div class="col-12 profile-meta"><div class="profile-name fw-fold fs-lg">小胖子</div><div class=profile-bio>每天一点点</div></div></div></div></div><div class="accordion taxonomies-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#taxonomies-toggle aria-expanded=false aria-controls=taxonomies-toggle>Taxonomies</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=taxonomies-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=taxonomyCategoriesTab data-bs-toggle=tab data-bs-target=#taxonomyCategories type=button role=tab aria-controls=taxonomyCategories aria-selected=true>
+分类</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyTagsTab data-bs-toggle=tab data-bs-target=#taxonomyTags type=button role=tab aria-controls=taxonomyTags aria-selected=true>
+标签</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyArchivesTab data-bs-toggle=tab data-bs-target=#taxonomyArchives type=button role=tab aria-controls=taxonomyArchives aria-selected=true>
+归档</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=taxonomyCategories role=tabpanel aria-labelledby=taxonomyCategoriesTab tabindex=0><a href=/categories/%E6%8A%80%E6%9C%AF/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=技术>技术
+<span class="badge badge-sm text-secondary bg-white ms-1">24</span></a>
+<a href=/categories/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">9</span></a>
+<a href=/categories/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=操作系统>操作系统
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=中间件>中间件
+<span class="badge badge-sm text-secondary bg-white ms-1">7</span></a>
+<a href=/categories/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/categories/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-boot/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-boot>spring-boot
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-cloud/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-cloud>spring-cloud
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/unbutu/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=Unbutu>Unbutu
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/categories class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">13</span></a></div><div class=tab-pane id=taxonomyTags role=tabpanel aria-labelledby=taxonomyTagsTab tabindex=0><a href=/tags/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">31</span></a>
+<a href=/tags/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=监控>监控
+<span class="badge badge-sm text-secondary bg-white ms-1">4</span></a>
+<a href=/tags/gradle/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=gradle>gradle
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/graphql/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=graphql>graphql
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/shell/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=shell>shell
+<span class="badge badge-sm text-secondary bg-white ms-1">2</span></a>
+<a href=/tags/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/filebeat/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=filebeat>filebeat
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/grafana/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=grafana>grafana
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/tags class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">22</span></a></div><div class=tab-pane id=taxonomyArchives role=tabpanel aria-labelledby=taxonomyArchivesTab tabindex=0><a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=2022>2022 <span class="badge badge-sm text-secondary bg-white ms-1">48</span></a>
+<a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=0001>0001 <span class="badge badge-sm text-secondary bg-white ms-1">5</span></a></div></div></div></div></div><div class="accordion posts-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#posts-toggle aria-expanded=false aria-controls=posts-toggle>文章</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=posts-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=recent-posts-tab data-bs-toggle=tab data-bs-target=#recent-posts type=button role=tab aria-controls=recent-posts aria-selected=true>
+最近文章</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=recent-posts role=tabpanel aria-labelledby=recent-posts-tab tabindex=0><ul class="post-list list-unstyled ms-1"><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/grafana/>Grafana</a><div class="post-meta mt-2"><span class=post-date>2022年12月10日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/gradle-basic/>Gradle-Basic</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/zero-copy/>Zero-Copy</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-lock/>Java-Lock</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-log/>Java-Log</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li></ul></div></div></div></div></div><div class="accordion post-toc d-none d-lg-block"><div class="accordion-item row mb-4 card component" id=postTOC><div class="card-header accordion-header"><h2 class="card-title fs-4 my-2 text-surface d-none d-lg-block">目录</h2><a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" role=button data-bs-toggle=collapse href=#post-toc aria-expanded=false aria-controls=post-toc>目录</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=post-toc><nav id=TableOfContents><ul><li><a href=#访问日志解码请求参数>访问日志解码请求参数</a></li><li><a href=#打印post请求的请求体信息>打印post请求的请求体信息</a></li><li><a href=#添加或启动新模块>添加或启动新模块</a></li><li><a href=#x-forwarded-for-和-x-real-ip>X-Forwarded-For 和 X-Real-IP</a></li><li><a href=#ngx_http_realip_module模块>ngx_http_realip_module模块</a></li><li><a href=#httpgeoip模块>HttpGeoIP模块</a></li><li><a href=#post_action请求后置处理器>post_action请求后置处理器</a></li><li><a href=#ngx_http_stub_status_module监控ngnix处理的请求数>ngx_http_stub_status_module监控ngnix处理的请求数</a></li><li><a href=#http_random_index_module-随机页面返回>http_random_index_module 随机页面返回</a></li><li><a href=#http_sub_module-替换响应>http_sub_module 替换响应</a><ul><li><a href=#语法>语法</a></li></ul></li><li><a href=#ngx_http_limit_conn_module限制客户端连接数>ngx_http_limit_conn_module限制客户端连接数</a></li><li><a href=#http_limit_req_module-限制请求速率>http_limit_req_module 限制请求速率</a></li><li><a href=#http_access_module-访问控制>http_access_module 访问控制</a><ul><li><a href=#语法-1>语法</a></li></ul></li><li><a href=#http_auth_basic_module-认证用户>http_auth_basic_module 认证用户</a></li><li><a href=#secure_link_module>secure_link_module</a></li><li><a href=#索引静态目录>索引静态目录</a></li><li><a href=#nginx架构模型>nginx架构模型</a></li><li><a href=#静态资源>静态资源</a><ul><li><a href=#sendfile>sendfile</a></li><li><a href=#tcp_nopush-和-tcp_nodelay><code>tcp_nopush</code> 和 <code>tcp_nodelay</code></a></li><li><a href=#gzip-压缩>gzip 压缩</a></li><li><a href=#gzip_static_module-模块>gzip_static_module 模块</a></li><li><a href=#gunzip_module-模块>gunzip_module 模块</a></li><li><a href=#缓存>缓存</a></li><li><a href=#跨站>跨站</a></li><li><a href=#防盗链>防盗链</a></li></ul></li><li><a href=#反向代理>反向代理</a><ul><li><a href=#负载均衡>负载均衡</a></li><li><a href=#缓存-1>缓存</a></li></ul></li><li><a href=#日志文件分割>日志文件分割</a></li><li><a href=#nginx灰度测试>nginx灰度测试</a></li><li><a href=#ngx_http_map_module>ngx_http_map_module</a></li><li><a href=#使用nginx进行ab测试>使用nginx进行AB测试</a></li><li><a href=#nginx请求镜像>nginx请求镜像</a></li><li><a href=#rewrite指令>rewrite指令</a></li><li><a href=#nginx文件上传>nginx文件上传</a></li></ul></nav></div></div></div></div></aside></div></main><footer class="footer mt-auto py-3 text-center container"></footer><script data-precache src=/assets/main/bundle.min.f06ce52438e0e6eee8225a013aaf3de719542ffc5ef58241be98c0f5d1df9732.js integrity="sha256-8GzlJDjg5u7oIloBOq895xlUL/xe9YJBvpjA9dHflzI=" crossorigin=anonymous async></script><script data-precache src=/assets/icons/bundle.min.4f30d5267a9f2f9d45ed93969d45ec626100a969a8b91f71f753315a261e9034.js integrity="sha256-TzDVJnqfL51F7ZOWnUXsYmEAqWmouR9x91MxWiYekDQ=" crossorigin=anonymous defer></script>
+<script data-precache src=/assets/viewer/bundle.min.0a0d0099935beee41b7a7bf4543cd55e793e5f830a571b0794ef8c3602c5823c.js integrity="sha256-Cg0AmZNb7uQbenv0VDzVXnk+X4MKVxsHlO+MNgLFgjw=" crossorigin=anonymous defer></script>
+<script src=/js/sw-register.js defer></script></body></html>

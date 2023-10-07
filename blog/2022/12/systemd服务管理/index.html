@@ -1,0 +1,526 @@
+<!doctype html><html class=position-relative itemscope itemtype=https://schema.org/WebPage lang=zh-hans data-bs-theme=auto data-palette=purple><head><script src=/assets/init/bundle.min.d893010142cc6ee98760d32b7e1e90d3786505dcd396e888f1ee101971e02785.js integrity="sha256-2JMBAULMbumHYNMrfh6Q03hlBdzTluiI8e4QGXHgJ4U=" crossorigin=anonymous></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Systemd服务管理 -</title><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_16x16_resize_q75_h2_box_2.webp sizes=16x16 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_32x32_resize_q75_h2_box_2.webp sizes=32x32 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_150x150_resize_q75_h2_box_2.webp sizes=150x150 type=image/webp><link rel=apple-touch-icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_180x180_resize_q75_h2_box_2.webp sizes=180x180 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_192x192_resize_q75_h2_box_2.webp sizes=192x192 type=image/webp><link rel=mask-icon href=/safari-pinned-tab.svg color=#6f42c1><meta name=keywords content="Hugo,Bootstrap,Blog Theme"><meta name=description content="历史上Linux的启动一直采用init进程，即下面的命令用来启动服务：
+$ sudo /etc/init.d/apache2 start #或者 $ service apache2 start 这种方法有两个缺点:
+启动时间长。init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。
+启动脚本复杂。init进程只是执行启动脚本，不管其他事情。脚本需要自己处理各种情况，这往往使得脚本变得很长。
+Systemd就是为了解决这些问题而诞生的。它的设计目标是，为系统的启动和管理提供一套完整的解决方案，根据Linux惯例，字母d是守护进程（daemon）的缩写，Systemd这个名字的含义，就是它要守护整个系统。
+概述 使用了Systemd，就不需要再用init了。Systemd取代了initd，成为系统的第一个进程（PID 等于 1），其他进程都是它的子进程。
+Systemd的优点是功能强大，使用方便，缺点是体系庞大，非常复杂。事实上，现在还有很多人反对使用Systemd，理由就是它过于复杂，与操作系统的其他部分强耦合，违反”keep simple, keep stupid”的Unix哲学。
+管理命令 Systemd并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
+systemctl 是Systemd的主命令，用于管理系统 #重启系统 $ sudo systemctl reboot #关闭系统，切断电源 $ sudo systemctl poweroff #CPU停止工作 $ sudo systemctl halt #暂停系统 $ sudo systemctl suspend #让系统进入冬眠状态 $ sudo systemctl hibernate #让系统进入交互式休眠状态 $ sudo systemctl hybrid-sleep #启动进入救援状态（单用户状态） $ sudo systemctl rescue systemd-analyze 命令用于查看启动耗时 #查看启动耗时 [root@k8s ~]# systemd-analyze Startup finished in 2."><meta name=twitter:card content="summary"><meta name=twitter:title content="Systemd服务管理"><meta name=twitter:description content="历史上Linux的启动一直采用init进程，即下面的命令用来启动服务：
+$ sudo /etc/init.d/apache2 start #或者 $ service apache2 start 这种方法有两个缺点:
+启动时间长。init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。
+启动脚本复杂。init进程只是执行启动脚本，不管其他事情。脚本需要自己处理各种情况，这往往使得脚本变得很长。
+Systemd就是为了解决这些问题而诞生的。它的设计目标是，为系统的启动和管理提供一套完整的解决方案，根据Linux惯例，字母d是守护进程（daemon）的缩写，Systemd这个名字的含义，就是它要守护整个系统。
+概述 使用了Systemd，就不需要再用init了。Systemd取代了initd，成为系统的第一个进程（PID 等于 1），其他进程都是它的子进程。
+Systemd的优点是功能强大，使用方便，缺点是体系庞大，非常复杂。事实上，现在还有很多人反对使用Systemd，理由就是它过于复杂，与操作系统的其他部分强耦合，违反”keep simple, keep stupid”的Unix哲学。
+管理命令 Systemd并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
+systemctl 是Systemd的主命令，用于管理系统 #重启系统 $ sudo systemctl reboot #关闭系统，切断电源 $ sudo systemctl poweroff #CPU停止工作 $ sudo systemctl halt #暂停系统 $ sudo systemctl suspend #让系统进入冬眠状态 $ sudo systemctl hibernate #让系统进入交互式休眠状态 $ sudo systemctl hybrid-sleep #启动进入救援状态（单用户状态） $ sudo systemctl rescue systemd-analyze 命令用于查看启动耗时 #查看启动耗时 [root@k8s ~]# systemd-analyze Startup finished in 2."><meta property="og:title" content="Systemd服务管理"><meta property="og:description" content="历史上Linux的启动一直采用init进程，即下面的命令用来启动服务：
+$ sudo /etc/init.d/apache2 start #或者 $ service apache2 start 这种方法有两个缺点:
+启动时间长。init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。
+启动脚本复杂。init进程只是执行启动脚本，不管其他事情。脚本需要自己处理各种情况，这往往使得脚本变得很长。
+Systemd就是为了解决这些问题而诞生的。它的设计目标是，为系统的启动和管理提供一套完整的解决方案，根据Linux惯例，字母d是守护进程（daemon）的缩写，Systemd这个名字的含义，就是它要守护整个系统。
+概述 使用了Systemd，就不需要再用init了。Systemd取代了initd，成为系统的第一个进程（PID 等于 1），其他进程都是它的子进程。
+Systemd的优点是功能强大，使用方便，缺点是体系庞大，非常复杂。事实上，现在还有很多人反对使用Systemd，理由就是它过于复杂，与操作系统的其他部分强耦合，违反”keep simple, keep stupid”的Unix哲学。
+管理命令 Systemd并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
+systemctl 是Systemd的主命令，用于管理系统 #重启系统 $ sudo systemctl reboot #关闭系统，切断电源 $ sudo systemctl poweroff #CPU停止工作 $ sudo systemctl halt #暂停系统 $ sudo systemctl suspend #让系统进入冬眠状态 $ sudo systemctl hibernate #让系统进入交互式休眠状态 $ sudo systemctl hybrid-sleep #启动进入救援状态（单用户状态） $ sudo systemctl rescue systemd-analyze 命令用于查看启动耗时 #查看启动耗时 [root@k8s ~]# systemd-analyze Startup finished in 2."><meta property="og:type" content="article"><meta property="og:url" content="https://banrenshan.github.io/blog/2022/12/systemd%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-12-01T11:21:20+00:00"><meta property="article:modified_time" content="2023-10-07T19:19:27+08:00"><meta itemprop=name content="Systemd服务管理"><meta itemprop=description content="历史上Linux的启动一直采用init进程，即下面的命令用来启动服务：
+$ sudo /etc/init.d/apache2 start #或者 $ service apache2 start 这种方法有两个缺点:
+启动时间长。init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。
+启动脚本复杂。init进程只是执行启动脚本，不管其他事情。脚本需要自己处理各种情况，这往往使得脚本变得很长。
+Systemd就是为了解决这些问题而诞生的。它的设计目标是，为系统的启动和管理提供一套完整的解决方案，根据Linux惯例，字母d是守护进程（daemon）的缩写，Systemd这个名字的含义，就是它要守护整个系统。
+概述 使用了Systemd，就不需要再用init了。Systemd取代了initd，成为系统的第一个进程（PID 等于 1），其他进程都是它的子进程。
+Systemd的优点是功能强大，使用方便，缺点是体系庞大，非常复杂。事实上，现在还有很多人反对使用Systemd，理由就是它过于复杂，与操作系统的其他部分强耦合，违反”keep simple, keep stupid”的Unix哲学。
+管理命令 Systemd并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
+systemctl 是Systemd的主命令，用于管理系统 #重启系统 $ sudo systemctl reboot #关闭系统，切断电源 $ sudo systemctl poweroff #CPU停止工作 $ sudo systemctl halt #暂停系统 $ sudo systemctl suspend #让系统进入冬眠状态 $ sudo systemctl hibernate #让系统进入交互式休眠状态 $ sudo systemctl hybrid-sleep #启动进入救援状态（单用户状态） $ sudo systemctl rescue systemd-analyze 命令用于查看启动耗时 #查看启动耗时 [root@k8s ~]# systemd-analyze Startup finished in 2."><meta itemprop=datePublished content="2022-12-01T11:21:20+00:00"><meta itemprop=dateModified content="2023-10-07T19:19:27+08:00"><meta itemprop=wordCount content="1277"><meta itemprop=keywords content="linux,"><meta property="og:image" content="https://banrenshan.github.io/images/logo.png"><meta name=twitter:image content="https://banrenshan.github.io/images/logo.png"><meta property="og:image:alt" content="Systemd服务管理"><meta name=twitter:image:alt content="Systemd服务管理"><link rel=manifest href=/manifest.json><link data-precache rel=stylesheet href="/assets/main/bundle.min.906e48a4015f207e7ad2852421d4b8e6fda8fb5c6d1fff31855591474e60da12.css" integrity="sha256-kG5IpAFfIH560oUkIdS45v2o+1xtH/8xhVWRR05g2hI=" crossorigin=anonymous><link data-precache rel=stylesheet href=/assets/viewer/bundle.min.eb914844636cd41f221f109e99c887bbc3b6b5ffb2af7c664b284cea2d1b54b7.css integrity="sha256-65FIRGNs1B8iHxCemciHu8O2tf+yr3xmSyhM6i0bVLc=" crossorigin=anonymous></head><body><header class="mb-4 sticky-top"><nav class="top-app-bar shadow navbar navbar-expand-xxl"><div class=container><a class="navbar-brand d-flex align-items-center flex-grow-1 flex-xxl-grow-0 justify-content-xxl-start ms-2 ms-xxl-0 mx-auto me-xxl-2" href=https://banrenshan.github.io/><picture><img class=logo alt=Logo src=https://banrenshan.github.io/images/logo.webp loading=lazy width=400 height=400></picture></a><div class="offcanvas-xxl offcanvas-end flex-grow-1" data-bs-scroll=true tabindex=-1 id=navbarMenus aria-labelledby=navbarMenusLabel><div class="offcanvas-header px-4 pb-0"><div class="offcanvas-title h5" id=navbarMenusLabel></div><button type=button class="btn-close btn-close-white" data-bs-dismiss=offcanvas data-bs-target=#navbarMenus aria-label=Close></button></div><div class="offcanvas-body p-4 pt-0 p-xxl-0"><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center me-auto"><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/docs/><span class="menu-icon me-1"><i class="fas fa-fw fa-book"></i></span>文档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/series/><span class="menu-icon me-1"><i class="fas fa-fw fa-columns"></i></span>专栏</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/categories/><span class="menu-icon me-1"><i class="fas fa-fw fa-folder"></i></span>分类</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/archives/><span class="menu-icon me-1"><i class="fas fa-fw fa-file-archive"></i></span>归档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/tags/><span class="menu-icon me-1"><i class="fas fa-fw fa-tags"></i></span>标签</a></li></ul><hr class=d-xxl-none><form class="search-bar ms-auto my-auto" action=/search/ novalidate><div class="input-group input-group-sm align-items-center"><span class="btn btn-search disabled position-absolute left-0 border-0 px-1"><i class="fas fa-fw fa-search fa-lg"></i></span>
+<input class="my-1 form-control border-white rounded-5 search-input bg-body" name=q type=search placeholder=搜索 aria-label=Search required>
+<span class="search-shortcut position-absolute end-0 top-0 me-2"><kbd class="bg-primary rounded shadow">/</kbd></span></div></form><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center ms-md-auto"><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=fontSizeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-font"></i>
+<span class=d-xxl-none>字体大小</span></a><ul class="font-size-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=fontSizeDropdown><li><button class="font-size-item dropdown-item" data-size=xs>
+特小号</button></li><li><button class="font-size-item dropdown-item" data-size=sm>
+小号</button></li><li><button class="font-size-item dropdown-item active" data-size=md>
+中等</button></li><li><button class="font-size-item dropdown-item" data-size=lg>
+大号</button></li><li><button class="font-size-item dropdown-item" data-size=xl>
+特大号</button></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=paletteDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-palette"></i>
+<span class=d-xxl-none>配色</span></a><ul class="palette-dropdown-menu dropdown-menu dropdown-menu-end px-2 row g-2" aria-labelledby=paletteDropdown><li class="col-4 my-1"><a role=button id=palette-blue aria-label=蓝色 class="btn btn-sm w-100 palette text-bg-blue" data-palette=blue></a></li><li class="col-4 my-1"><a role=button id=palette-blue-gray aria-label=蓝灰色 class="btn btn-sm w-100 palette text-bg-blue-gray" data-palette=blue-gray></a></li><li class="col-4 my-1"><a role=button id=palette-brown aria-label=棕色 class="btn btn-sm w-100 palette text-bg-brown" data-palette=brown></a></li><li class="col-4 my-1"><a role=button id=palette-cyan aria-label=青色 class="btn btn-sm w-100 palette text-bg-cyan" data-palette=cyan></a></li><li class="col-4 my-1"><a role=button id=palette-green aria-label=绿色 class="btn btn-sm w-100 palette text-bg-green" data-palette=green></a></li><li class="col-4 my-1"><a role=button id=palette-indigo aria-label=靛青色 class="btn btn-sm w-100 palette text-bg-indigo" data-palette=indigo></a></li><li class="col-4 my-1"><a role=button id=palette-orange aria-label=橙色 class="btn btn-sm w-100 palette text-bg-orange" data-palette=orange></a></li><li class="col-4 my-1"><a role=button id=palette-pink aria-label=粉色 class="btn btn-sm w-100 palette text-bg-pink" data-palette=pink></a></li><li class="col-4 my-1"><a role=button id=palette-purple aria-label=紫色 class="btn btn-sm w-100 palette text-bg-purple" data-palette=purple></a></li><li class="col-4 my-1"><a role=button id=palette-red aria-label=红色 class="btn btn-sm w-100 palette text-bg-red" data-palette=red></a></li><li class="col-4 my-1"><a role=button id=palette-teal aria-label=蓝绿色 class="btn btn-sm w-100 palette text-bg-teal" data-palette=teal></a></li><li class="col-4 my-1"><a role=button id=palette-yellow aria-label=黄色 class="btn btn-sm w-100 palette text-bg-yellow" data-palette=yellow></a></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=modeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="mode-icon fas fa-fw fa-adjust" id=modeIcon></i>
+<span class=d-xxl-none>模式</span></a><ul class="mode-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=modeDropdown><li class=mode-item data-color-mode=light data-icon=sun><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-sun"></i> 浅色</button></li><li class=mode-item data-color-mode=dark data-icon=moon><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-moon"></i> 深色</button></li><li class="mode-item active" data-color-mode=auto data-icon=adjust><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-adjust"></i> 自动</button></li></ul></li></ul></div></div><div class=d-flex><button class="navbar-toggler order-5 border-0" type=button data-bs-toggle=offcanvas data-bs-target=#navbarMenus aria-controls=navbarMenus aria-expanded=false aria-label="Toggle navigation">
+<i class="fas fa-ellipsis-h"></i></button></div></div></nav></header><main class=container><div class="row content"><noscript><div class="alert alert-danger" role=alert>你的浏览器不支持 JavaScript。</div></noscript><div class=col-xxl-8><div class=container><nav class="row card component" aria-label=breadcrumb><div class="card-body pb-0"><ol class="hbs-breadcrumb breadcrumb flex-nowrap"><li class="breadcrumb-item text-surface"><a href=/>主页</a></li><li class="breadcrumb-item text-surface"><a href=/blog/>Blogs</a></li><li class="breadcrumb-item active">Systemd服务管理</li></ol></div></nav><div class="post-panel-wrapper position-relative d-flex justify-content-center"><div class="d-flex flex-row justify-content-center rounded-5 border post-panel position-fixed px-3 py-1 surface shadow-1"><a class="action action-toc d-none d-xxl-block" href=#postTOC role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-toc d-block d-xxl-none" href=#post-toc-container role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-post-comments" href=#post-comments role=button aria-label=Comments title=Comments><i class="fas fa-fw fa-comments"></i></a>
+<a id=sidebarToggler class="action action-sidebar-toggler d-none d-xxl-block" role=button title="Sidebar toggler"><i class="fas fa-fw fa-expand-alt" data-fa-transform=rotate-45></i></a></div></div><article class="row card component mb-4 post"><div class=card-header><h1 class="card-title post-title my-2">Systemd服务管理</h1></div><div class=card-body><div class="post-meta mb-3"><span class="post-date me-1 mb-1" title="创建于 2022-12-01 11:21:20 +0000 UTC，更新于 2023-10-07 11:19:27 +0000 UTC。">2022年12月1日</span><span class="post-reading-time me-1 mb-1">6 分钟阅读</span><a href=/categories/linux/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-category">
+<i class="fas fa-fw fa-folder me-1"></i>Linux</a><a href=/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-category">
+<i class="fas fa-fw fa-folder me-1"></i>操作系统</a><a href=/tags/linux/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-tag">Linux</a></div><div class="mt-2 mb-3 d-block d-xxl-none"><h2 class="text-surface mb-3">目录</h2><div id=post-toc-container></div><hr class=text-secondary></div><div class="post-content mb-3" data-bs-spy=scroll data-bs-target=#TableOfContents tabindex=0><div id=post-content-body><p>历史上Linux的启动一直采用init进程，即下面的命令用来启动服务：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>$ sudo /etc/init.d/apache2 start
+</span></span><span class=line><span class=cl><span class=c1>#或者</span>
+</span></span><span class=line><span class=cl>$ service apache2 start
+</span></span></code></pre></div><p>这种方法有两个缺点:</p><ul><li><p>启动时间长。init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。</p></li><li><p>启动<a href=https://www.linuxcool.com/ title=脚本 target=_blank rel="noopener noreferrer">脚本<i class="fas fa-external-link-square-alt ms-1"></i></a>复杂。init进程只是执行启动<a href=https://www.linuxcool.com/ title=脚本 target=_blank rel="noopener noreferrer">脚本<i class="fas fa-external-link-square-alt ms-1"></i></a>，不管其他事情。脚本需要自己处理各种情况，这往往使得脚本变得很长。</p></li></ul><p>Systemd就是为了解决这些问题而诞生的。它的设计目标是，为系统的启动和管理提供一套完整的解决方案，根据Linux惯例，字母d是守护进程（daemon）的缩写，Systemd这个名字的含义，就是它要守护整个系统。</p><h2 id=概述 data-numberify>概述<a class="anchor ms-1" href=#概述></a></h2><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p>使用了Systemd，就不需要再用init了。Systemd取代了initd，成为系统的第一个进程（PID 等于 1），其他进程都是它的子进程。</p><p>Systemd的优点是功能强大，使用方便，缺点是体系庞大，非常复杂。事实上，现在还有很多人反对使用Systemd，理由就是它过于复杂，与操作系统的其他部分强耦合，违反”keep simple, keep stupid”的Unix哲学。</p><h2 id=管理命令 data-numberify>管理命令<a class="anchor ms-1" href=#管理命令></a></h2><p>Systemd并不是一个命令，而是一组命令，涉及到系统管理的方方面面。</p><ul><li><strong>systemctl 是Systemd的主命令，用于管理系统</strong></li></ul><pre tabindex=0><code>#重启系统
+$ sudo systemctl reboot
+
+#关闭系统，切断电源
+$ sudo systemctl poweroff
+
+#CPU停止工作
+$ sudo systemctl halt
+
+#暂停系统
+$ sudo systemctl suspend
+
+#让系统进入冬眠状态
+$ sudo systemctl hibernate
+
+#让系统进入交互式休眠状态
+$ sudo systemctl hybrid-sleep
+
+#启动进入救援状态（单用户状态）
+$ sudo systemctl rescue
+</code></pre><ul><li><strong>systemd-analyze 命令用于查看启动耗时</strong></li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#查看启动耗时</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># systemd-analyze</span>
+</span></span><span class=line><span class=cl>Startup finished in 2.102s <span class=o>(</span>kernel<span class=o>)</span> + 2.416s <span class=o>(</span>initrd<span class=o>)</span> + 24.551s <span class=o>(</span>userspace<span class=o>)</span> <span class=o>=</span> 29.070s
+</span></span><span class=line><span class=cl>                                                                             
+</span></span><span class=line><span class=cl><span class=c1>#查看每个服务的启动耗时</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># systemd-analyze blame</span>
+</span></span><span class=line><span class=cl>         11.097s docker.service
+</span></span><span class=line><span class=cl>          6.188s vdo.service
+</span></span><span class=line><span class=cl>          6.137s tuned.service
+</span></span><span class=line><span class=cl>          5.248s kdump.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示瀑布状的启动过程流</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># systemd-analyze critical-chain</span>
+</span></span><span class=line><span class=cl>The <span class=nb>time</span> after the unit is active or started is printed after the <span class=s2>&#34;@&#34;</span> character.
+</span></span><span class=line><span class=cl>The <span class=nb>time</span> the unit takes to start is printed after the <span class=s2>&#34;+&#34;</span> character.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>multi-user.target @24.534s
+</span></span><span class=line><span class=cl>└─docker.service @13.436s +11.097s
+</span></span><span class=line><span class=cl>  └─network-online.target @13.434s
+</span></span><span class=line><span class=cl>    └─network.target @13.397s
+</span></span><span class=line><span class=cl>      └─network.service @12.627s +769ms
+</span></span><span class=line><span class=cl>        └─NetworkManager-wait-online.service @11.482s +1.143s
+</span></span><span class=line><span class=cl>          └─NetworkManager.service @8.147s +3.332s
+</span></span><span class=line><span class=cl>            └─dbus.service @7.517s
+</span></span><span class=line><span class=cl>              └─basic.target @7.223s
+</span></span><span class=line><span class=cl>                └─sockets.target @7.222s
+</span></span><span class=line><span class=cl>                  └─dbus.socket @7.222s
+</span></span><span class=line><span class=cl>                    └─sysinit.target @7.202s
+</span></span><span class=line><span class=cl>                      └─systemd-update-utmp.service @7.155s +45ms
+</span></span><span class=line><span class=cl>                        └─auditd.service @6.569s +584ms
+</span></span><span class=line><span class=cl>                          └─systemd-tmpfiles-setup.service @6.538s +29ms
+</span></span><span class=line><span class=cl>                            └─rhel-import-state.service @6.452s +84ms
+</span></span><span class=line><span class=cl>                              └─local-fs.target @6.450s
+</span></span><span class=line><span class=cl>                                └─boot.mount @3.685s +815ms
+</span></span><span class=line><span class=cl>                                  └─local-fs-pre.target @3.684s
+</span></span><span class=line><span class=cl>                                    └─lvm2-monitor.service @1.416s +2.268s
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示指定服务的启动流</span>
+</span></span><span class=line><span class=cl>$ systemd-analyze critical-chain atd.service
+</span></span></code></pre></div><ul><li><strong>hostnamectl 命令用于查看当前主机的信息</strong></li></ul><pre tabindex=0><code>#显示当前主机的信息
+[root@k8s ~]# hostnamectl
+   Static hostname: k8s.node2
+         Icon name: computer-vm
+           Chassis: vm
+        Machine ID: e52a6046468046e6ae525e5fc2e64dd5
+           Boot ID: 43cacabf46904955a4cb2053c6de911f
+    Virtualization: vmware
+  Operating System: CentOS Linux 7 (Core)
+       CPE OS Name: cpe:/o:centos:centos:7
+            Kernel: Linux 3.10.0-862.el7.x86_64
+      Architecture: x86-64
+
+
+#设置主机名。
+$ sudo hostnamectl set-hostname rhel7
+</code></pre><ul><li><strong>localectl 命令用于查看本地化设置</strong></li></ul><pre tabindex=0><code>#查看本地化设置
+[root@k8s ~]# localectl
+   System Locale: LANG=zh_CN.UTF-8
+       VC Keymap: cn
+      X11 Layout: cn
+
+#设置本地化参数。
+$ sudo localectl set-locale LANG=en_GB.utf8
+$ sudo localectl set-keymap en_GB
+</code></pre><ul><li><p>timedatectl 命令用于查看当前时区设置</p><pre tabindex=0><code>#查看当前时区设置
+[root@k8s ~]# timedatectl
+      Local time: 六 2022-04-02 16:11:30 CST
+  Universal time: 六 2022-04-02 08:11:30 UTC
+        RTC time: 六 2022-04-02 08:11:30
+       Time zone: Asia/Shanghai (CST, +0800)
+     NTP enabled: yes
+NTP synchronized: yes
+ RTC in local TZ: no
+      DST active: n/a
+
+
+#显示所有可用的时区
+[root@k8s ~]# timedatectl list-timezones  
+America/Indiana/Indianapolis
+America/Indiana/Knox
+America/Indiana/Marengo
+America/Indiana/Petersburg
+America/Indiana/Tell_City
+America/Indiana/Vevay
+America/Indiana/Vincennes
+America/Indiana/Winamac
+America/Inuvik
+America/Iqaluit                                                                                 
+
+#设置当前时区
+$ sudo timedatectl set-timezone America/New_York
+$ sudo timedatectl set-time YYYY-MM-DD
+$ sudo timedatectl set-time HH:MM:SS
+</code></pre></li><li><p><strong>loginctl 命令用于查看当前登录的用户</strong></p></li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#列出当前session</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># loginctl list-sessions</span>
+</span></span><span class=line><span class=cl>   SESSION        UID USER             SEAT
+</span></span><span class=line><span class=cl>         <span class=m>3</span>          <span class=m>0</span> root
+</span></span><span class=line><span class=cl>         <span class=m>1</span>          <span class=m>0</span> root             seat0
+</span></span><span class=line><span class=cl>         <span class=m>2</span>          <span class=m>0</span> root
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=m>3</span> sessions listed.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 列出当前用户</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># loginctl list-users</span>
+</span></span><span class=line><span class=cl>       UID USER
+</span></span><span class=line><span class=cl>         <span class=m>0</span> root
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=m>1</span> users listed.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查看指定用户的信息</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># loginctl show-user root</span>
+</span></span><span class=line><span class=cl><span class=nv>UID</span><span class=o>=</span><span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>GID</span><span class=o>=</span><span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>Name</span><span class=o>=</span>root
+</span></span><span class=line><span class=cl><span class=nv>Timestamp</span><span class=o>=</span>六 2022-04-02 16:08:01 CST
+</span></span><span class=line><span class=cl><span class=nv>TimestampMonotonic</span><span class=o>=</span><span class=m>68310677</span>
+</span></span><span class=line><span class=cl><span class=nv>RuntimePath</span><span class=o>=</span>/run/user/0
+</span></span><span class=line><span class=cl><span class=nv>Slice</span><span class=o>=</span>user-0.slice
+</span></span><span class=line><span class=cl><span class=nv>Display</span><span class=o>=</span><span class=m>1</span>
+</span></span><span class=line><span class=cl><span class=nv>State</span><span class=o>=</span>active
+</span></span><span class=line><span class=cl><span class=nv>Sessions</span><span class=o>=</span><span class=m>3</span> <span class=m>2</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl><span class=nv>IdleHint</span><span class=o>=</span>no
+</span></span><span class=line><span class=cl><span class=nv>IdleSinceHint</span><span class=o>=</span><span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>IdleSinceHintMonotonic</span><span class=o>=</span><span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>Linger</span><span class=o>=</span>no
+</span></span></code></pre></div><h2 id=unit data-numberify>Unit<a class="anchor ms-1" href=#unit></a></h2><p>Systemd可以管理所有系统资源，不同的资源统称为 Unit（单位）,Unit一共分成以下12种。</p><ul><li><p>Service unit：系统服务</p></li><li><p>Target unit：多个Unit构成的一个组</p></li><li><p>Device Unit：硬件设备</p></li><li><p>Mount Unit：文件系统的挂载点</p></li><li><p>Automount Unit：自动挂载点</p></li><li><p>Path Unit：文件或路径</p></li><li><p>Scope Unit：不是由Systemd启动的外部进程</p></li><li><p>Slice Unit：进程组</p></li><li><p>Snapshot Unit：Systemd快照，可以切回某个快照</p></li><li><p>Socket Unit：进程间通信的socket</p></li><li><p>Swap Unit：swap文件</p></li><li><p>Timer Unit：定时器</p></li></ul><h3 id=管理命令-1 data-numberify>管理命令<a class="anchor ms-1" href=#管理命令-1></a></h3><ul><li><strong>查看当前系统的Unit</strong></li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#列出正在运行的Unit</span>
+</span></span><span class=line><span class=cl>$ systemctl list-units
+</span></span><span class=line><span class=cl>UNIT                        LOAD   ACTIVE SUB       DESCRIPTION
+</span></span><span class=line><span class=cl>chronyd.service             loaded active running   NTP client/server
+</span></span><span class=line><span class=cl>crond.service               loaded active running   Command Scheduler
+</span></span><span class=line><span class=cl>dbus.service                loaded active running   D-Bus System Message Bus
+</span></span><span class=line><span class=cl>docker.service              loaded active running   Docker Application Container
+</span></span><span class=line><span class=cl>getty@tty1.service          loaded active running   Getty on tty1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#列出所有Unit，包括没有找到配置文件的或者启动失败的</span>
+</span></span><span class=line><span class=cl>$ systemctl list-units --all
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#列出所有没有运行的Unit</span>
+</span></span><span class=line><span class=cl>$ systemctl list-units --all --state<span class=o>=</span>inactive
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#列出所有加载失败的Unit</span>
+</span></span><span class=line><span class=cl>$ systemctl list-units --failed
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#列出所有正在运行的、类型为service的Unit</span>
+</span></span><span class=line><span class=cl>$ systemctl list-units --type<span class=o>=</span>service
+</span></span></code></pre></div><ul><li><strong>查看unit的状态</strong></li></ul><pre tabindex=0><code>#显示系统状态
+
+[root@k8s ~]# systemctl status
+● k8s.node2
+    State: running
+     Jobs: 0 queued
+   Failed: 0 units
+    Since: 六 2022-04-02 16:06:55 CST; 22min ago
+   CGroup: /
+           ├─1 /usr/lib/systemd/systemd --switched-root --system --deserialize 2
+           ├─user.slice
+           │ └─user-0.slice
+           │   ├─session-3.scope
+           │   │ ├─1886 sshd: root@notty
+           │   │ └─1932 /usr/libexec/openssh/sftp-server
+           │   ├─session-2.scope
+           │   │ ├─ 1876 sshd: root@pts/0
+           │   │ ├─ 1888 -bash
+           │   │ ├─ 1921 bash -c while true; do sleep 1;head -v -n 8 /proc/memin
+           │   │ ├─12099 sleep 1
+           │   │ ├─12100 systemctl status
+           │   │ └─12101 less
+           │   └─session-1.scope
+           │     ├─ 709 login -- root
+           │     └─1795 -bash
+           └─system.slice
+
+#显示单个Unit的状态
+$ sysystemctl status bluetooth.service
+
+#显示远程主机的某个Unit的状态
+$ systemctl -H root@rhel7.example.com status httpd.service
+</code></pre><p>除了status命令，systemctl还提供了三个查询状态的简单方法，主要供脚本内部的判断语句使用:</p><pre tabindex=0><code>#显示某个Unit是否正在运行
+$ systemctl is-active application.service
+
+#显示某个Unit是否处于启动失败状态
+$ systemctl is-failed application.service
+
+#显示某个Unit服务是否建立了启动链接
+$ systemctl is-enabled application.service
+</code></pre><ul><li><strong>unit启停命令</strong></li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#立即启动一个服务</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl start apache.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#立即停止一个服务</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl stop apache.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#重启一个服务</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl restart apache.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#杀死一个服务的所有子进程</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl <span class=nb>kill</span> apache.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#重新加载一个服务的配置文件</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl reload apache.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#重载所有修改过的配置文件</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl daemon-reload
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示某个 Unit 的所有底层参数</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># systemctl show docker</span>
+</span></span><span class=line><span class=cl><span class=nv>Type</span><span class=o>=</span>notify
+</span></span><span class=line><span class=cl><span class=nv>Restart</span><span class=o>=</span>on-failure
+</span></span><span class=line><span class=cl><span class=nv>NotifyAccess</span><span class=o>=</span>main
+</span></span><span class=line><span class=cl><span class=nv>RestartUSec</span><span class=o>=</span>100ms
+</span></span><span class=line><span class=cl><span class=nv>TimeoutStartUSec</span><span class=o>=</span><span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>TimeoutStopUSec</span><span class=o>=</span>1min 30s
+</span></span><span class=line><span class=cl><span class=nv>WatchdogUSec</span><span class=o>=</span><span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>WatchdogTimestamp</span><span class=o>=</span>六 2022-04-02 16:07:22 CST
+</span></span><span class=line><span class=cl><span class=nv>WatchdogTimestampMonotonic</span><span class=o>=</span><span class=m>29053314</span>
+</span></span><span class=line><span class=cl><span class=nv>StartLimitInterval</span><span class=o>=</span><span class=m>60000000</span>
+</span></span><span class=line><span class=cl><span class=nv>StartLimitBurst</span><span class=o>=</span><span class=m>3</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示某个 Unit 的指定属性的值</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@k8s ~<span class=o>]</span><span class=c1># systemctl show -p TasksCurrent docker</span>
+</span></span><span class=line><span class=cl><span class=nv>TasksCurrent</span><span class=o>=</span><span class=m>25</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#设置某个 Unit 的指定属性</span>
+</span></span><span class=line><span class=cl>$ sudo systemctl set-property httpd.service <span class=nv>CPUShares</span><span class=o>=</span><span class=m>500</span>
+</span></span></code></pre></div><p><strong>依赖关系</strong></p><p>Unit之间存在依赖关系：A依赖于B，就意味着Systemd在启动A的时候，同时会去启动B。</p><pre tabindex=0><code>[root@k8s ~]# systemctl list-dependencies docker
+docker.service
+● ├─system.slice
+● ├─basic.target
+● │ ├─microcode.service
+● │ ├─rhel-dmesg.service
+● │ ├─selinux-policy-migrate-local-changes@targeted.service
+● │ ├─paths.target
+● │ ├─slices.target
+● │ │ ├─-.slice
+● │ │ └─system.slice
+● │ ├─sockets.target
+● │ │ ├─dbus.socket
+● │ │ ├─dm-event.socket
+● │ │ ├─rpcbind.socket
+● │ │ ├─systemd-initctl.socket
+</code></pre><h3 id=unit的配置文件 data-numberify>Unit的配置文件<a class="anchor ms-1" href=#unit的配置文件></a></h3><p>每一个Unit都有一个配置文件，告诉Systemd怎么启动这个Unit。Systemd默认从目录/etc/systemd/system/读取配置文件。但是里面存放的大部分文件都是符号链接，指向目录/usr/lib/systemd/system/，真正的配置文件存放在那个目录。</p><p>systemctl enable命令用于在上面两个目录之间，建立符号链接关系:</p><pre tabindex=0><code>$ sudo systemctl enable clamd@scan.service
+#等同于
+$ sudo ln -s &#39;/usr/lib/systemd/system/clamd@scan.service&#39; &#39;/etc/systemd/system/multi-user.target.wants/clamd@scan.service&#39;
+</code></pre><p>如果配置文件里面设置了开机启动，systemctl enable命令相当于激活开机启动，与之对应的，systemctl disable命令用于在两个目录之间，撤销符号链接关系，相当于撤销开机启动。</p><p>配置文件的后缀名，就是该Unit的种类，比如sshd.socket；如果省略，Systemd默认后缀名为.service，所以sshd会被理解成sshd.service。</p><h4 id=查看配置文件状态 data-numberify>查看配置文件状态<a class="anchor ms-1" href=#查看配置文件状态></a></h4><pre tabindex=0><code>[root@k8s system]# systemctl list-unit-files
+UNIT FILE                                     STATE
+proc-sys-fs-binfmt_misc.automount             static
+dev-hugepages.mount                           static
+dev-mqueue.mount                              static
+proc-sys-fs-binfmt_misc.mount                 static
+sys-fs-fuse-connections.mount                 static
+sys-kernel-config.mount                       static
+sys-kernel-debug.mount                        static
+tmp.mount                                     disabled
+brandbot.path                                 disabled
+systemd-ask-password-console.path             static
+systemd-ask-password-plymouth.path            static
+systemd-ask-password-wall.path                static
+</code></pre><p>每个配置文件的状态，一共有四种：</p><ul><li><p>enabled：已建立启动链接</p></li><li><p>disabled：没建立启动链接</p></li><li><p>static：该配置文件没有[Install]部分（无法执行），只能作为其他配置文件的依赖</p></li><li><p>masked：该配置文件被禁止建立启动链接</p></li></ul><p>一旦修改配置文件，就要让 SystemD 重新加载配置文件，然后重新启动，否则修改不会生效。</p><pre tabindex=0><code>$ sudo systemctl daemon-reload
+$ sudo systemctl restart httpd.service
+</code></pre><h4 id=配置文件的格式 data-numberify>配置文件的格式<a class="anchor ms-1" href=#配置文件的格式></a></h4><p>配置文件就是普通的文本文件，可以用文本编辑器打开。</p><pre tabindex=0><code># systemctl cat命令可以查看配置文件的内容。
+$ systemctl cat atd.service
+[Unit]
+Description=ATD daemon
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/atd
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>从上面的输出可以看到，配置文件分成几个区块。每个区块的第一行，是用方括号表示的区别名，比如[Unit]。注意，配置文件的区块名和字段名，都是大小写敏感的。每个区块内部是一些等号连接的键值对。注意，键值对的等号两侧不能有空格。</p><p><strong>[Unit]区块通常是配置文件的第一个区块，用来定义 Unit 的元数据，以及配置与其他 Unit 的关系。它的主要字段如下：</strong></p><ul><li><p>Description：简短描述</p></li><li><p>Documentation：文档地址</p></li><li><p>Requires：当前Unit依赖的其他Unit，如果它们没有运行，当前Unit会启动失败</p></li><li><p>Wants：与当前Unit配合的其他Unit，如果它们没有运行，当前Unit不会启动失败</p></li><li><p>BindsTo：与Requires类似，它指定的 Unit 如果退出，会导致当前Unit停止运行</p></li><li><p>Before：如果该字段指定的Unit也要启动，那么必须在当前Unit之后启动</p></li><li><p>After：如果该字段指定的Unit也要启动，那么必须在当前Unit之前启动</p></li><li><p>Conflicts：这里指定的Unit 不能与当前Unit同时运行</p></li><li><p>Condition&mldr;：当前Unit运行必须满足的条件，否则不会运行</p></li><li><p>Assert&mldr;：当前Unit运行必须满足的条件，否则会报启动失败</p></li></ul><p><strong>[Install]通常是配置文件的最后一个区块，用来定义如何启动，以及是否开机启动。它的主要字段如下：</strong></p><ul><li><p>WantedBy：它的值是一个或多个Target，当前Unit激活时（enable）符号链接会放入/etc/systemd/system目录下面以Target名+.wants后缀构成的子目录中</p></li><li><p>RequiredBy：它的值是一个或多个Target，当前Unit激活时，符号链接会放入/etc/systemd/system目录下面以Target 名 + .required后缀构成的子目录中</p></li><li><p>Alias：当前Unit 可用于启动的别名</p></li><li><p>Also：当前Unit激活（enable）时，会被同时激活的其他Unit</p></li></ul><p><strong>[Service]区块用来Service的配置，只有Service类型的Unit才有这个区块。它的主要字段如下：</strong></p><ul><li><p>Type：定义启动时的进程行为。它有以下几种值。</p><ul><li><p>Type=simple：默认值，执行ExecStart指定的命令，启动主进程</p></li><li><p>Type=forking：以fork方式从父进程创建子进程，创建后父进程会立即退出</p></li><li><p>Type=oneshot：一次性进程，Systemd会等当前服务退出，再继续往下执行</p></li><li><p>Type=dbus：当前服务通过D-Bus启动</p></li><li><p>Type=notify：当前服务启动完毕，会通知Systemd，再继续往下执行</p></li><li><p>Type=idle：若有其他任务执行完毕，当前服务才会运行</p></li></ul></li><li><p>ExecStart：启动当前服务的命令</p></li><li><p>ExecStartPre：启动当前服务之前执行的命令</p></li><li><p>ExecStartPost：启动当前服务之后执行的命令</p></li><li><p>ExecReload：重启当前服务时执行的命令</p></li><li><p>ExecStop：停止当前服务时执行的命令</p></li><li><p>ExecStopPost：停止当其服务之后执行的命令</p></li><li><p>RestartSec：自动重启当前服务间隔的秒数</p></li><li><p>Restart：定义何种情况Systemd会自动重启当前服务，可能的值包括always（总是重启）、on-success、on-failure、on-abnormal、on-abort、on-watchdog</p></li><li><p>TimeoutSec：定义Systemd停止当前服务之前等待的秒数</p></li><li><p>Environment：指定环境变量</p></li></ul><p>Unit配置文件的完整字段清单，请参考<a href=https://www.freedesktop.org/software/systemd/man/systemd.unit.html target=_blank rel="noopener noreferrer">官方文档<i class="fas fa-external-link-square-alt ms-1"></i></a>。</p><h3 id=target data-numberify>Target<a class="anchor ms-1" href=#target></a></h3><p>启动计算机的时候，需要启动大量的Unit。如果每一次启动，都要一一写明本次启动需要哪些Unit，显然非常不方便。Systemd的解决方案就是Target。</p><p>简单说，Target就是一个Unit组，包含许多相关的Unit。启动某个Target的时候，Systemd就会启动里面所有的Unit。从这个意义上说，Target这个概念类似于“状态点”，启动某个Target就好比启动到某种状态。</p><p>传统的init启动模式里面，有RunLevel的概念，跟Target的作用很类似。不同的是，RunLevel是互斥的，不可能多个RunLevel同时启动，但是多个Target可以同时启动。</p><pre tabindex=0><code>#查看当前系统的所有Target
+$ systemctl list-unit-files --type=target
+
+#查看一个 Target 包含的所有 Unit
+$ systemctl list-dependencies multi-user.target
+
+#查看启动时的默认 Target
+$ systemctl get-default
+
+#设置启动时的默认Target
+$ sudo systemctl set-default multi-user.target
+
+#切换Target时，默认不关闭前一个Target启动的进程，
+# systemctl isolate命令改变这种行为，
+#关闭前一个Target里面所有不属于后一个Target的进程
+$ sudo systemctl isolate multi-user.target
+</code></pre><p>它与init进程的主要差别如下：</p><ul><li><p>默认的RunLevel（在/etc/inittab文件设置）现在被默认的Target取代，位置是/etc/systemd/system/default.target，通常符号链接到graphical.target（图形界面）或者multi-user.target（多用户命令行）。</p></li><li><p>启动脚本的位置，以前是/etc/init.d目录，符号链接到不同的RunLevel目录（比如/etc/rc3.d、/etc/rc5.d等），现在则存放在/lib/systemd/system和/etc/systemd/system目录。</p></li><li><p>配置文件的位置，以前init进程的配置文件是/etc/inittab，各种服务的配置文件存放在/etc/sysconfig目录。现在的配置文件主要存放在/lib/systemd目录，在/etc/systemd目录里面的修改可以覆盖原始设置。</p></li></ul><h2 id=日志管理 data-numberify>日志管理<a class="anchor ms-1" href=#日志管理></a></h2><p>Systemd统一管理所有Unit的启动日志。带来的好处就是，可以只用journalctl一个命令，查看所有日志（内核日志和应用日志）。日志的配置文件是/etc/systemd/journald.conf。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#查看所有日志（默认情况下 ，只保存本次启动的日志）</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看内核日志（不显示应用日志）</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -k
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看系统本次启动的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -b
+</span></span><span class=line><span class=cl>$ sudo journalctl -b -0
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看上一次启动的日志（需更改设置）</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -b -1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看指定时间的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --since<span class=o>=</span><span class=s2>&#34;2012-10-30 18:17:16&#34;</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --since <span class=s2>&#34;20 min ago&#34;</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --since yesterday
+</span></span><span class=line><span class=cl>$ sudo journalctl --since <span class=s2>&#34;2015-01-10&#34;</span> --until <span class=s2>&#34;2015-01-11 03:00&#34;</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --since 09:00 --until <span class=s2>&#34;1 hour ago&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示尾部的最新10行日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -n
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示尾部指定行数的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -n <span class=m>20</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#实时滚动显示最新日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -f
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看指定服务的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl /usr/lib/systemd/systemd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看指定进程的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl <span class=nv>_PID</span><span class=o>=</span><span class=m>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看某个路径的脚本的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl /usr/bin/bash
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看指定用户的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl <span class=nv>_UID</span><span class=o>=</span><span class=m>33</span> --since today
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看某个 Unit 的日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -u nginx.service
+</span></span><span class=line><span class=cl>$ sudo journalctl -u nginx.service --since today
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#实时滚动显示某个 Unit 的最新日志</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -u nginx.service -f
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#合并显示多个 Unit 的日志</span>
+</span></span><span class=line><span class=cl>$ journalctl -u nginx.service -u php-fpm.service --since today
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#查看指定优先级（及其以上级别）的日志，共有8级</span>
+</span></span><span class=line><span class=cl><span class=c1># 0: emerg</span>
+</span></span><span class=line><span class=cl><span class=c1># 1: alert</span>
+</span></span><span class=line><span class=cl><span class=c1># 2: crit</span>
+</span></span><span class=line><span class=cl><span class=c1># 3: err</span>
+</span></span><span class=line><span class=cl><span class=c1># 4: warning</span>
+</span></span><span class=line><span class=cl><span class=c1># 5: notice</span>
+</span></span><span class=line><span class=cl><span class=c1># 6: info</span>
+</span></span><span class=line><span class=cl><span class=c1># 7: debug</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -p err -b
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#日志默认分页输出，--no-pager 改为正常的标准输出</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --no-pager
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#以 JSON 格式（单行）输出</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -b -u nginx.service -o json
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#以 JSON 格式（多行）输出，可读性更好</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl -b -u nginx.serviceqq
+</span></span><span class=line><span class=cl> -o json-pretty
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#显示日志占据的硬盘空间</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --disk-usage
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#指定日志文件占据的最大空间</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --vacuum-size<span class=o>=</span>1G
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#指定日志文件保存多久</span>
+</span></span><span class=line><span class=cl>$ sudo journalctl --vacuum-time<span class=o>=</span>1years
+</span></span></code></pre></div><h1 id=syslog-和-rsyslog data-numberify>syslog 和 rsyslog<a class="anchor ms-1" href=#syslog-和-rsyslog></a></h1><p>参考： <a href=https://www.sohu.com/a/284486478_639793 target=_blank rel="noopener noreferrer">Rsyslog日志系统_Syslog (sohu.com)<i class="fas fa-external-link-square-alt ms-1"></i></a></p><p>系统日志（Syslog）协议是在一个IP网络中转发系统日志信息的标准，它是在美国加州大学伯克利软件分布研究中心（BSD）的TCP/IP系统实施中开发的，目前已成为工业标准协议，可用它记录设备的日志。Syslog记录着系统中的任何事件，管理者可以通过查看系统记录随时掌握系统状况。系统日志通过Syslog进程记录系统的有关事件，也可以记录应用程序运作事件。通过适当配置，还可以实现运行Syslog协议的机器之间的通信。通过分析这些网络行为日志，可追踪和掌握与设备和网络有关的情况。</p><p>在Unix类操作系统上，syslog广泛应用于系统日志。syslog日志消息既可以记录在本地文件中，也可以通过网络发送到接收syslog的服务器。接收syslog的服务器可以对多个设备的syslog消息进行统一的存储，或者解析其中的内容做相应的处理。常见的应用场景是网络管理工具、安全管理系统、日志审计系统。</p><p>完整的syslog日志中包含产生日志的程序模块（Facility）、严重性（Severity或 Level）、时间、主机名或IP、进程名、进程ID和正文。在Unix类操作系统上，能够按Facility和Severity的组合来决定什么样的日志消息是否需要记录，记录到什么地方，是否需要发送到一个接收syslog的服务器等。由于syslog简单而灵活的特性，syslog不再仅限于Unix类主机的日志记录，任何需要记录和发送日志的场景，都可能会使用syslog。</p><p>rsyslog可以简单的理解为syslog的超集，在老版本的Linux系统中，Red Hat Enterprise Linux 3/4/5默认是使用的syslog作为系统的日志工具，从RHEL 6 开始系统默认使用了rsyslog。</p><p>它所做的事就是统一记录系统的各个子系统产生的日志。但是像FTP、HTTP它们都有自己日志记录格式，而不是系统的Rsyslog。在Rsyslog系统有两个进程分别是klogd,syslogd。而为什么需要两个守护进程呢?是因为内核跟其他信息需要记录的详细程度及格式的不同。</p><ul><li><p>klogd：记录内核信息，系统启动中在登录之前使用的都是物理终端/dev/console，这个时候虚拟终端还没有启动而内核启动日志都存放在/var/log/dmesg文件中，使用dmesg命令可以查看。</p></li><li><p>syslogd：记录非内核系统产生的信息，当系统启动/sbin/init程序时产生的日志都存放在以下各个日志文件中。</p><ul><li><p>/var/log/message #标准系统错误信息；</p></li><li><p>/var/log/maillog #邮件系统产生的日志信息；</p></li><li><p>/var/log/secure #记录系统的登录情况；</p></li><li><p>/var/log/dmesg #记录linux系统在引导过程中的各种记录信息；</p></li><li><p>/var/log/cron #记录crond计划任务产生的时间信息；</p></li><li><p>/var/log/lastlog #记录每个用户最近的登录事件；</p></li><li><p>/var/log/wtmp #记录每个用户登录、注销及系统启动和停机事件；</p></li><li><p>/var/run/btmp #记录失败的、错误的登录尝试及验证事件；</p></li></ul></li></ul><p>另外当日志文件过大时会通过系统crontab定义日志滚动的，也称日志切割，由logrotate控制其配置文件/etc/logrotate.conf，然后再由系统任务计划执行。logrotate负责备份和删除旧日志, 以及更新日志文件。后面详说。</p><h2 id=日志配置 data-numberify>日志配置<a class="anchor ms-1" href=#日志配置></a></h2><ul><li><p>/etc/rsyslog.conf 是rsyslog服务的总配置文件</p></li><li><p>/etc/rsyslog.d该目录是单独配置的rsyslog配置文件</p></li></ul><p>配置文件示例：</p><pre tabindex=0><code># 表示将所有facility的info级别,但不包括mail,authpriv,cron相关的信息,记录到 /var/log/messages文件
+
+*.info;mail.none;authpriv.none;cron.none /var/log/messages
+
+# 表示将权限,授权相关的所有基本的信息,记录到/var/log/secure文件中.这个文件的权限是600
+
+authpriv.* /var/log/secure
+
+# 表示将mail相关的所有基本的信息记录到/var/log/maillog文件中,可以看到路径前面有一个&#34;-&#34;而&#34;-&#34; 表示异步写入磁盘
+
+mail.* -/var/log/maillog
+
+# 表示将任务计划相关的所有级别的信息记录到/var/log/cron文件中
+
+cron.* /var/log/cron
+
+# 表示将所有facility的emerg级别的信息,发送给登录到系统上的所有用户
+
+*.emerg *
+
+# 表示将uucp及news的crit级别的信息记录到/var/log/spooler文件中
+
+uucp,news.crit /var/log/spooler
+
+# 表示将local7的所有级别的信息记录到/var/log/boot.log文件中上面说过local0 到local7这8个是用户自定义使用的,这里的local7记录的是系统启动相关的信息
+
+local7.* /var/log/boot.log
+</code></pre><p>配置文件 <strong>/etc/rsyslog.conf</strong> 有下面几个核心配置：</p><ul><li><p>modules，模块，配置加载的模块，如：ModLoad imudp.so配置加载UDP传输模块</p></li><li><p>global directives，全局配置，配置ryslog守护进程的全局属性，比如主信息队列大小（MainMessageQueueSize）</p></li><li><p>rules，规则（选择器+动作），每个规则行由两部分组成，selector部分和action部分，这两部分由一个或多个空格或tab分隔，selector部分指定源和日志等级，action部分指定对应的操作</p></li><li><p>模板（templates）： 允许你指定日志信息的格式，也可用于生成动态文件名，或在规则中使用</p></li><li><p>输出（outputs）</p></li></ul><p><strong>syslog协议格式定义如下：</strong></p><pre tabindex=0><code>facility.priority action
+</code></pre><p>facility标识系统需要记录日志的子系统，大概有以下子系统:</p><table><thead><tr><th>日志类型</th><th>日志内容</th></tr></thead><tbody><tr><td>auth</td><td>用户认证时产生的日志</td></tr><tr><td>authpriv</td><td>ssh、ftp等登录信息的验证信息</td></tr><tr><td>daemon</td><td>一些守护进程产生的日志</td></tr><tr><td>ftp</td><td>FTP产生的日志</td></tr><tr><td>lpr</td><td>打印相关活动</td></tr><tr><td>mark</td><td>服务内部的信息，时间标识</td></tr><tr><td>news</td><td>网络新闻传输协议(nntp)产生的消息。</td></tr><tr><td>syslog</td><td>系统日志</td></tr><tr><td>security</td><td></td></tr><tr><td>uucp</td><td>Unix-to-Unix Copy 两个unix之间的相关通信</td></tr><tr><td>console</td><td>针对系统控制台的消息。</td></tr><tr><td>cron</td><td>系统执行定时任务产生的日志。</td></tr><tr><td>kern</td><td>系统内核日志</td></tr><tr><td>local0~local7</td><td>自定义程序使用</td></tr><tr><td>mail</td><td>邮件日志</td></tr><tr><td>user</td><td>用户进程</td></tr></tbody></table><p>priority用来标识日志级别,级别越低信息越详细，有以下日志级别，从上到下，级别从高到低，记录的信息越来越少：</p><table><thead><tr><th></th><th>日志等级</th><th>说明</th></tr></thead><tbody><tr><td>7</td><td>emerg</td><td>紧急情况，系统不可用（例如系统崩溃），一般会通知所有用户。</td></tr><tr><td>6</td><td>alert</td><td>需要立即修复的告警。</td></tr><tr><td>5</td><td>crit</td><td>危险情况，例如硬盘错误，可能会阻碍程序的部分功能。</td></tr><tr><td>4</td><td>error/err</td><td>一般错误消息。</td></tr><tr><td>3</td><td>warning/warn</td><td>警告。</td></tr><tr><td>2</td><td>notice</td><td>不是错误，但是可能需要处理。</td></tr><tr><td>1</td><td>info</td><td>通用性消息，一般用来提供有用信息。</td></tr><tr><td>0</td><td>debug</td><td>调试程序产生的信息。</td></tr><tr><td></td><td>none</td><td>没有优先级，不记录任何日志消息。</td></tr></tbody></table></div></div></div><div class=card-footer><div class="post-navs d-flex justify-content-evenly"><div class="post-nav post-prev"><i class="fas fa-fw fa-chevron-down post-prev-icon me-1" data-fa-transform=rotate-90></i>
+<a href=/blog/2022/12/shell/>Shell</a></div><div class="post-nav post-next"><a href=/blog/2022/12/linux%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90/>Linux用户和权限</a>
+<i class="fas fa-fw fa-chevron-down post-next-icon ms-1" data-fa-transform=rotate-270></i></div></div></div></article><section class="related-posts row card component"><div class=card-header><h2 class="card-title fs-4 my-2 text-surface">相关文章</h2></div><div class="card-body slide px-1"><div class="slide-inner row gx-0"><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/linux-%E6%9D%82%E9%A1%B9/>Linux 杂项</a><div class="post-meta mb-0">2022年12月1日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/linux-%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF/>Linux 系统信息</a><div class="post-meta mb-0">2022年12月1日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/linux%E6%80%A7%E8%83%BD%E7%AE%A1%E7%90%86/>Linux性能管理</a><div class="post-meta mb-0">2022年12月1日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/linux%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90/>Linux用户和权限</a><div class="post-meta mb-0">2022年12月1日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/12/linux%E8%BD%AF%E4%BB%B6%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/>Linux软件和服务管理</a><div class="post-meta mb-0">2022年12月1日</div></div></div></div><button class=slide-control-left>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-90></i>
+<span class=visually-hidden>Left</span></button>
+<button class=slide-control-right>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-270></i>
+<span class=visually-hidden>Right</span></button></div></section><div class="card component row post-comments" id=post-comments><div class=card-header><h2 class="card-title my-2 fs-4 text-surface">评论</h2></div><div class=card-body></div></div></div></div><aside class="col-xxl-4 sidebar d-flex"><div class="container d-flex flex-column"><div class="accordion profile"><div class="accordion-item card row text-center component"><div class="accordion-header card-header border-0" id=profile-header><a class="accordion-button d-lg-none mb-2 shadow-none p-0 bg-transparent text-surface collapsed" role=button data-bs-toggle=collapse href=#profile aria-expanded=false aria-controls=profile>Profile</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=profile aria-labelledby=profile-header><div class="col-12 d-flex align-items-center justify-content-center"><picture><img class="profile-avatar rounded-circle" alt=小胖子 src=https://banrenshan.github.io/images/profile.webp loading=lazy data-viewer-invisible width=400 height=400></picture></div><div class="col-12 profile-meta"><div class="profile-name fw-fold fs-lg">小胖子</div><div class=profile-bio>每天一点点</div></div></div></div></div><div class="accordion taxonomies-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#taxonomies-toggle aria-expanded=false aria-controls=taxonomies-toggle>Taxonomies</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=taxonomies-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=taxonomyCategoriesTab data-bs-toggle=tab data-bs-target=#taxonomyCategories type=button role=tab aria-controls=taxonomyCategories aria-selected=true>
+分类</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyTagsTab data-bs-toggle=tab data-bs-target=#taxonomyTags type=button role=tab aria-controls=taxonomyTags aria-selected=true>
+标签</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyArchivesTab data-bs-toggle=tab data-bs-target=#taxonomyArchives type=button role=tab aria-controls=taxonomyArchives aria-selected=true>
+归档</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=taxonomyCategories role=tabpanel aria-labelledby=taxonomyCategoriesTab tabindex=0><a href=/categories/%E6%8A%80%E6%9C%AF/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=技术>技术
+<span class="badge badge-sm text-secondary bg-white ms-1">24</span></a>
+<a href=/categories/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">9</span></a>
+<a href=/categories/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=操作系统>操作系统
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=中间件>中间件
+<span class="badge badge-sm text-secondary bg-white ms-1">7</span></a>
+<a href=/categories/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/categories/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-boot/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-boot>spring-boot
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-cloud/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-cloud>spring-cloud
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/unbutu/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=Unbutu>Unbutu
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/categories class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">13</span></a></div><div class=tab-pane id=taxonomyTags role=tabpanel aria-labelledby=taxonomyTagsTab tabindex=0><a href=/tags/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">31</span></a>
+<a href=/tags/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=监控>监控
+<span class="badge badge-sm text-secondary bg-white ms-1">4</span></a>
+<a href=/tags/gradle/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=gradle>gradle
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/graphql/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=graphql>graphql
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/shell/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=shell>shell
+<span class="badge badge-sm text-secondary bg-white ms-1">2</span></a>
+<a href=/tags/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/filebeat/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=filebeat>filebeat
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/grafana/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=grafana>grafana
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/tags class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">22</span></a></div><div class=tab-pane id=taxonomyArchives role=tabpanel aria-labelledby=taxonomyArchivesTab tabindex=0><a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=2022>2022 <span class="badge badge-sm text-secondary bg-white ms-1">48</span></a>
+<a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=0001>0001 <span class="badge badge-sm text-secondary bg-white ms-1">5</span></a></div></div></div></div></div><div class="accordion posts-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#posts-toggle aria-expanded=false aria-controls=posts-toggle>文章</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=posts-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=recent-posts-tab data-bs-toggle=tab data-bs-target=#recent-posts type=button role=tab aria-controls=recent-posts aria-selected=true>
+最近文章</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=recent-posts role=tabpanel aria-labelledby=recent-posts-tab tabindex=0><ul class="post-list list-unstyled ms-1"><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/grafana/>Grafana</a><div class="post-meta mt-2"><span class=post-date>2022年12月10日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/gradle-basic/>Gradle-Basic</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/zero-copy/>Zero-Copy</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-lock/>Java-Lock</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-log/>Java-Log</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li></ul></div></div></div></div></div><div class="accordion post-toc d-none d-lg-block"><div class="accordion-item row mb-4 card component" id=postTOC><div class="card-header accordion-header"><h2 class="card-title fs-4 my-2 text-surface d-none d-lg-block">目录</h2><a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" role=button data-bs-toggle=collapse href=#post-toc aria-expanded=false aria-controls=post-toc>目录</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=post-toc><nav id=TableOfContents><ul><li><a href=#概述>概述</a></li><li><a href=#管理命令>管理命令</a></li><li><a href=#unit>Unit</a><ul><li><a href=#管理命令-1>管理命令</a></li><li><a href=#unit的配置文件><strong>Unit的配置文件</strong></a></li><li><a href=#target><strong>Target</strong></a></li></ul></li><li><a href=#日志管理><strong>日志管理</strong></a></li></ul><ul><li><a href=#日志配置>日志配置</a></li></ul></nav></div></div></div></div></aside></div></main><footer class="footer mt-auto py-3 text-center container"></footer><script data-precache src=/assets/main/bundle.min.f06ce52438e0e6eee8225a013aaf3de719542ffc5ef58241be98c0f5d1df9732.js integrity="sha256-8GzlJDjg5u7oIloBOq895xlUL/xe9YJBvpjA9dHflzI=" crossorigin=anonymous async></script><script data-precache src=/assets/icons/bundle.min.4f30d5267a9f2f9d45ed93969d45ec626100a969a8b91f71f753315a261e9034.js integrity="sha256-TzDVJnqfL51F7ZOWnUXsYmEAqWmouR9x91MxWiYekDQ=" crossorigin=anonymous defer></script>
+<script data-precache src=/assets/viewer/bundle.min.0a0d0099935beee41b7a7bf4543cd55e793e5f830a571b0794ef8c3602c5823c.js integrity="sha256-Cg0AmZNb7uQbenv0VDzVXnk+X4MKVxsHlO+MNgLFgjw=" crossorigin=anonymous defer></script>
+<script src=/js/sw-register.js defer></script></body></html>

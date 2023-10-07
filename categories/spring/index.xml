@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>spring on</title><link>https://banrenshan.github.io/categories/spring/</link><description>Recent content in spring on</description><generator>Hugo -- gohugo.io</generator><language>zh-hans</language><copyright/><lastBuildDate>Fri, 02 Dec 2022 12:02:30 +0000</lastBuildDate><atom:link href="https://banrenshan.github.io/categories/spring/index.xml" rel="self" type="application/rss+xml"/><item><title>spring容器</title><link>https://banrenshan.github.io/blog/2022/12/spring%E5%AE%B9%E5%99%A8/</link><pubDate>Fri, 02 Dec 2022 12:02:30 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring%E5%AE%B9%E5%99%A8/</guid><description>1.容器和 Bean 介绍 控制反转也叫依赖注入(DI)，这是一个过程。对象通过下面的方式，知道自己的依赖项：
+构造函数参数 工厂方法创建对象时的参数 对象的setter方法参数 然后容器在创建bean时，注入这些依赖。在这个过程中，bean控制着自身的创建，通过类上的构造函数等机制搜索所需的依赖，因此称为控制反转。
+org.springframework.beans 和 org.springframework.context 包是 Spring Framework 的 IoC 容器的基础。 BeanFactory 接口管理容器中的bean。 ApplicationContext 是 BeanFactory 的扩展子接口，扩展项如下：
+更容易与 Spring 的 AOP 特性集成 消息资源处理（用于国际化） 事件发布 应用层特定上下文，例如用于 Web 应用程序的 WebApplicationContext。 简而言之，BeanFactory 提供了配置框架和基本功能，ApplicationContext 增加了更多企业特定的功能。
+在 Spring 中，构成应用程序主干并由 Spring IoC 容器管理的对象称为 bean。 bean 是由 Spring IoC 容器实例化、组装和管理的对象。
+2.容器概览 org.springframework.context.ApplicationContext接口表示Spring IoC容器，并负责实例化，配置和组装Bean。 容器通过读取配置元数据获取有关要实例化，配置和组装哪些对象的指令。 配置元数据以XML，Java批注或Java代码表示。 它使您能够表达组成应用程序的对象以及这些对象之间的丰富相互依赖关系。
+Spring提供了ApplicationContext接口的几种实现。 在独立应用程序中，通常创建ClassPathXmlApplicationContext或FileSystemXmlApplicationContext的实例。 尽管XML是定义配置元数据的传统格式，但是您可以通过提供少量XML配置来声明性地启用对这些其他元数据格式的支持，从而指示容器将Java注释或代码用作元数据格式。
+在大多数应用场景中，不需要显式用户代码即可实例化一个Spring IoC容器的一个或多个实例。 例如，在Web应用程序场景中，应用程序的web.xml文件中配置简单八行样板XML就足够了（请参阅Web应用程序的便捷ApplicationContext实例化）。
+下图显示了Spring的工作原理的高级视图。 您的应用程序类与配置元数据结合在一起，以便在创建和初始化ApplicationContext之后，您将拥有一个完全配置且可执行的系统或应用程序。
+配置元数据 如上图所示，Spring IoC容器使用一种形式的配置元数据。 此配置元数据表示您作为应用程序开发人员如何告诉Spring容器实例化，配置和组装应用程序中的对象。
+传统上，配置元数据以简单直观的XML格式提供，这是本章大部分内容用来传达Spring IoC容器的关键概念和功能的内容。
+有关在Spring容器中使用其他形式的元数据的信息，请参见：</description></item><item><title>spring-batch</title><link>https://banrenshan.github.io/blog/2022/12/spring-batch/</link><pubDate>Fri, 02 Dec 2022 11:51:23 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-batch/</guid><description>spring batch 核心概念 一个作业有一到多个步骤，每个步骤正好有一个ItemReader、一个ItemProcessor和一个ItemWriter。需要使用JobLauncher启动作业，JobRepository存储关于当前运行作业的元数据。
+作业（Job） 作业是封装整个批处理过程的实体。是整个层次结构的顶部，如下图所示：
+在SpringBatch中，作业只是步骤实例的容器。它将逻辑上属于一个流的多个步骤组合在一起，并允许配置所有步骤的全局属性，例如可重启性。作业配置包含：
+名称 步骤的顺序 作业是否需要重启 对于那些使用Java配置的人，SpringBatch以SimpleJob类的形式提供了作业接口的默认实现，它在作业之上创建了一些标准功能。使用基于java的配置时，可以使用构建器集合来实例化作业，如下例所示：
+@Bean public Job footballJob() { return this.jobBuilderFactory.get(&amp;#34;footballJob&amp;#34;) .start(playerLoad()) .next(gameLoad()) .next(playerSummarization()) .build(); } JobInstance JobInstance是job运行时的概念，这样说可能有些抽象。假如我们有个作业A，在每天快要结束的时候运行。那么一月一日运行该job就会创建一个JobInstance,一月二日则会创建一个新的JobInstance。
+但是，会有这样的情况，一月一日的JobInstance运行失败了，在一月二日会继续运行这个失败的JobInstance,同时一月二日的JobInstance照旧执行。
+因此，JobInstacen可能会多次执行（这是后面的JobExecution概念）。并且在给定时刻只能运行一个对应于特定作业和JobParameters的JobInstance。
+JobInstance的定义与要加载的数据完全没有关系。如何加载数据完全取决于ItemReader实现。使用新的JobInstance意味着“从头开始”，而使用现有实例通常意味着“从您停止的地方开始”。
+JobParameters 如何区分不同的JobInstance呢？答案：JobParameters。JobParameters对象包含一组用于启动批处理作业的参数。它们可用于识别，甚至在运行期间用作参考数据，如下图所示：
+并非所有作业参数都需要用于标识作业实例。默认情况下，它们会这样做。但是，该框架还允许提交带有不影响JobInstance标识的参数的作业。
+JobExecution JobExecution是指一次尝试运行作业的技术概念。执行可能以失败或成功结束，但对应的JobInstance不会被视为已完成，除非执行成功完成。假如任务A第一次执行失败，此时JobInstance会被标记会失败，当下次继续执行这个失败的JobInstance时，如果成功了，就会变更JobInstance为成功。
+Job定义了什么是作业以及如何执行作业，而JobInstance是一个纯粹的组织对象，用于将执行分组在一起，主要是为了实现正确的重启语义。然而，JobExecution是运行期间实际发生的事情的主要存储机制，它包含许多必须控制和持久化的属性，如下表所示：
+属性 定义 Status 指示执行状态的BatchStatus对象。运行时，状态为BatchStatus#STARTED。如果失败，则为BatchStatus#FAILED。如果成功完成，则为BatchStatus#COMPLETED startTime java.util.Date ,表示开始执行的时间，没有执行则为空 endTime java.util.Date,执行结束的时间 exitStatus 执行的结果，空代表还没有结束 createTime java.util.Date,创建的时间 lastUpdated java.util.Date executionContext 属性包，包含在执行之间需要的用户数据。 failureExceptions 作业执行期间遇到的异常列表 这些属性很重要，因为它们是持久化的，可用于完全确定执行状态。例如，如果01-01的EndOfDay作业在晚上9:00执行，但在9:30失败，则在批处理元数据表中创建以下条目：
+为了清晰和格式，列名可能已被缩写或删除。
+表：BATCH_JOB_INSTANCE
+JOB_INST_ID JOB_NAME 1 EndOfDayJob 表：BATCH_JOB_EXECUTION_PARAMS
+JOB_EXECUTION_ID TYPE_CD KEY_NAME DATE_VAL IDENTIFYING 1 DATE schedule.Date 2017-01-01 TRUE 表：BATCH_JOB_EXECUTION</description></item><item><title>spring-cloud-gateway</title><link>https://banrenshan.github.io/blog/2022/12/spring-cloud-gateway/</link><pubDate>Fri, 02 Dec 2022 11:46:10 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-cloud-gateway/</guid><description>spring cloud gateway 概述 基于版本3.1.1
+该项目提供了一个建立在Spring生态系统之上的API网关，包括：Spring 5，Spring Boot 2和Project Reactor。Spring Cloud Gateway旨在提供一种简单而有效的方法来路由到API，并为它们提供跨领域的关注点，例如：安全性，监控/指标和可伸缩性。
+org.springframework.cloud:spring-cloud-starter-gateway
+路由：网关的基本构建基块。它由 ID、目标 URI、谓词集合和筛选器集合定义。如果聚合谓词为 true，则匹配路由。 谓词：这是一个 Java 8 函数谓词。输入类型是Spring Framework ServerWebExchange。这使您可以匹配 HTTP 请求中的任何内容，例如标头或参数。 过滤器：这些是使用特定工厂构建的网关过滤器实例。在这里，您可以修改发送下游请求之前或之后的请求和响应。 如何工作 客户端向 Spring Cloud Gateway 发出请求。 如果Gateway Handler Mapping确定请求与路由匹配，则将其发送到Gateway Web Handler。 此处理程序通过特定于请求的过滤器链运行请求。 过滤器被虚线分隔的原因是过滤器可以在发送代理请求之前和之后运行逻辑。 执行所有“pre”过滤器逻辑。 然后进行代理请求。 发出代理请求后，将运行“post”过滤器逻辑。
+如何配置 有两种方法可以配置谓词和过滤器：简洁方式和完全模式。
+简洁方式
+spring: cloud: gateway: routes: - id: after_route uri: https://example.org predicates: - Cookie=mycookie,mycookievalue 定义了 路由谓词工厂（Cookie ），cookie 名称(mycookie) 和匹配值(mycookievalue)。
+完全模式
+spring: cloud: gateway: routes: - id: after_route uri: https://example.</description></item></channel></rss>

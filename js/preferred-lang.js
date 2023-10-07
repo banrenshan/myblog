@@ -1,0 +1,1 @@
+(()=>{var a={fallback:"https://banrenshan.github.io/",homes:{"zh-hans":"https://banrenshan.github.io/"}};(()=>{let n=navigator.language||navigator.userLanguage;if(n in a.homes){window.location.href=a.homes[n];return}let e=n.split("-");for(let o in a.homes)if(o.indexOf(e[0])===0){window.location.href=a.homes[o];return}window.location.href=a.fallback})();})();

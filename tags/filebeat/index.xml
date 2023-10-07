@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>filebeat on</title><link>https://banrenshan.github.io/tags/filebeat/</link><description>Recent content in filebeat on</description><generator>Hugo -- gohugo.io</generator><language>zh-hans</language><copyright/><lastBuildDate>Sun, 27 Nov 2022 20:15:32 +0000</lastBuildDate><atom:link href="https://banrenshan.github.io/tags/filebeat/index.xml" rel="self" type="application/rss+xml"/><item><title>filebeat</title><link>https://banrenshan.github.io/blog/2022/11/filebeat/</link><pubDate>Sun, 27 Nov 2022 20:15:32 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/filebeat/</guid><description>FileBeat 概述 Filebeat 是一个用于转发和集中日志数据的轻量级传送器。作为代理安装在您的服务器上，Filebeat 监控您指定位置的日志文件，收集日志事件，并将它们转发到Elasticsearch或 Logstash以进行索引。
+以下是 Filebeat 的工作原理：当您启动 Filebeat 时，它会启动一个或多个输入，这些输入去您指定的位置中查找日志文件。对于 Filebeat 定位的每个日志，Filebeat 都会启动一个收集器**(harvester)**。每个harvester 读取单个日志以获取新内容并将新日志数据发送到libbeat，libbeat 聚合事件并将聚合数据发送到配置好的输出。
+Filebeat 是 Elastic Beat，基于libbeat 框架。
+为每个文件启动一个收集器， 其逐行读取文件，并将内容发送到输出。 收集器负责打开和关闭文件，这意味着在收集器运行时文件描述符保持打开状态。
+Filebeat 如何保持文件的状态？ Filebeat 会保存每个文件的状态，并经常在将状态刷新到注册表文件。 该状态用于记住收集器读取的最后一个偏移量，并确保发送所有日志行。 如果无法访问 Elasticsearch 或 Logstash 等输出，Filebeat 会跟踪发送的最后几行，并在输出再次可用时继续读取文件。 在 Filebeat 运行时，每个输入的状态信息也会保存在内存中。 当 Filebeat 重新启动时，来自注册表文件的数据用于重建状态，并且 Filebeat 在最后一个已知位置继续每个收集器。
+对于每个输入，Filebeat 都会保存它找到的每个文件的状态。 因为文件可以重命名或移动，所以文件名和路径不足以识别文件。 对于每个文件，Filebeat 都会存储唯一标识符，以检测文件是否以前被收集过。
+Filebeat 如何确保至少一次交付？ Filebeat 保证事件将至少传递到配置的输出一次，并且不会丢失数据。Filebeat 能够实现这种行为是因为它将每个事件的传递状态存储在注册表文件中。
+在定义的输出被阻塞并且没有确认所有事件的情况下，Filebeat 将继续尝试发送事件，直到输出确认它已收到事件。
+如果 Filebeat 在发送事件的过程中关闭，它不会在关闭前等待输出确认所有事件。任何发送到输出但在 Filebeat 关闭之前未确认的事件，在 Filebeat 重新启动时会再次发送。这可确保每个事件至少发送一次，但最终可能会将重复的事件发送到输出。您可以通过设置shutdown_timeout选项将 Filebeat 配置为在关闭之前等待特定的时间。
+与es集成 索引策略 索引生命周期是elasticsearch管理索引的一种方式，可以根据运行状态决定创建新的索引、删除索引等。
+从 7.0 版本开始，Filebeat 在连接支持生命周期管理的es集群时，默认使用索引生命周期管理。具体说，filebeat会在连接ES时，在ES上创建filebeat定义好的生命周期。您可以在 Kibana 的索引生命周期策略 UI 中查看和编辑策略。</description></item></channel></rss>

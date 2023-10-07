@@ -1,0 +1,237 @@
+<!doctype html><html class=position-relative itemscope itemtype=https://schema.org/WebPage lang=zh-hans data-bs-theme=auto data-palette=purple><head><script src=/assets/init/bundle.min.d893010142cc6ee98760d32b7e1e90d3786505dcd396e888f1ee101971e02785.js integrity="sha256-2JMBAULMbumHYNMrfh6Q03hlBdzTluiI8e4QGXHgJ4U=" crossorigin=anonymous></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>grafana -</title><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_16x16_resize_q75_h2_box_2.webp sizes=16x16 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_32x32_resize_q75_h2_box_2.webp sizes=32x32 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_150x150_resize_q75_h2_box_2.webp sizes=150x150 type=image/webp><link rel=apple-touch-icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_180x180_resize_q75_h2_box_2.webp sizes=180x180 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_192x192_resize_q75_h2_box_2.webp sizes=192x192 type=image/webp><link rel=mask-icon href=/safari-pinned-tab.svg color=#6f42c1><meta name=keywords content="Hugo,Bootstrap,Blog Theme"><meta name=description content="报警 警报规则
+设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。
+Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。
+一旦创建了警报规则，它们将经历各种状态和转换。
+命名空间
+创建 Grafana 管理的规则时，该文件夹可用于访问控制。
+组
+组内的所有规则都以相同的时间间隔进行评估。
+组中的警报规则和记录规则将始终按顺序进行评估。
+警报实例
+Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。
+请考虑以下 PromQL 表达式：
+sum by(cpu) ( rate(node_cpu_seconds_total{mode!=&#34;idle&#34;}[1m]) ) 使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。
+标签
+将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。
+通知策略
+设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。
+联络点
+定义警报触发时如何通知联系人。支持多种ChatOps工具。
+注解
+注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。
+标签
+标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。
+在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉$labels变量，它保存警报实例的标签键/值对，以及$value变量，它保持警报实例的评估值。
+在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。
+例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：
+Instance {{ $labels.instance }} has been down for more than 5 minutes 对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：
+{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }}) Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容："><meta name=twitter:card content="summary"><meta name=twitter:title content="grafana"><meta name=twitter:description content="报警 警报规则
+设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。
+Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。
+一旦创建了警报规则，它们将经历各种状态和转换。
+命名空间
+创建 Grafana 管理的规则时，该文件夹可用于访问控制。
+组
+组内的所有规则都以相同的时间间隔进行评估。
+组中的警报规则和记录规则将始终按顺序进行评估。
+警报实例
+Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。
+请考虑以下 PromQL 表达式：
+sum by(cpu) ( rate(node_cpu_seconds_total{mode!=&#34;idle&#34;}[1m]) ) 使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。
+标签
+将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。
+通知策略
+设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。
+联络点
+定义警报触发时如何通知联系人。支持多种ChatOps工具。
+注解
+注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。
+标签
+标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。
+在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉$labels变量，它保存警报实例的标签键/值对，以及$value变量，它保持警报实例的评估值。
+在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。
+例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：
+Instance {{ $labels.instance }} has been down for more than 5 minutes 对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：
+{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }}) Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容："><meta property="og:title" content="grafana"><meta property="og:description" content="报警 警报规则
+设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。
+Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。
+一旦创建了警报规则，它们将经历各种状态和转换。
+命名空间
+创建 Grafana 管理的规则时，该文件夹可用于访问控制。
+组
+组内的所有规则都以相同的时间间隔进行评估。
+组中的警报规则和记录规则将始终按顺序进行评估。
+警报实例
+Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。
+请考虑以下 PromQL 表达式：
+sum by(cpu) ( rate(node_cpu_seconds_total{mode!=&#34;idle&#34;}[1m]) ) 使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。
+标签
+将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。
+通知策略
+设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。
+联络点
+定义警报触发时如何通知联系人。支持多种ChatOps工具。
+注解
+注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。
+标签
+标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。
+在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉$labels变量，它保存警报实例的标签键/值对，以及$value变量，它保持警报实例的评估值。
+在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。
+例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：
+Instance {{ $labels.instance }} has been down for more than 5 minutes 对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：
+{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }}) Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容："><meta property="og:type" content="article"><meta property="og:url" content="https://banrenshan.github.io/blog/2022/11/grafana/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-11-27T19:49:23+00:00"><meta property="article:modified_time" content="2023-10-07T19:19:27+08:00"><meta itemprop=name content="grafana"><meta itemprop=description content="报警 警报规则
+设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。
+Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。
+一旦创建了警报规则，它们将经历各种状态和转换。
+命名空间
+创建 Grafana 管理的规则时，该文件夹可用于访问控制。
+组
+组内的所有规则都以相同的时间间隔进行评估。
+组中的警报规则和记录规则将始终按顺序进行评估。
+警报实例
+Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。
+请考虑以下 PromQL 表达式：
+sum by(cpu) ( rate(node_cpu_seconds_total{mode!=&#34;idle&#34;}[1m]) ) 使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。
+标签
+将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。
+通知策略
+设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。
+联络点
+定义警报触发时如何通知联系人。支持多种ChatOps工具。
+注解
+注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。
+标签
+标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。
+在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉$labels变量，它保存警报实例的标签键/值对，以及$value变量，它保持警报实例的评估值。
+在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。
+例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：
+Instance {{ $labels.instance }} has been down for more than 5 minutes 对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：
+{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }}) Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容："><meta itemprop=datePublished content="2022-11-27T19:49:23+00:00"><meta itemprop=dateModified content="2023-10-07T19:19:27+08:00"><meta itemprop=wordCount content="703"><meta itemprop=keywords content="grafana,监控,"><meta property="og:image" content="https://banrenshan.github.io/images/logo.png"><meta name=twitter:image content="https://banrenshan.github.io/images/logo.png"><meta property="og:image:alt" content="grafana"><meta name=twitter:image:alt content="grafana"><link rel=manifest href=/manifest.json><link data-precache rel=stylesheet href="/assets/main/bundle.min.906e48a4015f207e7ad2852421d4b8e6fda8fb5c6d1fff31855591474e60da12.css" integrity="sha256-kG5IpAFfIH560oUkIdS45v2o+1xtH/8xhVWRR05g2hI=" crossorigin=anonymous><link data-precache rel=stylesheet href=/assets/viewer/bundle.min.eb914844636cd41f221f109e99c887bbc3b6b5ffb2af7c664b284cea2d1b54b7.css integrity="sha256-65FIRGNs1B8iHxCemciHu8O2tf+yr3xmSyhM6i0bVLc=" crossorigin=anonymous></head><body><header class="mb-4 sticky-top"><nav class="top-app-bar shadow navbar navbar-expand-xxl"><div class=container><a class="navbar-brand d-flex align-items-center flex-grow-1 flex-xxl-grow-0 justify-content-xxl-start ms-2 ms-xxl-0 mx-auto me-xxl-2" href=https://banrenshan.github.io/><picture><img class=logo alt=Logo src=https://banrenshan.github.io/images/logo.webp loading=lazy width=400 height=400></picture></a><div class="offcanvas-xxl offcanvas-end flex-grow-1" data-bs-scroll=true tabindex=-1 id=navbarMenus aria-labelledby=navbarMenusLabel><div class="offcanvas-header px-4 pb-0"><div class="offcanvas-title h5" id=navbarMenusLabel></div><button type=button class="btn-close btn-close-white" data-bs-dismiss=offcanvas data-bs-target=#navbarMenus aria-label=Close></button></div><div class="offcanvas-body p-4 pt-0 p-xxl-0"><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center me-auto"><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/docs/><span class="menu-icon me-1"><i class="fas fa-fw fa-book"></i></span>文档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/series/><span class="menu-icon me-1"><i class="fas fa-fw fa-columns"></i></span>专栏</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/categories/><span class="menu-icon me-1"><i class="fas fa-fw fa-folder"></i></span>分类</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/archives/><span class="menu-icon me-1"><i class="fas fa-fw fa-file-archive"></i></span>归档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/tags/><span class="menu-icon me-1"><i class="fas fa-fw fa-tags"></i></span>标签</a></li></ul><hr class=d-xxl-none><form class="search-bar ms-auto my-auto" action=/search/ novalidate><div class="input-group input-group-sm align-items-center"><span class="btn btn-search disabled position-absolute left-0 border-0 px-1"><i class="fas fa-fw fa-search fa-lg"></i></span>
+<input class="my-1 form-control border-white rounded-5 search-input bg-body" name=q type=search placeholder=搜索 aria-label=Search required>
+<span class="search-shortcut position-absolute end-0 top-0 me-2"><kbd class="bg-primary rounded shadow">/</kbd></span></div></form><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center ms-md-auto"><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=fontSizeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-font"></i>
+<span class=d-xxl-none>字体大小</span></a><ul class="font-size-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=fontSizeDropdown><li><button class="font-size-item dropdown-item" data-size=xs>
+特小号</button></li><li><button class="font-size-item dropdown-item" data-size=sm>
+小号</button></li><li><button class="font-size-item dropdown-item active" data-size=md>
+中等</button></li><li><button class="font-size-item dropdown-item" data-size=lg>
+大号</button></li><li><button class="font-size-item dropdown-item" data-size=xl>
+特大号</button></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=paletteDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-palette"></i>
+<span class=d-xxl-none>配色</span></a><ul class="palette-dropdown-menu dropdown-menu dropdown-menu-end px-2 row g-2" aria-labelledby=paletteDropdown><li class="col-4 my-1"><a role=button id=palette-blue aria-label=蓝色 class="btn btn-sm w-100 palette text-bg-blue" data-palette=blue></a></li><li class="col-4 my-1"><a role=button id=palette-blue-gray aria-label=蓝灰色 class="btn btn-sm w-100 palette text-bg-blue-gray" data-palette=blue-gray></a></li><li class="col-4 my-1"><a role=button id=palette-brown aria-label=棕色 class="btn btn-sm w-100 palette text-bg-brown" data-palette=brown></a></li><li class="col-4 my-1"><a role=button id=palette-cyan aria-label=青色 class="btn btn-sm w-100 palette text-bg-cyan" data-palette=cyan></a></li><li class="col-4 my-1"><a role=button id=palette-green aria-label=绿色 class="btn btn-sm w-100 palette text-bg-green" data-palette=green></a></li><li class="col-4 my-1"><a role=button id=palette-indigo aria-label=靛青色 class="btn btn-sm w-100 palette text-bg-indigo" data-palette=indigo></a></li><li class="col-4 my-1"><a role=button id=palette-orange aria-label=橙色 class="btn btn-sm w-100 palette text-bg-orange" data-palette=orange></a></li><li class="col-4 my-1"><a role=button id=palette-pink aria-label=粉色 class="btn btn-sm w-100 palette text-bg-pink" data-palette=pink></a></li><li class="col-4 my-1"><a role=button id=palette-purple aria-label=紫色 class="btn btn-sm w-100 palette text-bg-purple" data-palette=purple></a></li><li class="col-4 my-1"><a role=button id=palette-red aria-label=红色 class="btn btn-sm w-100 palette text-bg-red" data-palette=red></a></li><li class="col-4 my-1"><a role=button id=palette-teal aria-label=蓝绿色 class="btn btn-sm w-100 palette text-bg-teal" data-palette=teal></a></li><li class="col-4 my-1"><a role=button id=palette-yellow aria-label=黄色 class="btn btn-sm w-100 palette text-bg-yellow" data-palette=yellow></a></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=modeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="mode-icon fas fa-fw fa-adjust" id=modeIcon></i>
+<span class=d-xxl-none>模式</span></a><ul class="mode-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=modeDropdown><li class=mode-item data-color-mode=light data-icon=sun><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-sun"></i> 浅色</button></li><li class=mode-item data-color-mode=dark data-icon=moon><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-moon"></i> 深色</button></li><li class="mode-item active" data-color-mode=auto data-icon=adjust><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-adjust"></i> 自动</button></li></ul></li></ul></div></div><div class=d-flex><button class="navbar-toggler order-5 border-0" type=button data-bs-toggle=offcanvas data-bs-target=#navbarMenus aria-controls=navbarMenus aria-expanded=false aria-label="Toggle navigation">
+<i class="fas fa-ellipsis-h"></i></button></div></div></nav></header><main class=container><div class="row content"><noscript><div class="alert alert-danger" role=alert>你的浏览器不支持 JavaScript。</div></noscript><div class=col-xxl-8><div class=container><nav class="row card component" aria-label=breadcrumb><div class="card-body pb-0"><ol class="hbs-breadcrumb breadcrumb flex-nowrap"><li class="breadcrumb-item text-surface"><a href=/>主页</a></li><li class="breadcrumb-item text-surface"><a href=/blog/>Blogs</a></li><li class="breadcrumb-item active">Grafana</li></ol></div></nav><div class="post-panel-wrapper position-relative d-flex justify-content-center"><div class="d-flex flex-row justify-content-center rounded-5 border post-panel position-fixed px-3 py-1 surface shadow-1"><a class="action action-toc d-none d-xxl-block" href=#postTOC role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-toc d-block d-xxl-none" href=#post-toc-container role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-post-comments" href=#post-comments role=button aria-label=Comments title=Comments><i class="fas fa-fw fa-comments"></i></a>
+<a id=sidebarToggler class="action action-sidebar-toggler d-none d-xxl-block" role=button title="Sidebar toggler"><i class="fas fa-fw fa-expand-alt" data-fa-transform=rotate-45></i></a></div></div><article class="row card component mb-4 post"><div class=card-header><h1 class="card-title post-title my-2">Grafana</h1></div><div class=card-body><div class="post-meta mb-3"><span class="post-date me-1 mb-1" title="创建于 2022-11-27 19:49:23 +0000 UTC，更新于 2023-10-07 11:19:27 +0000 UTC。">2022年11月27日</span><span class="post-reading-time me-1 mb-1">4 分钟阅读</span><a href=/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-category">
+<i class="fas fa-fw fa-folder me-1"></i>中间件</a><a href=/tags/grafana/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-tag">Grafana</a><a href=/tags/%E7%9B%91%E6%8E%A7/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-tag">监控</a></div><div class="mt-2 mb-3 d-block d-xxl-none"><h2 class="text-surface mb-3">目录</h2><div id=post-toc-container></div><hr class=text-secondary></div><div class="post-content mb-3" data-bs-spy=scroll data-bs-target=#TableOfContents tabindex=0><div id=post-content-body><h1 id=报警 data-numberify>报警<a class="anchor ms-1" href=#报警></a></h1><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p><strong>警报规则</strong></p><p>设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。</p><p>Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。</p><p>一旦创建了警报规则，它们将经历各种状态和转换。</p><p><strong>命名空间</strong></p><p>创建 Grafana 管理的规则时，该文件夹可用于访问控制。</p><p><strong>组</strong></p><p>组内的所有规则都以相同的时间间隔进行评估。</p><p>组中的警报规则和记录规则将始终按顺序进行评估。</p><p><strong>警报实例</strong></p><p>Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。</p><p>请考虑以下 PromQL 表达式：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>sum by(cpu) (
+</span></span><span class=line><span class=cl>  rate(node_cpu_seconds_total{mode!=&#34;idle&#34;}[1m])
+</span></span><span class=line><span class=cl>)
+</span></span></code></pre></div><p>使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p><strong>标签</strong></p><p>将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。</p><p><strong>通知策略</strong></p><p>设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。</p><p><strong>联络点</strong></p><p>定义警报触发时如何通知联系人。支持多种ChatOps工具。</p><p><strong>注解</strong></p><p>注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。</p><p><strong>标签</strong></p><p>标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。</p><p>在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉<code>$labels</code>变量，它保存警报实例的标签键/值对，以及<code>$value</code>变量，它保持警报实例的评估值。</p><p>在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。</p><p>例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Instance {{ $labels.instance }} has been down for more than 5 minutes
+</span></span></code></pre></div><p>对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }})
+</span></span></code></pre></div><p>Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>[ var=&#39;B&#39; labels={instance=http_server} value=10 ]
+</span></span></code></pre></div><p>如果警报规则有两个或多个查询，或者使用reduce和数学表达式，则可以使用$values变量对每个查询和表达式的简化结果进行模板化。该变量保存每个简化查询的标签和值，以及任何数学表达式的结果。但是，它不保存每个查询的样本。</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p>如果此规则创建警报实例，$values将保存reduce表达式B和数学表达式C的结果。它将不会保存查询A返回的结果，因为查询A不会返回单个值，而是会随时间返回一系列值。</p><p>如果我们要编写摘要注释，例如：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }})
+</span></span></code></pre></div><p>我们会发现，由于警报的条件，数学表达式C必须是布尔比较，它必须返回0或1。我们需要的是归约表达式B的第95个百分位：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $values.B }})
+</span></span></code></pre></div><p>我们还可以显示B的标签，但是由于此警报规则只有一个查询，因此B的标签相当于$labels：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ $values.B.Labels.instance }} has a 95th percentile request latency above 1s: {{ $values.B }})
+</span></span></code></pre></div><p>No data and execution errors or timeouts</p><p>如果查询A未返回任何数据，则缩减表达式B也将不返回任何数据。这意味着｛｛$values.B｝｝将为零。为了确保即使查询没有返回数据，注释和标签仍然可以模板化，我们可以使用if语句检查$values.B：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ if $values.B }}{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $values.B }}){{ end }}
+</span></span></code></pre></div><p>如果规则使用经典条件而不是reduce和数学表达式，则$values包含refID和条件位置的组合。例如，{{ $values.A0 }} and {{ $values.A1 }}。
+展开注释和标签时，以下模板变量可用:</p><table><thead><tr><th><strong>Name</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td>$labels</td><td>查询或条件中的标签。例如，｛｛$labels.instance｝｝和｛｛$labels.job｝｝｝。当规则使用经典条件时，此选项不可用</td></tr><tr><td>$values</td><td>为此警报规则计算的所有reduce表达式和数学表达式的值。例如，｛｛$values.A｝｝、｛｛$values.A.Labels｝和｛｛$values.A.Value｝｝｝，其中A是reduce或数学表达式的refID。如果规则使用经典条件而不是reduce和数学表达式，则$values包含refID和条件位置的组合。</td></tr><tr><td>$value</td><td>警报实例的值字符串。例如: [ var=&lsquo;A&rsquo; labels={instance=foo} value=10 ]。</td></tr></tbody></table><p>使用标签和标签匹配器将警报规则链接到通知策略和静默。这允许一种非常灵活的方式来管理警报实例，指定应该处理它们的策略，以及静默哪些警报。</p><p>标签匹配器由3个不同的部分组成：标签、值和运算符。</p><ul><li>标签字段是要匹配的标签的名称。它必须与标签名称完全匹配。</li><li>值字段与指定标签名称的相应值匹配。它的匹配方式取决于Operator。</li><li>运算符字段是与标签值匹配的运算符。可用的运算符有：</li></ul><table><thead><tr><th><strong>Operator</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td>=</td><td>等于</td></tr><tr><td>!=</td><td>不等于</td></tr><tr><td>=~</td><td>正则匹配</td></tr><tr><td>!~</td><td>正则不匹配</td></tr></tbody></table><p>如果使用多个标签匹配器，则使用AND逻辑运算符将它们组合起来。这意味着所有匹配器必须匹配才能将规则链接到策略。</p><p>有三个关键组件：警报规则状态、警报实例状态和警报规则运行状况。尽管相互关联，但每个组件传递的信息都有细微的不同。</p><p>警报规则状态：</p><table><thead><tr><th><strong>State</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td><strong>Normal</strong></td><td>评估引擎返回的时间序列均未处于待定或触发状态。</td></tr><tr><td><strong>Pending</strong></td><td>评估引擎返回的至少一个时间序列处于待定状态。</td></tr><tr><td><strong>Firing</strong></td><td>评估引擎返回的至少一个时间序列处于firing状态。</td></tr></tbody></table><p>警报将首先转换为挂起，然后触发，因此在触发警报之前至少需要两个评估周期。</p><p>警报实例状态:</p><table><thead><tr><th><strong>State</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td><strong>Normal</strong></td><td>警报的状态既不触发也不挂起，一切正常工作。</td></tr><tr><td><strong>Pending</strong></td><td>处于活动状态的警报的状态小于配置的阈值持续时间。</td></tr><tr><td><strong>Alerting</strong></td><td>活动时间超过配置阈值持续时间的警报的状态。</td></tr><tr><td><strong>NoData</strong></td><td>在配置的时间窗口内未收到任何数据。</td></tr><tr><td><strong>Error</strong></td><td>尝试评估警报规则时发生的错误。</td></tr></tbody></table><p>警报规则运行状况:</p><table><thead><tr><th><strong>State</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td><strong>Ok</strong></td><td>评估警报规则时没有错误。</td></tr><tr><td><strong>Error</strong></td><td>评估警报规则时出错。</td></tr><tr><td><strong>NoData</strong></td><td>在规则评估期间返回的至少一个时间序列中缺少数据。</td></tr></tbody></table><p>当警报规则的评估产生状态NoData或Error时，Grafana alerting将生成具有以下附加标签的警报实例：</p><table><thead><tr><th><strong>Label</strong></th><th><strong>Description</strong></th></tr></thead><tbody><tr><td><strong>alertname</strong></td><td>Either DatasourceNoData or DatasourceError depending on the state.</td></tr><tr><td><strong>datasource_uid</strong></td><td>The UID of the data source that caused the state.</td></tr></tbody></table><h2 id=配置联系人 data-numberify>配置联系人<a class="anchor ms-1" href=#配置联系人></a></h2><p>通过联系点发送的通知是使用消息模板生成的。Grafana的默认模板基于Go模板系统，其中一些字段被计算为文本，而另一些字段被评估为HTML（这可能会影响转义）。默认模板，在default_template.go中定义，可以参考其写法：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ define &#34;__subject&#34; }}[{{ .Status | toUpper }}{{ if eq .Status &#34;firing&#34; }}:{{ .Alerts.Firing | len }}{{ if gt (.Alerts.Resolved | len) 0 }}, RESOLVED:{{ .Alerts.Resolved | len }}{{ end }}{{ end }}] {{ .GroupLabels.SortedPairs.Values | join &#34; &#34; }} {{ if gt (len .CommonLabels) (len .GroupLabels) }}({{ with .CommonLabels.Remove .GroupLabels.Names }}{{ .Values | join &#34; &#34; }}{{ end }}){{ end }}{{ end }}
+</span></span><span class=line><span class=cl>{{ define &#34;__text_values_list&#34; }}{{ $len := len .Values }}{{ if $len }}{{ $first := gt $len 1 }}{{ range $refID, $value := .Values -}}
+</span></span><span class=line><span class=cl>{{ $refID }}={{ $value }}{{ if $first }}, {{ end }}{{ $first = false }}{{ end -}}
+</span></span><span class=line><span class=cl>{{ else }}[no value]{{ end }}{{ end }}
+</span></span><span class=line><span class=cl>{{ define &#34;__text_alert_list&#34; }}{{ range . }}
+</span></span><span class=line><span class=cl>Value: {{ template &#34;__text_values_list&#34; . }}
+</span></span><span class=line><span class=cl>Labels:
+</span></span><span class=line><span class=cl>{{ range .Labels.SortedPairs }} - {{ .Name }} = {{ .Value }}
+</span></span><span class=line><span class=cl>{{ end }}Annotations:
+</span></span><span class=line><span class=cl>{{ range .Annotations.SortedPairs }} - {{ .Name }} = {{ .Value }}
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .GeneratorURL) 0 }}Source: {{ .GeneratorURL }}
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .SilenceURL) 0 }}Silence: {{ .SilenceURL }}
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .DashboardURL) 0 }}Dashboard: {{ .DashboardURL }}
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .PanelURL) 0 }}Panel: {{ .PanelURL }}
+</span></span><span class=line><span class=cl>{{ end }}{{ end }}{{ end }}
+</span></span><span class=line><span class=cl>{{ define &#34;default.title&#34; }}{{ template &#34;__subject&#34; . }}{{ end }}
+</span></span><span class=line><span class=cl>{{ define &#34;default.message&#34; }}{{ if gt (len .Alerts.Firing) 0 }}**Firing**
+</span></span><span class=line><span class=cl>{{ template &#34;__text_alert_list&#34; .Alerts.Firing }}{{ if gt (len .Alerts.Resolved) 0 }}
+</span></span><span class=line><span class=cl>{{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}**Resolved**
+</span></span><span class=line><span class=cl>{{ template &#34;__text_alert_list&#34; .Alerts.Resolved }}{{ end }}{{ end }}
+</span></span><span class=line><span class=cl>{{ define &#34;__teams_text_alert_list&#34; }}{{ range . }}
+</span></span><span class=line><span class=cl>Value: {{ template &#34;__text_values_list&#34; . }}
+</span></span><span class=line><span class=cl>Labels:
+</span></span><span class=line><span class=cl>{{ range .Labels.SortedPairs }} - {{ .Name }} = {{ .Value }}
+</span></span><span class=line><span class=cl>{{ end }}
+</span></span><span class=line><span class=cl>Annotations:
+</span></span><span class=line><span class=cl>{{ range .Annotations.SortedPairs }} - {{ .Name }} = {{ .Value }}
+</span></span><span class=line><span class=cl>{{ end }}
+</span></span><span class=line><span class=cl>{{ if gt (len .GeneratorURL) 0 }}Source: [{{ .GeneratorURL }}]({{ .GeneratorURL }})
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .SilenceURL) 0 }}Silence: [{{ .SilenceURL }}]({{ .SilenceURL }})
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .DashboardURL) 0 }}Dashboard: [{{ .DashboardURL }}]({{ .DashboardURL }})
+</span></span><span class=line><span class=cl>{{ end }}{{ if gt (len .PanelURL) 0 }}Panel: [{{ .PanelURL }}]({{ .PanelURL }})
+</span></span><span class=line><span class=cl>{{ end }}
+</span></span><span class=line><span class=cl>{{ end }}{{ end }}
+</span></span><span class=line><span class=cl>{{ define &#34;teams.default.message&#34; }}{{ if gt (len .Alerts.Firing) 0 }}**Firing**
+</span></span><span class=line><span class=cl>{{ template &#34;__teams_text_alert_list&#34; .Alerts.Firing }}{{ if gt (len .Alerts.Resolved) 0 }}
+</span></span><span class=line><span class=cl>{{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}**Resolved**
+</span></span><span class=line><span class=cl>{{ template &#34;__teams_text_alert_list&#34; .Alerts.Resolved }}{{ end }}{{ end }}
+</span></span></code></pre></div><p>以下示例演示如何使用默认模板在Slack中呈现警报消息。消息标题包含正在触发或已解决的警报计数。消息正文列出了警报及其状态:</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p>下面的示例显示了如何使用自定义模板：</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p>模板嵌套</p><p>您可以在其他模板中嵌入模板。例如，您可以使用define关键字定义模板片段：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>{{ define &#34;mytemplate&#34; }}
+</span></span><span class=line><span class=cl>  {{ len .Alerts.Firing }} firing. {{ len .Alerts.Resolved }} resolved.
+</span></span><span class=line><span class=cl>{{ end }}
+</span></span></code></pre></div><p>然后，可以使用template关键字将自定义模板嵌入此片段中。例如：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>Alert summary:
+</span></span><span class=line><span class=cl>{{ template &#34;mytemplate&#34; . }}
+</span></span></code></pre></div><p>您可以使用以下任何内置模板选项嵌入自定义模板:</p><table><thead><tr><th>default.title</th><th>显示高级状态信息。</th></tr></thead><tbody><tr><td>default.message</td><td>提供触发和已解决警报的格式化摘要。</td></tr><tr><td>teams.default.message</td><td>类似于default.messsage。为Microsoft Teams格式化。</td></tr></tbody></table><p>通知策略决定如何将警报路由到联系点。策略具有树结构，其中每个策略可以有一个或多个子策略。除根策略外，每个策略还可以匹配特定的警报标签。每个警报由根策略评估，然后由每个子策略评估。如果为特定策略启用了“继续匹配后续同级节点”选项，则即使在一个或多个匹配之后，评估也会继续。当没有任何子策略匹配时，命中根策略。</p><p><picture><img class=img-fluid alt=img src loading=lazy></picture></p><p>分组是Grafana Alerting的一个新的关键概念，它将类似性质的警报通知分类为单个漏斗。这样，当系统的许多部分同时发生故障，导致大量警报同时触发时，您可以在较大的停机期间正确地路由警报通知。</p><p>例如，假设您有100个服务连接到不同环境中的数据库。这些服务通过标签env=environmentname进行区分。有一个警报规则，用于监视您的服务是否可以访问名为alertname=DatabaseUnreach的数据库。</p><p>当出现网络分区时，一半的服务将无法再访问数据库。结果，会触发50个不同的警报（假设您的服务有一半）。对于这种情况，您希望收到一个带有受影响环境列表的单页通知（而不是50页）。</p><p>您可以将分组配置为group_by:[alertname]（请注意，省略了env标签）。有了这个配置，Grafana会发送一个紧凑的通知，其中包含此警报规则的所有受影响环境。</p><p>Grafana还有一个名为<code>…</code>的特殊标签，您可以使用它按所有标签对所有警报进行分组（有效地禁用分组），因此每个警报都将进入自己的组。它不同于默认的group_by:null，其中所有警报都进入一个组。</p><p>静音定时是警告重复发送的时间间隔。使用它们可以防止警报在特定的重复周期内触发。</p><p>与静音类似，静音计时不会阻止评估警报规则，也不会阻止警报实例在用户界面中显示。它们仅阻止创建通知。</p><p>使用静音停止来自一个或多个警报规则的通知。静默不会阻止评估警报规则。它们也不会停止警告实例在用户界面中显示。静音仅阻止创建通知。沉默只持续一段特定的时间。</p><ul><li></li></ul></div></div></div><div class=card-footer><div class="post-navs d-flex justify-content-evenly"><div class="post-nav post-prev"><i class="fas fa-fw fa-chevron-down post-prev-icon me-1" data-fa-transform=rotate-90></i>
+<a href=/blog/2022/11/unbutu-%E4%BD%BF%E7%94%A8/>Unbutu 使用</a></div><div class="post-nav post-next"><a href=/blog/2022/11/loki/>Loki</a>
+<i class="fas fa-fw fa-chevron-down post-next-icon ms-1" data-fa-transform=rotate-270></i></div></div></div></article><section class="related-posts row card component"><div class=card-header><h2 class="card-title fs-4 my-2 text-surface">相关文章</h2></div><div class="card-body slide px-1"><div class="slide-inner row gx-0"><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/opentelemetry/>Opentelemetry</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/unbutu-%E4%BD%BF%E7%94%A8/>Unbutu 使用</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/jdk%E6%96%B0%E7%89%B9%E6%80%A7/>Jdk新特性</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/graphql-java%E5%AE%9E%E7%8E%B0/>Graphql Java实现</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/graphql%E8%A7%84%E8%8C%83/>Graphql规范</a><div class="post-meta mb-0">2022年11月27日</div></div></div></div><button class=slide-control-left>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-90></i>
+<span class=visually-hidden>Left</span></button>
+<button class=slide-control-right>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-270></i>
+<span class=visually-hidden>Right</span></button></div></section><div class="card component row post-comments" id=post-comments><div class=card-header><h2 class="card-title my-2 fs-4 text-surface">评论</h2></div><div class=card-body></div></div></div></div><aside class="col-xxl-4 sidebar d-flex"><div class="container d-flex flex-column"><div class="accordion profile"><div class="accordion-item card row text-center component"><div class="accordion-header card-header border-0" id=profile-header><a class="accordion-button d-lg-none mb-2 shadow-none p-0 bg-transparent text-surface collapsed" role=button data-bs-toggle=collapse href=#profile aria-expanded=false aria-controls=profile>Profile</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=profile aria-labelledby=profile-header><div class="col-12 d-flex align-items-center justify-content-center"><picture><img class="profile-avatar rounded-circle" alt=小胖子 src=https://banrenshan.github.io/images/profile.webp loading=lazy data-viewer-invisible width=400 height=400></picture></div><div class="col-12 profile-meta"><div class="profile-name fw-fold fs-lg">小胖子</div><div class=profile-bio>每天一点点</div></div></div></div></div><div class="accordion taxonomies-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#taxonomies-toggle aria-expanded=false aria-controls=taxonomies-toggle>Taxonomies</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=taxonomies-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=taxonomyCategoriesTab data-bs-toggle=tab data-bs-target=#taxonomyCategories type=button role=tab aria-controls=taxonomyCategories aria-selected=true>
+分类</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyTagsTab data-bs-toggle=tab data-bs-target=#taxonomyTags type=button role=tab aria-controls=taxonomyTags aria-selected=true>
+标签</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyArchivesTab data-bs-toggle=tab data-bs-target=#taxonomyArchives type=button role=tab aria-controls=taxonomyArchives aria-selected=true>
+归档</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=taxonomyCategories role=tabpanel aria-labelledby=taxonomyCategoriesTab tabindex=0><a href=/categories/%E6%8A%80%E6%9C%AF/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=技术>技术
+<span class="badge badge-sm text-secondary bg-white ms-1">24</span></a>
+<a href=/categories/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">9</span></a>
+<a href=/categories/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=操作系统>操作系统
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=中间件>中间件
+<span class="badge badge-sm text-secondary bg-white ms-1">7</span></a>
+<a href=/categories/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/categories/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-boot/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-boot>spring-boot
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-cloud/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-cloud>spring-cloud
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/unbutu/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=Unbutu>Unbutu
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/categories class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">13</span></a></div><div class=tab-pane id=taxonomyTags role=tabpanel aria-labelledby=taxonomyTagsTab tabindex=0><a href=/tags/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">31</span></a>
+<a href=/tags/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=监控>监控
+<span class="badge badge-sm text-secondary bg-white ms-1">4</span></a>
+<a href=/tags/gradle/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=gradle>gradle
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/graphql/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=graphql>graphql
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/shell/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=shell>shell
+<span class="badge badge-sm text-secondary bg-white ms-1">2</span></a>
+<a href=/tags/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/filebeat/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=filebeat>filebeat
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/grafana/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=grafana>grafana
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/tags class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">22</span></a></div><div class=tab-pane id=taxonomyArchives role=tabpanel aria-labelledby=taxonomyArchivesTab tabindex=0><a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=2022>2022 <span class="badge badge-sm text-secondary bg-white ms-1">48</span></a>
+<a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=0001>0001 <span class="badge badge-sm text-secondary bg-white ms-1">5</span></a></div></div></div></div></div><div class="accordion posts-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#posts-toggle aria-expanded=false aria-controls=posts-toggle>文章</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=posts-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=recent-posts-tab data-bs-toggle=tab data-bs-target=#recent-posts type=button role=tab aria-controls=recent-posts aria-selected=true>
+最近文章</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=recent-posts role=tabpanel aria-labelledby=recent-posts-tab tabindex=0><ul class="post-list list-unstyled ms-1"><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/grafana/>Grafana</a><div class="post-meta mt-2"><span class=post-date>2022年12月10日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/gradle-basic/>Gradle-Basic</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/zero-copy/>Zero-Copy</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-lock/>Java-Lock</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-log/>Java-Log</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li></ul></div></div></div></div></div><div class="accordion post-toc d-none d-lg-block"><div class="accordion-item row mb-4 card component" id=postTOC><div class="card-header accordion-header"><h2 class="card-title fs-4 my-2 text-surface d-none d-lg-block">目录</h2><a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" role=button data-bs-toggle=collapse href=#post-toc aria-expanded=false aria-controls=post-toc>目录</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=post-toc><nav id=TableOfContents><ul><li><a href=#配置联系人>配置联系人</a></li></ul></nav></div></div></div></div></aside></div></main><footer class="footer mt-auto py-3 text-center container"></footer><script data-precache src=/assets/main/bundle.min.f06ce52438e0e6eee8225a013aaf3de719542ffc5ef58241be98c0f5d1df9732.js integrity="sha256-8GzlJDjg5u7oIloBOq895xlUL/xe9YJBvpjA9dHflzI=" crossorigin=anonymous async></script><script data-precache src=/assets/icons/bundle.min.4f30d5267a9f2f9d45ed93969d45ec626100a969a8b91f71f753315a261e9034.js integrity="sha256-TzDVJnqfL51F7ZOWnUXsYmEAqWmouR9x91MxWiYekDQ=" crossorigin=anonymous defer></script>
+<script data-precache src=/assets/viewer/bundle.min.0a0d0099935beee41b7a7bf4543cd55e793e5f830a571b0794ef8c3602c5823c.js integrity="sha256-Cg0AmZNb7uQbenv0VDzVXnk+X4MKVxsHlO+MNgLFgjw=" crossorigin=anonymous defer></script>
+<script src=/js/sw-register.js defer></script></body></html>

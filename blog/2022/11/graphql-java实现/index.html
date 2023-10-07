@@ -1,0 +1,825 @@
+<!doctype html><html class=position-relative itemscope itemtype=https://schema.org/WebPage lang=zh-hans data-bs-theme=auto data-palette=purple><head><script src=/assets/init/bundle.min.d893010142cc6ee98760d32b7e1e90d3786505dcd396e888f1ee101971e02785.js integrity="sha256-2JMBAULMbumHYNMrfh6Q03hlBdzTluiI8e4QGXHgJ4U=" crossorigin=anonymous></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>graphql java实现 -</title><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_16x16_resize_q75_h2_box_2.webp sizes=16x16 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_32x32_resize_q75_h2_box_2.webp sizes=32x32 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_150x150_resize_q75_h2_box_2.webp sizes=150x150 type=image/webp><link rel=apple-touch-icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_180x180_resize_q75_h2_box_2.webp sizes=180x180 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_192x192_resize_q75_h2_box_2.webp sizes=192x192 type=image/webp><link rel=mask-icon href=/safari-pinned-tab.svg color=#6f42c1><meta name=keywords content="Hugo,Bootstrap,Blog Theme"><meta name=description content="执行 查询 要对schema执行查询，请使用适当的参数构建一个新的GraphQL对象，然后调用execute方法。查询的结果是ExecutionResult，它是查询数据和/或错误列表。
+GraphQLSchema schema = GraphQLSchema.newSchema() .query(queryType) .build(); GraphQL graphQL = GraphQL.newGraphQL(schema) .build(); ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(&#34;query { hero { name } }&#34;) .build(); ExecutionResult executionResult = graphQL.execute(executionInput); Object data = executionResult.getData(); List<GraphQLError> errors = executionResult.getErrors(); Data Fetchers 每个graphql字段类型都有一个graphql.schema.DataFetcher与其关联的。通常，您可以依赖graphql.schema.PropertyDataFetcher检查Java POJO对象，以从中提供字段值。如果您没有在字段上指定数据获取器，则将使用此选项。
+DataFetcher userDataFetcher = new DataFetcher() { @Override public Object get(DataFetchingEnvironment environment) { return fetchUserFromDatabase(environment.getArgument(&#34;userId&#34;)); } }; 在上面的示例中，执行将等待数据获取器返回，然后再继续。您可以通过向数据返回CompletionStage来实现DataFetcher的异步执行。
+获取数据的时候发生异常 如果在数据获取器调用期间发生异常，则默认情况下执行策略将生成一个graphql.ExceptionWhileDataFetching错误，并将其添加到结果的错误列表中。请记住，graphql允许有错误的部分结果。这是标准行为的代码：
+public class SimpleDataFetcherExceptionHandler implements DataFetcherExceptionHandler { private static final Logger log = LoggerFactory."><meta name=twitter:card content="summary"><meta name=twitter:title content="graphql java实现"><meta name=twitter:description content="执行 查询 要对schema执行查询，请使用适当的参数构建一个新的GraphQL对象，然后调用execute方法。查询的结果是ExecutionResult，它是查询数据和/或错误列表。
+GraphQLSchema schema = GraphQLSchema.newSchema() .query(queryType) .build(); GraphQL graphQL = GraphQL.newGraphQL(schema) .build(); ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(&#34;query { hero { name } }&#34;) .build(); ExecutionResult executionResult = graphQL.execute(executionInput); Object data = executionResult.getData(); List<GraphQLError> errors = executionResult.getErrors(); Data Fetchers 每个graphql字段类型都有一个graphql.schema.DataFetcher与其关联的。通常，您可以依赖graphql.schema.PropertyDataFetcher检查Java POJO对象，以从中提供字段值。如果您没有在字段上指定数据获取器，则将使用此选项。
+DataFetcher userDataFetcher = new DataFetcher() { @Override public Object get(DataFetchingEnvironment environment) { return fetchUserFromDatabase(environment.getArgument(&#34;userId&#34;)); } }; 在上面的示例中，执行将等待数据获取器返回，然后再继续。您可以通过向数据返回CompletionStage来实现DataFetcher的异步执行。
+获取数据的时候发生异常 如果在数据获取器调用期间发生异常，则默认情况下执行策略将生成一个graphql.ExceptionWhileDataFetching错误，并将其添加到结果的错误列表中。请记住，graphql允许有错误的部分结果。这是标准行为的代码：
+public class SimpleDataFetcherExceptionHandler implements DataFetcherExceptionHandler { private static final Logger log = LoggerFactory."><meta property="og:title" content="graphql java实现"><meta property="og:description" content="执行 查询 要对schema执行查询，请使用适当的参数构建一个新的GraphQL对象，然后调用execute方法。查询的结果是ExecutionResult，它是查询数据和/或错误列表。
+GraphQLSchema schema = GraphQLSchema.newSchema() .query(queryType) .build(); GraphQL graphQL = GraphQL.newGraphQL(schema) .build(); ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(&#34;query { hero { name } }&#34;) .build(); ExecutionResult executionResult = graphQL.execute(executionInput); Object data = executionResult.getData(); List<GraphQLError> errors = executionResult.getErrors(); Data Fetchers 每个graphql字段类型都有一个graphql.schema.DataFetcher与其关联的。通常，您可以依赖graphql.schema.PropertyDataFetcher检查Java POJO对象，以从中提供字段值。如果您没有在字段上指定数据获取器，则将使用此选项。
+DataFetcher userDataFetcher = new DataFetcher() { @Override public Object get(DataFetchingEnvironment environment) { return fetchUserFromDatabase(environment.getArgument(&#34;userId&#34;)); } }; 在上面的示例中，执行将等待数据获取器返回，然后再继续。您可以通过向数据返回CompletionStage来实现DataFetcher的异步执行。
+获取数据的时候发生异常 如果在数据获取器调用期间发生异常，则默认情况下执行策略将生成一个graphql.ExceptionWhileDataFetching错误，并将其添加到结果的错误列表中。请记住，graphql允许有错误的部分结果。这是标准行为的代码：
+public class SimpleDataFetcherExceptionHandler implements DataFetcherExceptionHandler { private static final Logger log = LoggerFactory."><meta property="og:type" content="article"><meta property="og:url" content="https://banrenshan.github.io/blog/2022/11/graphql-java%E5%AE%9E%E7%8E%B0/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-11-27T19:02:18+00:00"><meta property="article:modified_time" content="2023-10-07T19:19:27+08:00"><meta itemprop=name content="graphql java实现"><meta itemprop=description content="执行 查询 要对schema执行查询，请使用适当的参数构建一个新的GraphQL对象，然后调用execute方法。查询的结果是ExecutionResult，它是查询数据和/或错误列表。
+GraphQLSchema schema = GraphQLSchema.newSchema() .query(queryType) .build(); GraphQL graphQL = GraphQL.newGraphQL(schema) .build(); ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(&#34;query { hero { name } }&#34;) .build(); ExecutionResult executionResult = graphQL.execute(executionInput); Object data = executionResult.getData(); List<GraphQLError> errors = executionResult.getErrors(); Data Fetchers 每个graphql字段类型都有一个graphql.schema.DataFetcher与其关联的。通常，您可以依赖graphql.schema.PropertyDataFetcher检查Java POJO对象，以从中提供字段值。如果您没有在字段上指定数据获取器，则将使用此选项。
+DataFetcher userDataFetcher = new DataFetcher() { @Override public Object get(DataFetchingEnvironment environment) { return fetchUserFromDatabase(environment.getArgument(&#34;userId&#34;)); } }; 在上面的示例中，执行将等待数据获取器返回，然后再继续。您可以通过向数据返回CompletionStage来实现DataFetcher的异步执行。
+获取数据的时候发生异常 如果在数据获取器调用期间发生异常，则默认情况下执行策略将生成一个graphql.ExceptionWhileDataFetching错误，并将其添加到结果的错误列表中。请记住，graphql允许有错误的部分结果。这是标准行为的代码：
+public class SimpleDataFetcherExceptionHandler implements DataFetcherExceptionHandler { private static final Logger log = LoggerFactory."><meta itemprop=datePublished content="2022-11-27T19:02:18+00:00"><meta itemprop=dateModified content="2023-10-07T19:19:27+08:00"><meta itemprop=wordCount content="2225"><meta itemprop=keywords content="graphql,"><meta property="og:image" content="https://banrenshan.github.io/images/logo.png"><meta name=twitter:image content="https://banrenshan.github.io/images/logo.png"><meta property="og:image:alt" content="graphql java实现"><meta name=twitter:image:alt content="graphql java实现"><link rel=manifest href=/manifest.json><link data-precache rel=stylesheet href="/assets/main/bundle.min.906e48a4015f207e7ad2852421d4b8e6fda8fb5c6d1fff31855591474e60da12.css" integrity="sha256-kG5IpAFfIH560oUkIdS45v2o+1xtH/8xhVWRR05g2hI=" crossorigin=anonymous><link data-precache rel=stylesheet href=/assets/viewer/bundle.min.eb914844636cd41f221f109e99c887bbc3b6b5ffb2af7c664b284cea2d1b54b7.css integrity="sha256-65FIRGNs1B8iHxCemciHu8O2tf+yr3xmSyhM6i0bVLc=" crossorigin=anonymous></head><body><header class="mb-4 sticky-top"><nav class="top-app-bar shadow navbar navbar-expand-xxl"><div class=container><a class="navbar-brand d-flex align-items-center flex-grow-1 flex-xxl-grow-0 justify-content-xxl-start ms-2 ms-xxl-0 mx-auto me-xxl-2" href=https://banrenshan.github.io/><picture><img class=logo alt=Logo src=https://banrenshan.github.io/images/logo.webp loading=lazy width=400 height=400></picture></a><div class="offcanvas-xxl offcanvas-end flex-grow-1" data-bs-scroll=true tabindex=-1 id=navbarMenus aria-labelledby=navbarMenusLabel><div class="offcanvas-header px-4 pb-0"><div class="offcanvas-title h5" id=navbarMenusLabel></div><button type=button class="btn-close btn-close-white" data-bs-dismiss=offcanvas data-bs-target=#navbarMenus aria-label=Close></button></div><div class="offcanvas-body p-4 pt-0 p-xxl-0"><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center me-auto"><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/docs/><span class="menu-icon me-1"><i class="fas fa-fw fa-book"></i></span>文档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/series/><span class="menu-icon me-1"><i class="fas fa-fw fa-columns"></i></span>专栏</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/categories/><span class="menu-icon me-1"><i class="fas fa-fw fa-folder"></i></span>分类</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/archives/><span class="menu-icon me-1"><i class="fas fa-fw fa-file-archive"></i></span>归档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/tags/><span class="menu-icon me-1"><i class="fas fa-fw fa-tags"></i></span>标签</a></li></ul><hr class=d-xxl-none><form class="search-bar ms-auto my-auto" action=/search/ novalidate><div class="input-group input-group-sm align-items-center"><span class="btn btn-search disabled position-absolute left-0 border-0 px-1"><i class="fas fa-fw fa-search fa-lg"></i></span>
+<input class="my-1 form-control border-white rounded-5 search-input bg-body" name=q type=search placeholder=搜索 aria-label=Search required>
+<span class="search-shortcut position-absolute end-0 top-0 me-2"><kbd class="bg-primary rounded shadow">/</kbd></span></div></form><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center ms-md-auto"><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=fontSizeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-font"></i>
+<span class=d-xxl-none>字体大小</span></a><ul class="font-size-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=fontSizeDropdown><li><button class="font-size-item dropdown-item" data-size=xs>
+特小号</button></li><li><button class="font-size-item dropdown-item" data-size=sm>
+小号</button></li><li><button class="font-size-item dropdown-item active" data-size=md>
+中等</button></li><li><button class="font-size-item dropdown-item" data-size=lg>
+大号</button></li><li><button class="font-size-item dropdown-item" data-size=xl>
+特大号</button></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=paletteDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-palette"></i>
+<span class=d-xxl-none>配色</span></a><ul class="palette-dropdown-menu dropdown-menu dropdown-menu-end px-2 row g-2" aria-labelledby=paletteDropdown><li class="col-4 my-1"><a role=button id=palette-blue aria-label=蓝色 class="btn btn-sm w-100 palette text-bg-blue" data-palette=blue></a></li><li class="col-4 my-1"><a role=button id=palette-blue-gray aria-label=蓝灰色 class="btn btn-sm w-100 palette text-bg-blue-gray" data-palette=blue-gray></a></li><li class="col-4 my-1"><a role=button id=palette-brown aria-label=棕色 class="btn btn-sm w-100 palette text-bg-brown" data-palette=brown></a></li><li class="col-4 my-1"><a role=button id=palette-cyan aria-label=青色 class="btn btn-sm w-100 palette text-bg-cyan" data-palette=cyan></a></li><li class="col-4 my-1"><a role=button id=palette-green aria-label=绿色 class="btn btn-sm w-100 palette text-bg-green" data-palette=green></a></li><li class="col-4 my-1"><a role=button id=palette-indigo aria-label=靛青色 class="btn btn-sm w-100 palette text-bg-indigo" data-palette=indigo></a></li><li class="col-4 my-1"><a role=button id=palette-orange aria-label=橙色 class="btn btn-sm w-100 palette text-bg-orange" data-palette=orange></a></li><li class="col-4 my-1"><a role=button id=palette-pink aria-label=粉色 class="btn btn-sm w-100 palette text-bg-pink" data-palette=pink></a></li><li class="col-4 my-1"><a role=button id=palette-purple aria-label=紫色 class="btn btn-sm w-100 palette text-bg-purple" data-palette=purple></a></li><li class="col-4 my-1"><a role=button id=palette-red aria-label=红色 class="btn btn-sm w-100 palette text-bg-red" data-palette=red></a></li><li class="col-4 my-1"><a role=button id=palette-teal aria-label=蓝绿色 class="btn btn-sm w-100 palette text-bg-teal" data-palette=teal></a></li><li class="col-4 my-1"><a role=button id=palette-yellow aria-label=黄色 class="btn btn-sm w-100 palette text-bg-yellow" data-palette=yellow></a></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=modeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="mode-icon fas fa-fw fa-adjust" id=modeIcon></i>
+<span class=d-xxl-none>模式</span></a><ul class="mode-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=modeDropdown><li class=mode-item data-color-mode=light data-icon=sun><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-sun"></i> 浅色</button></li><li class=mode-item data-color-mode=dark data-icon=moon><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-moon"></i> 深色</button></li><li class="mode-item active" data-color-mode=auto data-icon=adjust><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-adjust"></i> 自动</button></li></ul></li></ul></div></div><div class=d-flex><button class="navbar-toggler order-5 border-0" type=button data-bs-toggle=offcanvas data-bs-target=#navbarMenus aria-controls=navbarMenus aria-expanded=false aria-label="Toggle navigation">
+<i class="fas fa-ellipsis-h"></i></button></div></div></nav></header><main class=container><div class="row content"><noscript><div class="alert alert-danger" role=alert>你的浏览器不支持 JavaScript。</div></noscript><div class=col-xxl-8><div class=container><nav class="row card component" aria-label=breadcrumb><div class="card-body pb-0"><ol class="hbs-breadcrumb breadcrumb flex-nowrap"><li class="breadcrumb-item text-surface"><a href=/>主页</a></li><li class="breadcrumb-item text-surface"><a href=/blog/>Blogs</a></li><li class="breadcrumb-item active">Graphql Java实现</li></ol></div></nav><div class="post-panel-wrapper position-relative d-flex justify-content-center"><div class="d-flex flex-row justify-content-center rounded-5 border post-panel position-fixed px-3 py-1 surface shadow-1"><a class="action action-toc d-none d-xxl-block" href=#postTOC role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-toc d-block d-xxl-none" href=#post-toc-container role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-post-comments" href=#post-comments role=button aria-label=Comments title=Comments><i class="fas fa-fw fa-comments"></i></a>
+<a id=sidebarToggler class="action action-sidebar-toggler d-none d-xxl-block" role=button title="Sidebar toggler"><i class="fas fa-fw fa-expand-alt" data-fa-transform=rotate-45></i></a></div></div><article class="row card component mb-4 post"><div class=card-header><h1 class="card-title post-title my-2">Graphql Java实现</h1></div><div class=card-body><div class="post-meta mb-3"><span class="post-date me-1 mb-1" title="创建于 2022-11-27 19:02:18 +0000 UTC，更新于 2023-10-07 11:19:27 +0000 UTC。">2022年11月27日</span><span class="post-reading-time me-1 mb-1">11 分钟阅读</span><a href=/categories/java/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-category">
+<i class="fas fa-fw fa-folder me-1"></i>Java</a><a href=/tags/graphql/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-tag">Graphql</a></div><div class="mt-2 mb-3 d-block d-xxl-none"><h2 class="text-surface mb-3">目录</h2><div id=post-toc-container></div><hr class=text-secondary></div><div class="post-content mb-3" data-bs-spy=scroll data-bs-target=#TableOfContents tabindex=0><div id=post-content-body><h2 id=执行 data-numberify>执行<a class="anchor ms-1" href=#执行></a></h2><h3 id=查询 data-numberify>查询<a class="anchor ms-1" href=#查询></a></h3><p>要对schema执行查询，请使用适当的参数构建一个新的GraphQL对象，然后调用execute方法。查询的结果是ExecutionResult，它是查询数据和/或错误列表。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>GraphQLSchema</span> <span class=n>schema</span> <span class=o>=</span> <span class=n>GraphQLSchema</span><span class=o>.</span><span class=na>newSchema</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>query</span><span class=o>(</span><span class=n>queryType</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>GraphQL</span> <span class=n>graphQL</span> <span class=o>=</span> <span class=n>GraphQL</span><span class=o>.</span><span class=na>newGraphQL</span><span class=o>(</span><span class=n>schema</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>ExecutionInput</span> <span class=n>executionInput</span> <span class=o>=</span> <span class=n>ExecutionInput</span><span class=o>.</span><span class=na>newExecutionInput</span><span class=o>().</span><span class=na>query</span><span class=o>(</span><span class=s>&#34;query { hero { name } }&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>ExecutionResult</span> <span class=n>executionResult</span> <span class=o>=</span> <span class=n>graphQL</span><span class=o>.</span><span class=na>execute</span><span class=o>(</span><span class=n>executionInput</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>Object</span> <span class=n>data</span> <span class=o>=</span> <span class=n>executionResult</span><span class=o>.</span><span class=na>getData</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=n>List</span><span class=o>&lt;</span><span class=n>GraphQLError</span><span class=o>&gt;</span> <span class=n>errors</span> <span class=o>=</span> <span class=n>executionResult</span><span class=o>.</span><span class=na>getErrors</span><span class=o>();</span>
+</span></span></code></pre></div><h3 id=data-fetchers data-numberify>Data Fetchers<a class="anchor ms-1" href=#data-fetchers></a></h3><p>每个graphql字段类型都有一个graphql.schema.DataFetcher与其关联的。通常，您可以依赖graphql.schema.PropertyDataFetcher检查Java POJO对象，以从中提供字段值。如果您没有在字段上指定数据获取器，则将使用此选项。</p><pre tabindex=0><code>DataFetcher userDataFetcher = new DataFetcher() {
+    @Override
+    public Object get(DataFetchingEnvironment environment) {
+        return fetchUserFromDatabase(environment.getArgument(&#34;userId&#34;));
+    }
+};
+</code></pre><p>在上面的示例中，执行将等待数据获取器返回，然后再继续。您可以通过向数据返回CompletionStage来实现DataFetcher的异步执行。</p><h3 id=获取数据的时候发生异常 data-numberify>获取数据的时候发生异常<a class="anchor ms-1" href=#获取数据的时候发生异常></a></h3><p>如果在数据获取器调用期间发生异常，则默认情况下执行策略将生成一个graphql.ExceptionWhileDataFetching错误，并将其添加到结果的错误列表中。请记住，graphql允许有错误的部分结果。这是标准行为的代码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>SimpleDataFetcherExceptionHandler</span> <span class=kd>implements</span> <span class=n>DataFetcherExceptionHandler</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>Logger</span> <span class=n>log</span> <span class=o>=</span> <span class=n>LoggerFactory</span><span class=o>.</span><span class=na>getLogger</span><span class=o>(</span><span class=n>SimpleDataFetcherExceptionHandler</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>accept</span><span class=o>(</span><span class=n>DataFetcherExceptionHandlerParameters</span> <span class=n>handlerParameters</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>Throwable</span> <span class=n>exception</span> <span class=o>=</span> <span class=n>handlerParameters</span><span class=o>.</span><span class=na>getException</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>SourceLocation</span> <span class=n>sourceLocation</span> <span class=o>=</span> <span class=n>handlerParameters</span><span class=o>.</span><span class=na>getField</span><span class=o>().</span><span class=na>getSourceLocation</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>ExecutionPath</span> <span class=n>path</span> <span class=o>=</span> <span class=n>handlerParameters</span><span class=o>.</span><span class=na>getPath</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>ExceptionWhileDataFetching</span> <span class=n>error</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ExceptionWhileDataFetching</span><span class=o>(</span><span class=n>path</span><span class=o>,</span> <span class=n>exception</span><span class=o>,</span> <span class=n>sourceLocation</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>handlerParameters</span><span class=o>.</span><span class=na>getExecutionContext</span><span class=o>().</span><span class=na>addError</span><span class=o>(</span><span class=n>error</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>log</span><span class=o>.</span><span class=na>warn</span><span class=o>(</span><span class=n>error</span><span class=o>.</span><span class=na>getMessage</span><span class=o>(),</span> <span class=n>exception</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>如果抛出的异常本身是GraphqlError，那么它会将该异常的消息和自定义扩展属性传输到ExceptionWhileDataFetching对象中。这允许您将自己的自定义属性放入发送回调用者的graphql错误中。</p><p>例如，假设您的数据获取器抛出了此异常。foo和fizz属性将包含在生成的graphql错误中。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>class</span> <span class=nc>CustomRuntimeException</span> <span class=kd>extends</span> <span class=n>RuntimeException</span> <span class=kd>implements</span> <span class=n>GraphQLError</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=nf>getExtensions</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>customAttributes</span> <span class=o>=</span> <span class=k>new</span> <span class=n>LinkedHashMap</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>        <span class=n>customAttributes</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;foo&#34;</span><span class=o>,</span> <span class=s>&#34;bar&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>customAttributes</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;fizz&#34;</span><span class=o>,</span> <span class=s>&#34;whizz&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>customAttributes</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>SourceLocation</span><span class=o>&gt;</span> <span class=nf>getLocations</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>ErrorType</span> <span class=nf>getErrorType</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>ErrorType</span><span class=o>.</span><span class=na>DataFetchingException</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>您可以通过创建自己的graphql.execution.DataFetcherExceptionHandler来更改此行为。</p><p>例如，上面的代码记录了底层异常和堆栈跟踪。有些人可能不希望在输出错误列表中看到这一点。所以你可以使用这个机制来改变这种行为。</p><pre tabindex=0><code>DataFetcherExceptionHandler handler = new DataFetcherExceptionHandler() {
+    @Override
+    public void accept(DataFetcherExceptionHandlerParameters handlerParameters) {
+        //
+        // do your custom handling here.  The parameters have all you need
+    }
+};
+ExecutionStrategy executionStrategy = new AsyncExecutionStrategy(handler);
+</code></pre><h3 id=返回数据和错误 data-numberify>返回数据和错误<a class="anchor ms-1" href=#返回数据和错误></a></h3><p>graphql.execution.DataFetcherResult同时返回数据和多个错误.。或包装在CompletableFuture实例中，用于异步执行。当DataFetcher可能需要从多个源或另一个GraphQL资源检索数据时，这非常有用。</p><p>在本例中，DataFetcher从另一个GraphQL资源中检索用户并返回其数据和错误。</p><pre tabindex=0><code>DataFetcher userDataFetcher = new DataFetcher() {
+    @Override
+    public Object get(DataFetchingEnvironment environment) {
+        Map response = fetchUserFromRemoteGraphQLResource(environment.getArgument(&#34;userId&#34;));
+        List&lt;GraphQLError&gt; errors = response.get(&#34;errors&#34;).stream()
+            .map(MyMapGraphQLError::new)
+            .collect(Collectors.toList());
+        return new DataFetcherResult(response.get(&#34;data&#34;), errors);
+    }
+};
+</code></pre><h3 id=序列化结果成json data-numberify>序列化结果成JSON<a class="anchor ms-1" href=#序列化结果成json></a></h3><p>调用graphql最常见的方法是通过HTTP，并期望返回JSON响应。所以你需要将graphql.ExecutionResult转换为JSON负载。
+一种常见的方法是使用JSON序列化库，如Jackson或GSON。然而，他们具体如何解释数据结果是他们所特有的。例如，null在graphql结果中很重要，因此必须设置json映射器以包含它们。</p><p>为了确保获得100%符合graphql规范的JSON结果，应该对结果调用toSpecification，然后将其作为JSON发送回去。</p><pre tabindex=0><code>ExecutionResult executionResult = graphQL.execute(executionInput);
+
+Map&lt;String, Object&gt; toSpecificationResult = executionResult.toSpecification();
+
+sendAsJson(toSpecificationResult);
+</code></pre><p>graphql java库专注于查询引擎，不关心其他高级应用程序问题，例如：</p><ul><li>数据库访问</li><li>数据缓存</li><li>数据认证</li><li>数据分页</li><li>JSON编码</li><li>依赖注入</li></ul><p>您需要将这些关注点推入业务逻辑层。</p><h3 id=上下文对象 data-numberify>上下文对象<a class="anchor ms-1" href=#上下文对象></a></h3><p>您可以在查询执行期间传入上下文对象，以便更好地调用该业务逻辑。例如，应用程序可能正在执行用户检测，您需要在graphql执行过程中提供这些信息来执行授权。下面的示例显示了如何传递信息来帮助执行查询。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// 将用户信息设置到上下文，
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=n>UserContext</span> <span class=n>contextForUser</span> <span class=o>=</span> <span class=n>YourGraphqlContextBuilder</span><span class=o>.</span><span class=na>getContextForUser</span><span class=o>(</span><span class=n>getCurrentUser</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>ExecutionInput</span> <span class=n>executionInput</span> <span class=o>=</span> <span class=n>ExecutionInput</span><span class=o>.</span><span class=na>newExecutionInput</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>context</span><span class=o>(</span><span class=n>contextForUser</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>ExecutionResult</span> <span class=n>executionResult</span> <span class=o>=</span> <span class=n>graphQL</span><span class=o>.</span><span class=na>execute</span><span class=o>(</span><span class=n>executionInput</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 在DataFetcher 获取上下文中的内容
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=n>DataFetcher</span> <span class=n>dataFetcher</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DataFetcher</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>get</span><span class=o>(</span><span class=n>DataFetchingEnvironment</span> <span class=n>environment</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>UserContext</span> <span class=n>userCtx</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getContext</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>Long</span> <span class=n>businessObjId</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;businessObjId&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>invokeBusinessLayerMethod</span><span class=o>(</span><span class=n>userCtx</span><span class=o>,</span> <span class=n>businessObjId</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>};</span>
+</span></span></code></pre></div><h2 id=数据获取 data-numberify>数据获取<a class="anchor ms-1" href=#数据获取></a></h2><h3 id=graphql-如何获取数据 data-numberify>graphql 如何获取数据<a class="anchor ms-1" href=#graphql-如何获取数据></a></h3><p>graphql 中的每个字段都有一个 <code>graphql.schema.DataFetcher</code> 与之关联 。一些字段将使用专门的数据获取器代码，该代码知道如何去数据库获取字段信息，而大多数字段只需使用字段名和普通旧Java对象（POJO）模式从返回的内存对象中获取数据即可。</p><p>设想一个如下的类型声明：</p><pre tabindex=0><code>type Query {
+  products(match : String) : [Product]   # a list of products
+}
+
+type Product {
+  id : ID
+  name : String
+  description : String
+  cost : Float
+  tax : Float
+  launchDate(dateFormat : String = &#34;dd, MMM, yyyy&#34;) : String
+}
+</code></pre><p>Query.products 有专门的 DataFetcher ， 例如下面的代码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>DataFetcher</span> <span class=n>productsDataFetcher</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DataFetcher</span><span class=o>&lt;</span><span class=n>List</span><span class=o>&lt;</span><span class=n>ProductDTO</span><span class=o>&gt;&gt;()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductDTO</span><span class=o>&gt;</span> <span class=nf>get</span><span class=o>(</span><span class=n>DataFetchingEnvironment</span> <span class=n>environment</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>DatabaseSecurityCtx</span> <span class=n>ctx</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getContext</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductDTO</span><span class=o>&gt;</span> <span class=n>products</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>match</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;match&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>match</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>products</span> <span class=o>=</span> <span class=n>fetchProductsFromDatabaseWithMatching</span><span class=o>(</span><span class=n>ctx</span><span class=o>,</span> <span class=n>match</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>products</span> <span class=o>=</span> <span class=n>fetchAllProductsFromDatabase</span><span class=o>(</span><span class=n>ctx</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>products</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>};</span>
+</span></span></code></pre></div><p>每个DataFetcher都传递了一个<code>graphql.schema.DataFetchingEnvironment</code>对象，其中包含要获取的字段、已向字段提供的参数以及其他信息，例如字段的类型、其父类型、查询根对象或查询上下文对象。</p><p>一旦我们有了ProductDTO对象的列表，我们通常不需要在每个字段上使用专门的数据获取器。graphql-java附带了一个智能<code>graphql.schema.PropertyDataFetcher</code>，它知道如何根据字段名遵循POJO模式。在上面的示例中，有一个name字段，因此它将尝试查找公共<code>String getName() </code>POJO方法来获取数据。</p><p>然而，您可以在DTO方法中访问<code>graphql.schema.DataFetchingEnvironment</code>对象。这允许您在发送值之前对其进行调整。例如，上面我们有一个launchDate字段，它接受可选的dateFormat参数。我们可以让ProductDTO具有将此日期格式应用于所需格式的逻辑：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>class</span> <span class=nc>ProductDTO</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>ID</span> <span class=n>id</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>String</span> <span class=n>name</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>String</span> <span class=n>description</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>Double</span> <span class=n>cost</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>Double</span> <span class=n>tax</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>LocalDateTime</span> <span class=n>launchDate</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>String</span> <span class=nf>getName</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>name</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>String</span> <span class=nf>getLaunchDate</span><span class=o>(</span><span class=n>DataFetchingEnvironment</span> <span class=n>environment</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>dateFormat</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;dateFormat&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>yodaTimeFormatter</span><span class=o>(</span><span class=n>launchDate</span><span class=o>,</span><span class=n>dateFormat</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><h3 id=自定义propertydatafetcher data-numberify>自定义PropertyDataFetcher<a class="anchor ms-1" href=#自定义propertydatafetcher></a></h3><p>如上所述，<code>graphql.schema.PropertyDataFetcher</code>是graphql-java中字段的默认数据获取器，它将使用标准模式获取对象字段值。</p><p>它支持POJO方法和Map方法。默认情况下，对于graphql字段fieldX，则可以找到名为fieldX的POJO属性或名为fieldX的map 键。</p><p>但是，graphql模式命名和运行时对象命名之间可能有一些小差异。例如，想象一下<code>Product.description</code>实际上在运行时对应 Java对象中的getDesc()。如果使用SDL指定schema，则可以使用@fetch指令来重新映射:</p><pre tabindex=0><code>directive @fetch(from : String!) on FIELD_DEFINITION
+
+type Product {
+    id : ID
+    name : String
+    description : String @fetch(from:&#34;desc&#34;)
+    cost : Float
+    tax : Float
+}
+</code></pre><p>这将告诉<code>graphql.schema.PropertyDataFetcher</code>在获取名为description的graphql字段的数据时使用属性名称desc。</p><p>如果您是手动编码模式，那么您可以直接通过在字段数据获取器中进行连接:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>GraphQLFieldDefinition</span> <span class=n>descriptionField</span> <span class=o>=</span> <span class=n>GraphQLFieldDefinition</span><span class=o>.</span><span class=na>newFieldDefinition</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>name</span><span class=o>(</span><span class=s>&#34;description&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>type</span><span class=o>(</span><span class=n>Scalars</span><span class=o>.</span><span class=na>GraphQLString</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>GraphQLCodeRegistry</span> <span class=n>codeRegistry</span> <span class=o>=</span> <span class=n>GraphQLCodeRegistry</span><span class=o>.</span><span class=na>newCodeRegistry</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>dataFetcher</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>coordinates</span><span class=o>(</span><span class=s>&#34;ObjectType&#34;</span><span class=o>,</span> <span class=s>&#34;description&#34;</span><span class=o>),</span>
+</span></span><span class=line><span class=cl>                <span class=n>PropertyDataFetcher</span><span class=o>.</span><span class=na>fetching</span><span class=o>(</span><span class=s>&#34;desc&#34;</span><span class=o>))</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span></code></pre></div><h3 id=datafetchingenvironment核心方法 data-numberify>DataFetchingEnvironment核心方法<a class="anchor ms-1" href=#datafetchingenvironment核心方法></a></h3><ul><li>T getSource()：source对象用于获取字段的信息。在常见情况下，它是一个内存中的DTO对象，因此简单的POJO getter将用于字段值。在更复杂的情况下，您可以检查它以了解如何获取当前字段的特定信息。在执行graphql字段树时，每个返回的字段值都会成为子字段的源对象。</li><li>T getRoot()： 对于顶级字段，root和source是相同的。根对象在查询过程中从不更改，它可能为空，因此不使用</li><li>Map&lt;String, Object> getArguments():这表示在字段上提供的参数以及从传入的变量、AST文本和默认参数值解析的参数值。您可以使用字段的参数来控制它返回的值。</li><li>T getContext(): 上下文对象在首次查询时设置，并在查询的整个生命周期内保持不变。上下文可以是任何值，通常用于在尝试获取字段数据时为每个数据获取器提供一些所需的调用上下文。例如，当前用户凭证或数据库连接参数可以包含在上下文对象中，以便数据获取器可以进行业务层调用。作为一名graphql系统设计师，您的一个关键设计决定是，如果需要，您将如何在提取器中使用上下文。有些人使用一个依赖框架，该框架将上下文自动注入数据获取器，因此不需要使用它。</li><li>ExecutionStepInfo getExecutionStepInfo(): 执行graphql查询会创建字段及其类型的调用树。graphql.execution.ExecutionStepInfo.getParentTypeInfo允许您向上导航，查看导致当前字段执行的类型和字段。由于这在执行期间形成了树路径，因此graphql.execution.ExecutionStepInfo.getPath方法返回该路径的表示。这对于记录和调试查询非常有用。</li><li>DataFetchingFieldSelectionSet getSelectionSet(): 选择集表示在当前执行的字段下“选择”的子字段。这有助于提前了解客户需要的子字段信息。</li><li>ExecutionId getExecutionId():每个查询执行都有一个唯一的id。您可以在日志中使用它来标记每个单独的查询。</li></ul><h2 id=数据映射 data-numberify>数据映射<a class="anchor ms-1" href=#数据映射></a></h2><p>graphql的核心是声明一个类型schema，并将其映射到运行时数据上。例如下面的schema:</p><pre tabindex=0><code>type Query {
+  products(match : String) : [Product]   # a list of products
+}
+
+type Product {
+  id : ID
+  name : String
+  description : String
+  cost : Float
+  tax : Float
+}
+</code></pre><p>然后，我们可以通过类似以下的方式在这个简单模式上运行查询：</p><pre tabindex=0><code>query ProductQuery {
+  products(match : &#34;Paper*&#34;)
+  {
+    id, name, cost, tax
+  }
+}
+</code></pre><p>我们将有一个DataFetcher匹配 Query的products字段，负责查找与传入参数匹配的产品列表。
+现在假设我们有3个下游服务。一个用于获取产品信息，一个用于获得产品cost 信息，另一个用于计算产品tax信息。</p><p>graphql-java通过在对象上运行数据获取器获取所有信息并将其映射回模式中指定的类型来工作。我们面临的挑战是将这三种信息来源作为一种统一的类型。</p><p>我们可以在cost 和 tax 字段上指定数据获取器，但这需要更多的维护，可能会导致N+1性能问题。我们最好在Query.products 的 data fetcher 中完成所有这些工作，并在此时创建数据的统一视图:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>DataFetcher</span> <span class=n>productsDataFetcher</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DataFetcher</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>get</span><span class=o>(</span><span class=n>DataFetchingEnvironment</span> <span class=n>env</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>matchArg</span> <span class=o>=</span> <span class=n>env</span><span class=o>.</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;match&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductInfo</span><span class=o>&gt;</span> <span class=n>productInfo</span> <span class=o>=</span> <span class=n>getMatchingProducts</span><span class=o>(</span><span class=n>matchArg</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductCostInfo</span><span class=o>&gt;</span> <span class=n>productCostInfo</span> <span class=o>=</span> <span class=n>getProductCosts</span><span class=o>(</span><span class=n>productInfo</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductTaxInfo</span><span class=o>&gt;</span> <span class=n>productTaxInfo</span> <span class=o>=</span> <span class=n>getProductTax</span><span class=o>(</span><span class=n>productInfo</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>mapDataTogether</span><span class=o>(</span><span class=n>productInfo</span><span class=o>,</span> <span class=n>productCostInfo</span><span class=o>,</span> <span class=n>productTaxInfo</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>};</span>
+</span></span></code></pre></div><p>因此，查看上面的代码，我们有3种类型的信息需要以某种方式组合，以便上面的graphql查询可以访问字段id、name、cost、tax。</p><p>我们有两种方法来创建此映射。一种是通过使用非类型安全的List＜Map＞结构，另一种是创建封装此数据的类型安全类List＜ProductDTO＞。</p><p>Map 的方式如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>Map</span><span class=o>&gt;</span> <span class=nf>mapDataTogetherViaMap</span><span class=o>(</span><span class=n>List</span><span class=o>&lt;</span><span class=n>ProductInfo</span><span class=o>&gt;</span> <span class=n>productInfo</span><span class=o>,</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductCostInfo</span><span class=o>&gt;</span> <span class=n>productCostInfo</span><span class=o>,</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductTaxInfo</span><span class=o>&gt;</span> <span class=n>productTaxInfo</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>List</span><span class=o>&lt;</span><span class=n>Map</span><span class=o>&gt;</span> <span class=n>unifiedView</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ArrayList</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=o>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>productInfo</span><span class=o>.</span><span class=na>size</span><span class=o>();</span> <span class=n>i</span><span class=o>++)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>ProductInfo</span> <span class=n>info</span> <span class=o>=</span> <span class=n>productInfo</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>ProductCostInfo</span> <span class=n>cost</span> <span class=o>=</span> <span class=n>productCostInfo</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>ProductTaxInfo</span> <span class=n>tax</span> <span class=o>=</span> <span class=n>productTaxInfo</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>objectMap</span> <span class=o>=</span> <span class=k>new</span> <span class=n>HashMap</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>        <span class=n>objectMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;id&#34;</span><span class=o>,</span> <span class=n>info</span><span class=o>.</span><span class=na>getId</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>        <span class=n>objectMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;name&#34;</span><span class=o>,</span> <span class=n>info</span><span class=o>.</span><span class=na>getName</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>        <span class=n>objectMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;description&#34;</span><span class=o>,</span> <span class=n>info</span><span class=o>.</span><span class=na>getDescription</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>        <span class=n>objectMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;cost&#34;</span><span class=o>,</span> <span class=n>cost</span><span class=o>.</span><span class=na>getCost</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>        <span class=n>objectMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;tax&#34;</span><span class=o>,</span> <span class=n>tax</span><span class=o>.</span><span class=na>getTax</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>unifiedView</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>objectMap</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>unifiedView</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>DTO 方式如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>class</span> <span class=nc>ProductDTO</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>id</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>name</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>description</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>Float</span> <span class=n>cost</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>Float</span> <span class=n>tax</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=nf>ProductDTO</span><span class=o>(</span><span class=n>String</span> <span class=n>id</span><span class=o>,</span> <span class=n>String</span> <span class=n>name</span><span class=o>,</span> <span class=n>String</span> <span class=n>description</span><span class=o>,</span> <span class=n>Float</span> <span class=n>cost</span><span class=o>,</span> <span class=n>Float</span> <span class=n>tax</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>id</span> <span class=o>=</span> <span class=n>id</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>name</span> <span class=o>=</span> <span class=n>name</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>description</span> <span class=o>=</span> <span class=n>description</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>cost</span> <span class=o>=</span> <span class=n>cost</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>tax</span> <span class=o>=</span> <span class=n>tax</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>String</span> <span class=nf>getId</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>id</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>String</span> <span class=nf>getName</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>name</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>String</span> <span class=nf>getDescription</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>description</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>Float</span> <span class=nf>getCost</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>cost</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>Float</span> <span class=nf>getTax</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>tax</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>private</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductDTO</span><span class=o>&gt;</span> <span class=nf>mapDataTogetherViaDTO</span><span class=o>(</span><span class=n>List</span><span class=o>&lt;</span><span class=n>ProductInfo</span><span class=o>&gt;</span> <span class=n>productInfo</span><span class=o>,</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductCostInfo</span><span class=o>&gt;</span> <span class=n>productCostInfo</span><span class=o>,</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductTaxInfo</span><span class=o>&gt;</span> <span class=n>productTaxInfo</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>List</span><span class=o>&lt;</span><span class=n>ProductDTO</span><span class=o>&gt;</span> <span class=n>unifiedView</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ArrayList</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=o>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>productInfo</span><span class=o>.</span><span class=na>size</span><span class=o>();</span> <span class=n>i</span><span class=o>++)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>ProductInfo</span> <span class=n>info</span> <span class=o>=</span> <span class=n>productInfo</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>ProductCostInfo</span> <span class=n>cost</span> <span class=o>=</span> <span class=n>productCostInfo</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>ProductTaxInfo</span> <span class=n>tax</span> <span class=o>=</span> <span class=n>productTaxInfo</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>ProductDTO</span> <span class=n>productDTO</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ProductDTO</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>info</span><span class=o>.</span><span class=na>getId</span><span class=o>(),</span>
+</span></span><span class=line><span class=cl>                <span class=n>info</span><span class=o>.</span><span class=na>getName</span><span class=o>(),</span>
+</span></span><span class=line><span class=cl>                <span class=n>info</span><span class=o>.</span><span class=na>getDescription</span><span class=o>(),</span>
+</span></span><span class=line><span class=cl>                <span class=n>cost</span><span class=o>.</span><span class=na>getCost</span><span class=o>(),</span>
+</span></span><span class=line><span class=cl>                <span class=n>tax</span><span class=o>.</span><span class=na>getTax</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>unifiedView</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>productDTO</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>unifiedView</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><h2 id=异常 data-numberify>异常<a class="anchor ms-1" href=#异常></a></h2><p>如果遇到某些异常情况，graphql引擎可以抛出运行时异常。以下是可以在graphql.execute()调用中抛出的异常列表。</p><p>这些不是执行中的graphql错误，而是执行graphql查询时完全不可接受的条件:</p><ul><li>graphql.schema.CoercingSerializeException:当一个值不能通过标量类型序列化时，例如String值被强制为Int。</li><li>graphql.schema.CoercingParseValueException：当标量类型无法解析值（例如，字符串输入值被解析为Int）时引发。</li><li>graphql.execution.UnresolvedTypeException：如果graphql.schema.TypeResolver无法提供给定接口或联合类型的具体对象类型。</li><li>graphql.execution.NonNullableValueCoercedAsNullException:如果在执行期间将非空变量参数强制为空值时引发。</li><li>graphql.execution.InputMapDefinesTooManyFieldsException:如果用于输入类型对象的映射包含的键多于该输入类型中定义的键，则引发。</li><li>graphql.schema.validation.InvalidSchemaException:如果通过graphql.schema.GraphQLSchema.Builder#build()生成schema无效时引发</li><li><code>graphql.execution.UnknownOperationException</code>：如果查询中定义了多个操作，并且缺少操作名称，或者GraphQL查询中没有包含匹配的操作名称。</li><li>graphql.GraphQLException：作为通用运行时异常抛出，例如，如果代码在检查POJO时无法访问命名字段，它类似于RuntimeException。</li><li>graphql.AssertException：</li></ul><h2 id=字段选择 data-numberify>字段选择<a class="anchor ms-1" href=#字段选择></a></h2><p>当您具有复合类型（对象或接口类型）并且从该类型中选择了一组子字段时，将发生字段选择。</p><p>例如下面的查询：</p><pre tabindex=0><code>query {
+  user(userId : &#34;xyz&#34;) {
+    name
+    age
+    weight
+    friends {
+      name
+    }
+  }
+}
+</code></pre><p>了解字段选择集有助于提高DataFetchers的效率。例如，在上面的查询中，假设用户字段由SQL数据库系统支持。数据获取器可以查看字段选择集并使用不同的查询，因为它知道调用者需要朋友信息和用户信息。</p><p>graphql.schema.DataFetchingFieldSelectionSet 用于表示选择的字段。他提供了schema中字段/参数和graphql.schema.GraphQLFieldDefinition的映射：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>DataFetcher</span> <span class=n>smartUserDF</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DataFetcher</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>get</span><span class=o>(</span><span class=n>DataFetchingEnvironment</span> <span class=n>env</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>userId</span> <span class=o>=</span> <span class=n>env</span><span class=o>.</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;userId&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>DataFetchingFieldSelectionSet</span> <span class=n>selectionSet</span> <span class=o>=</span> <span class=n>env</span><span class=o>.</span><span class=na>getSelectionSet</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>selectionSet</span><span class=o>.</span><span class=na>contains</span><span class=o>(</span><span class=s>&#34;friends/*&#34;</span><span class=o>))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>getUserAndTheirFriends</span><span class=o>(</span><span class=n>userId</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>getUser</span><span class=o>(</span><span class=n>userId</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>};</span>
+</span></span></code></pre></div><p>全局路径匹配系统用于对选择中的字段进行寻址。它基于java.nio.file.FileSystem#getPathMatcher作为实现。这将允许您使用 <code>*</code>, <code>**</code> and <code>?</code> 作为特殊匹配字符，例如<code>invoice/customer*</code>将invoice字段与以customer开头的子字段相匹配。每个级别的字段由<code>/</code>分隔，就像文件系统路径一样。</p><p>有一些方法允许您获取有关选择集中字段的更详细信息。例如，如果您经常使用Relay，您希望知道查询的Connection部分中请求了哪些字段:</p><pre tabindex=0><code>query {
+  users(first:10)  {
+    edges {
+      node {
+        name
+        age
+        weight
+        friends {
+          name
+        }
+      }
+    }
+  }
+}
+</code></pre><p>您可以编写代码来获取与glob匹配的每个特定字段的详细信息:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>DataFetchingFieldSelectionSet</span> <span class=n>selectionSet</span> <span class=o>=</span> <span class=n>env</span><span class=o>.</span><span class=na>getSelectionSet</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=n>List</span><span class=o>&lt;</span><span class=n>SelectedField</span><span class=o>&gt;</span> <span class=n>nodeFields</span> <span class=o>=</span> <span class=n>selectionSet</span><span class=o>.</span><span class=na>getFields</span><span class=o>(</span><span class=s>&#34;edges/nodes/*&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl><span class=n>nodeFields</span><span class=o>.</span><span class=na>forEach</span><span class=o>(</span><span class=n>selectedField</span> <span class=o>-&gt;</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>selectedField</span><span class=o>.</span><span class=na>getName</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>    <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>selectedField</span><span class=o>.</span><span class=na>getFieldDefinition</span><span class=o>().</span><span class=na>getType</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>DataFetchingFieldSelectionSet</span> <span class=n>innerSelectionSet</span> <span class=o>=</span> <span class=n>selectedField</span><span class=o>.</span><span class=na>getSelectionSet</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// this forms a tree of selection and you can get very fancy with it
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>}</span>
+</span></span></code></pre></div><h2 id=字段的可见性 data-numberify>字段的可见性<a class="anchor ms-1" href=#字段的可见性></a></h2><p>默认情况下，GraphqlSchema中定义的每个字段都可用。在某些情况下，您可能需要根据用户限制某些字段。</p><p>您可以使用graphql.schema.visibility.GraphqlFieldVisibility来实现这一点。</p><p>一个简单的graphql.schema.visibility.BlockedFields实现基于全限定字段名称：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>GraphqlFieldVisibility</span> <span class=n>blockedFields</span> <span class=o>=</span> <span class=n>BlockedFields</span><span class=o>.</span><span class=na>newBlock</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>addPattern</span><span class=o>(</span><span class=s>&#34;Character.id&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>addPattern</span><span class=o>(</span><span class=s>&#34;Droid.appearsIn&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>addPattern</span><span class=o>(</span><span class=s>&#34;.*\\.hero&#34;</span><span class=o>)</span> <span class=c1>// it uses regular expressions
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=n>GraphQLCodeRegistry</span> <span class=n>codeRegistry</span> <span class=o>=</span> <span class=n>GraphQLCodeRegistry</span><span class=o>.</span><span class=na>newCodeRegistry</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>fieldVisibility</span><span class=o>(</span><span class=n>blockedFields</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>GraphQLSchema</span> <span class=n>schema</span> <span class=o>=</span> <span class=n>GraphQLSchema</span><span class=o>.</span><span class=na>newSchema</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>query</span><span class=o>(</span><span class=n>StarWarsSchema</span><span class=o>.</span><span class=na>queryType</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>codeRegistry</span><span class=o>(</span><span class=n>codeRegistry</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span></code></pre></div><p>如果需要，还有另一种实现可以阻止在模式上执行检测。请注意，这会使您的服务器违反graphql规范和大多数客户端的期望，因此请谨慎使用。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>GraphQLCodeRegistry</span> <span class=n>codeRegistry</span> <span class=o>=</span> <span class=n>GraphQLCodeRegistry</span><span class=o>.</span><span class=na>newCodeRegistry</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>fieldVisibility</span><span class=o>(</span><span class=n>NoIntrospectionGraphqlFieldVisibility</span><span class=o>.</span><span class=na>NO_INTROSPECTION_FIELD_VISIBILITY</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=n>GraphQLSchema</span> <span class=n>schema</span> <span class=o>=</span> <span class=n>GraphQLSchema</span><span class=o>.</span><span class=na>newSchema</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>query</span><span class=o>(</span><span class=n>StarWarsSchema</span><span class=o>.</span><span class=na>queryType</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>codeRegistry</span><span class=o>(</span><span class=n>codeRegistry</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span></code></pre></div><p>您可以创建自己的GraphqlFieldVisibility派生，以检查需要做什么来确定哪些字段应该可见或不可见。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>class</span> <span class=nc>CustomFieldVisibility</span> <span class=kd>implements</span> <span class=n>GraphqlFieldVisibility</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>final</span> <span class=n>YourUserAccessService</span> <span class=n>userAccessService</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>CustomFieldVisibility</span><span class=o>(</span><span class=n>YourUserAccessService</span> <span class=n>userAccessService</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>userAccessService</span> <span class=o>=</span> <span class=n>userAccessService</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>GraphQLFieldDefinition</span><span class=o>&gt;</span> <span class=nf>getFieldDefinitions</span><span class=o>(</span><span class=n>GraphQLFieldsContainer</span> <span class=n>fieldsContainer</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=s>&#34;AdminType&#34;</span><span class=o>.</span><span class=na>equals</span><span class=o>(</span><span class=n>fieldsContainer</span><span class=o>.</span><span class=na>getName</span><span class=o>()))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(!</span><span class=n>userAccessService</span><span class=o>.</span><span class=na>isAdminUser</span><span class=o>())</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=n>Collections</span><span class=o>.</span><span class=na>emptyList</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>fieldsContainer</span><span class=o>.</span><span class=na>getFieldDefinitions</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>GraphQLFieldDefinition</span> <span class=nf>getFieldDefinition</span><span class=o>(</span><span class=n>GraphQLFieldsContainer</span> <span class=n>fieldsContainer</span><span class=o>,</span> <span class=n>String</span> <span class=n>fieldName</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=s>&#34;AdminType&#34;</span><span class=o>.</span><span class=na>equals</span><span class=o>(</span><span class=n>fieldsContainer</span><span class=o>.</span><span class=na>getName</span><span class=o>()))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(!</span><span class=n>userAccessService</span><span class=o>.</span><span class=na>isAdminUser</span><span class=o>())</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>fieldsContainer</span><span class=o>.</span><span class=na>getFieldDefinition</span><span class=o>(</span><span class=n>fieldName</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><h2 id=标量 data-numberify>标量<a class="anchor ms-1" href=#标量></a></h2><p>GraphQL类型系统的叶节点称为标量。一旦达到标量类型，就不能再下降到类型层次结构中。标量类型表示不可分割的值。</p><p>GraphQL规范规定，所有实现都必须具有以下标量类型：</p><ul><li>String aka <code>GraphQLString</code> - UTF‐8 字符串</li><li>Boolean aka <code>GraphQLBoolean</code> - true 或者 false.</li><li>Int aka <code>GraphQLInt</code></li><li>Float aka <code>GraphQLFloat</code></li><li>ID aka <code>GraphQLID</code>：以与字符串相同的方式序列化的唯一标识符。然而，将其定义为ID意味着它不是人类可读的。</li></ul><p><a href=https://github.com/graphql-java/graphql-java-extended-scalars target=_blank rel="noopener noreferrer">graphql-java-extended-scalars<i class="fas fa-external-link-square-alt ms-1"></i></a>扩展了以下标量：</p><ul><li>Long aka <code>GraphQLLong</code></li><li>Short aka <code>GraphQLShort</code></li><li>Byte aka <code>GraphQLByte</code></li><li>BigDecimal aka <code>GraphQLBigDecimal</code></li><li>BigInteger aka <code>GraphQLBigInteger</code></li></ul><h3 id=自定义标量 data-numberify>自定义标量<a class="anchor ms-1" href=#自定义标量></a></h3><p>您可以自定义标量。在这样做时，您将承担在运行时强制值的责任，稍后我们将对此进行解释。
+假设我们决定需要一个电子邮件标量类型。它将以电子邮件地址作为输入和输出。</p><p>我们会创建下面的graphql.schema.GraphQLScalarType实例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kd>static</span> <span class=kd>class</span> <span class=nc>EmailScalar</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>GraphQLScalarType</span> <span class=n>EMAIL</span> <span class=o>=</span> <span class=n>GraphQLScalarType</span><span class=o>.</span><span class=na>newScalar</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>name</span><span class=o>(</span><span class=s>&#34;email&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>description</span><span class=o>(</span><span class=s>&#34;A custom scalar that handles emails&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>coercing</span><span class=o>(</span><span class=k>new</span> <span class=n>Coercing</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>                <span class=kd>public</span> <span class=n>Object</span> <span class=nf>serialize</span><span class=o>(</span><span class=n>Object</span> <span class=n>dataFetcherResult</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=n>serializeEmail</span><span class=o>(</span><span class=n>dataFetcherResult</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>                <span class=kd>public</span> <span class=n>Object</span> <span class=nf>parseValue</span><span class=o>(</span><span class=n>Object</span> <span class=n>input</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=n>parseEmailFromVariable</span><span class=o>(</span><span class=n>input</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>                <span class=kd>public</span> <span class=n>Object</span> <span class=nf>parseLiteral</span><span class=o>(</span><span class=n>Object</span> <span class=n>input</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=n>parseEmailFromAstLiteral</span><span class=o>(</span><span class=n>input</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>})</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=kt>boolean</span> <span class=nf>looksLikeAnEmailAddress</span><span class=o>(</span><span class=n>String</span> <span class=n>possibleEmailValue</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// ps.  I am not trying to replicate RFC-3696 clearly
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=k>return</span> <span class=n>Pattern</span><span class=o>.</span><span class=na>matches</span><span class=o>(</span><span class=s>&#34;[A-Za-z0-9]@[.*]&#34;</span><span class=o>,</span> <span class=n>possibleEmailValue</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=n>Object</span> <span class=nf>serializeEmail</span><span class=o>(</span><span class=n>Object</span> <span class=n>dataFetcherResult</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>possibleEmailValue</span> <span class=o>=</span> <span class=n>String</span><span class=o>.</span><span class=na>valueOf</span><span class=o>(</span><span class=n>dataFetcherResult</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>looksLikeAnEmailAddress</span><span class=o>(</span><span class=n>possibleEmailValue</span><span class=o>))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>possibleEmailValue</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>throw</span> <span class=k>new</span> <span class=n>CoercingSerializeException</span><span class=o>(</span><span class=s>&#34;Unable to serialize &#34;</span> <span class=o>+</span> <span class=n>possibleEmailValue</span> <span class=o>+</span> <span class=s>&#34; as an email address&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=n>Object</span> <span class=nf>parseEmailFromVariable</span><span class=o>(</span><span class=n>Object</span> <span class=n>input</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>input</span> <span class=k>instanceof</span> <span class=n>String</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>String</span> <span class=n>possibleEmailValue</span> <span class=o>=</span> <span class=n>input</span><span class=o>.</span><span class=na>toString</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(</span><span class=n>looksLikeAnEmailAddress</span><span class=o>(</span><span class=n>possibleEmailValue</span><span class=o>))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=n>possibleEmailValue</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>throw</span> <span class=k>new</span> <span class=n>CoercingParseValueException</span><span class=o>(</span><span class=s>&#34;Unable to parse variable value &#34;</span> <span class=o>+</span> <span class=n>input</span> <span class=o>+</span> <span class=s>&#34; as an email address&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=n>Object</span> <span class=nf>parseEmailFromAstLiteral</span><span class=o>(</span><span class=n>Object</span> <span class=n>input</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>input</span> <span class=k>instanceof</span> <span class=n>StringValue</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>String</span> <span class=n>possibleEmailValue</span> <span class=o>=</span> <span class=o>((</span><span class=n>StringValue</span><span class=o>)</span> <span class=n>input</span><span class=o>).</span><span class=na>getValue</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(</span><span class=n>looksLikeAnEmailAddress</span><span class=o>(</span><span class=n>possibleEmailValue</span><span class=o>))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=n>possibleEmailValue</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>throw</span> <span class=k>new</span> <span class=n>CoercingParseLiteralException</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>                <span class=s>&#34;Value is not any email address : &#39;&#34;</span> <span class=o>+</span> <span class=n>String</span><span class=o>.</span><span class=na>valueOf</span><span class=o>(</span><span class=n>input</span><span class=o>)</span> <span class=o>+</span> <span class=s>&#34;&#39;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>任何自定义标量实现的真正工作都是graphql.schema.Coercing执行。它负责3个功能：</p><ul><li>parseValue : 获取变量输入对象并转换为Java运行时表示</li><li>parseLiteral : 采用AST文字graphql.language.Value作为输入并转换为Java运行时表示</li><li>serialize : 获取Java对象并将其转换为该标量的输出形状</li></ul><p>因此，自定义标量代码必须处理2种形式的输入（parseValue/parseLiteral）和1种形式的输出（serialize）。</p><p>假如有下面的输入：</p><pre tabindex=0><code>mutation Contact($mainContact: Email!) {
+  makeContact(mainContactEmail: $mainContact, backupContactEmail: &#34;backup@company.com&#34;) {
+    id
+    mainContactEmail
+  }
+}
+</code></pre><ul><li>通过parseValue调用，将$mainContact变量值转换为运行时对象</li><li>通过parseLiteral调用以转换AST graphql.language.StringValue “backup@company.com“转换为运行时对象</li><li>通过serialize调用，将mainContactEmail的运行时表示转换为可输出的表单</li></ul><h3 id=验证输入输出 data-numberify>验证输入输出<a class="anchor ms-1" href=#验证输入输出></a></h3><p>这些方法可以验证所接收的输入是否有意义。例如，我们的电子邮件标量将尝试验证输入和输出是否确实是电子邮件地址。
+graphql.schema.Coercing的规定如下：</p><ul><li>serialize 只能允许抛出 graphql.schema.SerializeException，这表示该值无法序列化为适当的形式。您不能允许其他运行时异常转义此方法以获得用于验证的正常graphql行为。</li><li>parseValue只能允许抛出graphql.schema.ParseValueException,这表示无法将值作为输入解析为适当的形式。您不能允许其他运行时异常逃脱此方法以获得用于验证的正常graphql行为。</li><li>parseLiteral只能允许抛出graphql.schema.ParseLiteralException，这表明AST值不能作为输入解析为适当的形式。您不能允许任何运行时异常逃脱此方法以获得正常的graphql行为进行验证。</li></ul><p>有些人试图依赖运行时异常进行验证，并希望它们以graphql错误的形式出现。事实并非如此。您必须遵循强制方法契约，以允许graphqljava引擎根据标量类型的graphql规范工作。</p><h2 id=创建schema data-numberify>创建schema<a class="anchor ms-1" href=#创建schema></a></h2><p>GraphQL API有一个schema，它定义了可以查询或修改的每个字段以及这些字段的类型。graphql-java提供了两种不同的schema定义方式：编程或通过特殊的graphql-dsl（称为SDL）。</p><p>SDL方式:</p><pre tabindex=0><code>type Foo {
+  bar: String
+}
+</code></pre><p>代码方式：</p><pre tabindex=0><code>GraphQLObjectType fooType = newObject()
+    .name(&#34;Foo&#34;)
+    .field(newFieldDefinition()
+            .name(&#34;bar&#34;)
+            .type(GraphQLString))
+    .build();
+</code></pre><h3 id=datafetcher-和-typeresolver data-numberify>DataFetcher 和 TypeResolver<a class="anchor ms-1" href=#datafetcher-和-typeresolver></a></h3><p>DataFetcher为字段提供数据（如果是mutation，则会进行更改）。每个字段定义都有一个DataFetcher。如果未配置，则使用PropertyDataFetch。</p><p>PropertyDataFetcher从Map和JavaBeans获取数据。因此，当字段名与源对象的Map键或属性名匹配时，不需要DataFetcher。</p><p>TypeResolver帮助graphql-java决定具体值属于哪种类型。这是Interface和Union所需要的。</p><p>例如，假设您有一个名为MagicUserType的接口，它可以解析回一系列名为Wizard、Witch和Necromancer的Java类。类型解析器负责检查运行时对象，并决定应该使用什么GraphqlObjectType来表示它，从而决定将调用哪些数据获取器和字段。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=k>new</span> <span class=n>TypeResolver</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>GraphQLObjectType</span> <span class=nf>getType</span><span class=o>(</span><span class=n>TypeResolutionEnvironment</span> <span class=n>env</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>Object</span> <span class=n>javaObject</span> <span class=o>=</span> <span class=n>env</span><span class=o>.</span><span class=na>getObject</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>javaObject</span> <span class=k>instanceof</span> <span class=n>Wizard</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>env</span><span class=o>.</span><span class=na>getSchema</span><span class=o>().</span><span class=na>getObjectType</span><span class=o>(</span><span class=s>&#34;WizardType&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>javaObject</span> <span class=k>instanceof</span> <span class=n>Witch</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>env</span><span class=o>.</span><span class=na>getSchema</span><span class=o>().</span><span class=na>getObjectType</span><span class=o>(</span><span class=s>&#34;WitchType&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>env</span><span class=o>.</span><span class=na>getSchema</span><span class=o>().</span><span class=na>getObjectType</span><span class=o>(</span><span class=s>&#34;NecromancerType&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>};</span>
+</span></span></code></pre></div><h3 id=使用sdl的方式创建schema data-numberify>使用SDL的方式创建Schema<a class="anchor ms-1" href=#使用sdl的方式创建schema></a></h3><p>通过SDL定义模式时，在创建可执行模式时，需要提供所需的DataFetcher和TypeResolver。
+以以下静态模式定义文件starWarsSchema.graphqls为例：</p><pre tabindex=0><code>schema {
+  query: QueryType
+}
+
+type QueryType {
+  hero(episode: Episode): Character
+  human(id : String) : Human
+  droid(id: ID!): Droid
+}
+
+
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+
+interface Character {
+  id: ID!
+  name: String!
+  friends: [Character]
+  appearsIn: [Episode]!
+}
+
+type Human implements Character {
+  id: ID!
+  name: String!
+  friends: [Character]
+  appearsIn: [Episode]!
+  homePlanet: String
+}
+
+type Droid implements Character {
+  id: ID!
+  name: String!
+  friends: [Character]
+  appearsIn: [Episode]!
+  primaryFunction: String
+}
+</code></pre><p>静态架构定义文件starWarsSchema.graphqls包含字段和类型定义，但需要运行时连接才能使其成为真正的可执行模式。</p><p>运行时连接包含DataFetcher、TypeResolver和自定义Scalar，它们是生成完全可执行架构所需的。</p><p>使用此生成器模式将其连接在一起：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>RuntimeWiring</span> <span class=nf>buildRuntimeWiring</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>RuntimeWiring</span><span class=o>.</span><span class=na>newRuntimeWiring</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>scalar</span><span class=o>(</span><span class=n>CustomScalar</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// this uses builder function lambda syntax
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=o>.</span><span class=na>type</span><span class=o>(</span><span class=s>&#34;QueryType&#34;</span><span class=o>,</span> <span class=n>typeWiring</span> <span class=o>-&gt;</span> <span class=n>typeWiring</span>
+</span></span><span class=line><span class=cl>                    <span class=o>.</span><span class=na>dataFetcher</span><span class=o>(</span><span class=s>&#34;hero&#34;</span><span class=o>,</span> <span class=k>new</span> <span class=n>StaticDataFetcher</span><span class=o>(</span><span class=n>StarWarsData</span><span class=o>.</span><span class=na>getArtoo</span><span class=o>()))</span>
+</span></span><span class=line><span class=cl>                    <span class=o>.</span><span class=na>dataFetcher</span><span class=o>(</span><span class=s>&#34;human&#34;</span><span class=o>,</span> <span class=n>StarWarsData</span><span class=o>.</span><span class=na>getHumanDataFetcher</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>                    <span class=o>.</span><span class=na>dataFetcher</span><span class=o>(</span><span class=s>&#34;droid&#34;</span><span class=o>,</span> <span class=n>StarWarsData</span><span class=o>.</span><span class=na>getDroidDataFetcher</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>            <span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>type</span><span class=o>(</span><span class=s>&#34;Human&#34;</span><span class=o>,</span> <span class=n>typeWiring</span> <span class=o>-&gt;</span> <span class=n>typeWiring</span>
+</span></span><span class=line><span class=cl>                    <span class=o>.</span><span class=na>dataFetcher</span><span class=o>(</span><span class=s>&#34;friends&#34;</span><span class=o>,</span> <span class=n>StarWarsData</span><span class=o>.</span><span class=na>getFriendsDataFetcher</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>            <span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// you can use builder syntax if you don&#39;t like the lambda syntax
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=o>.</span><span class=na>type</span><span class=o>(</span><span class=s>&#34;Droid&#34;</span><span class=o>,</span> <span class=n>typeWiring</span> <span class=o>-&gt;</span> <span class=n>typeWiring</span>
+</span></span><span class=line><span class=cl>                    <span class=o>.</span><span class=na>dataFetcher</span><span class=o>(</span><span class=s>&#34;friends&#34;</span><span class=o>,</span> <span class=n>StarWarsData</span><span class=o>.</span><span class=na>getFriendsDataFetcher</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>            <span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// or full builder syntax if that takes your fancy
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=o>.</span><span class=na>type</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>                    <span class=n>newTypeWiring</span><span class=o>(</span><span class=s>&#34;Character&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>                            <span class=o>.</span><span class=na>typeResolver</span><span class=o>(</span><span class=n>StarWarsData</span><span class=o>.</span><span class=na>getCharacterTypeResolver</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>                            <span class=o>.</span><span class=na>build</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>最后，您可以通过将静态模式和连接组合在一起来生成可执行模式，如以下示例所示：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>SchemaParser</span> <span class=n>schemaParser</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SchemaParser</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=n>SchemaGenerator</span> <span class=n>schemaGenerator</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SchemaGenerator</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>File</span> <span class=n>schemaFile</span> <span class=o>=</span> <span class=n>loadSchema</span><span class=o>(</span><span class=s>&#34;starWarsSchema.graphqls&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>TypeDefinitionRegistry</span> <span class=n>typeRegistry</span> <span class=o>=</span> <span class=n>schemaParser</span><span class=o>.</span><span class=na>parse</span><span class=o>(</span><span class=n>schemaFile</span><span class=o>);</span>
+</span></span><span class=line><span class=cl><span class=n>RuntimeWiring</span> <span class=n>wiring</span> <span class=o>=</span> <span class=n>buildRuntimeWiring</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=n>GraphQLSchema</span> <span class=n>graphQLSchema</span> <span class=o>=</span> <span class=n>schemaGenerator</span><span class=o>.</span><span class=na>makeExecutableSchema</span><span class=o>(</span><span class=n>typeRegistry</span><span class=o>,</span> <span class=n>wiring</span><span class=o>);</span>
+</span></span></code></pre></div><p>除了上面显示的生成器样式之外，TypeResolver和DataFetcher也可以使用WiringFactory接口进行连接。这允许更动态的运行时连接，因为可以检查SDL定义以决定连接什么。例如，您可以查看SDL指令或SDL定义的其他方面，以帮助您决定创建什么运行时。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>RuntimeWiring</span> <span class=nf>buildDynamicRuntimeWiring</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>WiringFactory</span> <span class=n>dynamicWiringFactory</span> <span class=o>=</span> <span class=k>new</span> <span class=n>WiringFactory</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>        <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>providesTypeResolver</span><span class=o>(</span><span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span><span class=o>,</span> <span class=n>InterfaceTypeDefinition</span> <span class=n>definition</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>getDirective</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=s>&#34;specialMarker&#34;</span><span class=o>)</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>        <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>providesTypeResolver</span><span class=o>(</span><span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span><span class=o>,</span> <span class=n>UnionTypeDefinition</span> <span class=n>definition</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>getDirective</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=s>&#34;specialMarker&#34;</span><span class=o>)</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>        <span class=kd>public</span> <span class=n>TypeResolver</span> <span class=nf>getTypeResolver</span><span class=o>(</span><span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span><span class=o>,</span> <span class=n>InterfaceTypeDefinition</span> <span class=n>definition</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>Directive</span> <span class=n>directive</span>  <span class=o>=</span> <span class=n>getDirective</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=s>&#34;specialMarker&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>createTypeResolver</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=n>directive</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>        <span class=kd>public</span> <span class=n>TypeResolver</span> <span class=nf>getTypeResolver</span><span class=o>(</span><span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span><span class=o>,</span> <span class=n>UnionTypeDefinition</span> <span class=n>definition</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>Directive</span> <span class=n>directive</span>  <span class=o>=</span> <span class=n>getDirective</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=s>&#34;specialMarker&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>createTypeResolver</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=n>directive</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>        <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>providesDataFetcher</span><span class=o>(</span><span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span><span class=o>,</span> <span class=n>FieldDefinition</span> <span class=n>definition</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>getDirective</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=s>&#34;dataFetcher&#34;</span><span class=o>)</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>        <span class=kd>public</span> <span class=n>DataFetcher</span> <span class=nf>getDataFetcher</span><span class=o>(</span><span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span><span class=o>,</span> <span class=n>FieldDefinition</span> <span class=n>definition</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>Directive</span> <span class=n>directive</span> <span class=o>=</span> <span class=n>getDirective</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span> <span class=s>&#34;dataFetcher&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>createDataFetcher</span><span class=o>(</span><span class=n>definition</span><span class=o>,</span><span class=n>directive</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>};</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>RuntimeWiring</span><span class=o>.</span><span class=na>newRuntimeWiring</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>wiringFactory</span><span class=o>(</span><span class=n>dynamicWiringFactory</span><span class=o>).</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><h2 id=指令 data-numberify>指令<a class="anchor ms-1" href=#指令></a></h2><p>假如有下面的类型：</p><pre tabindex=0><code>type Employee
+  id : ID
+  name : String!
+  startDate : String!
+  salary : Float
+}
+</code></pre><p>向每个能看到该员工姓名的人发布工资信息可能不是您想要的。相反，你需要某种访问控制，这样如果你的角色是经理，你就可以看到薪水，否则你就得不到数据。</p><p>指令可以帮助您更容易地声明这一点。我们的上述声明大致如下：</p><pre tabindex=0><code>directive @auth(role : String!) on FIELD_DEFINITION
+
+type Employee
+  id : ID
+  name : String!
+  startDate : String!
+  salary : Float @auth(role : &#34;manager&#34;)
+}
+</code></pre><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>class</span> <span class=nc>AuthorisationDirective</span> <span class=kd>implements</span> <span class=n>SchemaDirectiveWiring</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>GraphQLFieldDefinition</span> <span class=nf>onField</span><span class=o>(</span><span class=n>SchemaDirectiveWiringEnvironment</span><span class=o>&lt;</span><span class=n>GraphQLFieldDefinition</span><span class=o>&gt;</span> <span class=n>environment</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>targetAuthRole</span> <span class=o>=</span> <span class=o>(</span><span class=n>String</span><span class=o>)</span> <span class=n>environment</span><span class=o>.</span><span class=na>getDirective</span><span class=o>().</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;role&#34;</span><span class=o>).</span><span class=na>getValue</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>GraphQLFieldDefinition</span> <span class=n>field</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getElement</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>GraphQLFieldsContainer</span> <span class=n>parentType</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getFieldsContainer</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// build a data fetcher that first checks authorisation roles before then calling the original data fetcher
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>DataFetcher</span> <span class=n>originalDataFetcher</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getCodeRegistry</span><span class=o>().</span><span class=na>getDataFetcher</span><span class=o>(</span><span class=n>parentType</span><span class=o>,</span> <span class=n>field</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>DataFetcher</span> <span class=n>authDataFetcher</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DataFetcher</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>            <span class=kd>public</span> <span class=n>Object</span> <span class=nf>get</span><span class=o>(</span><span class=n>DataFetchingEnvironment</span> <span class=n>dataFetchingEnvironment</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>Exception</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>contextMap</span> <span class=o>=</span> <span class=n>dataFetchingEnvironment</span><span class=o>.</span><span class=na>getContext</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>                <span class=n>AuthorisationCtx</span> <span class=n>authContext</span> <span class=o>=</span> <span class=o>(</span><span class=n>AuthorisationCtx</span><span class=o>)</span> <span class=n>contextMap</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=s>&#34;authContext&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=k>if</span> <span class=o>(</span><span class=n>authContext</span><span class=o>.</span><span class=na>hasRole</span><span class=o>(</span><span class=n>targetAuthRole</span><span class=o>))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=n>originalDataFetcher</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>dataFetchingEnvironment</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>};</span>
+</span></span><span class=line><span class=cl>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// now change the field definition to have the new authorising data fetcher
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>environment</span><span class=o>.</span><span class=na>getCodeRegistry</span><span class=o>().</span><span class=na>dataFetcher</span><span class=o>(</span><span class=n>parentType</span><span class=o>,</span> <span class=n>field</span><span class=o>,</span> <span class=n>authDataFetcher</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>field</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1>// we wire this into the runtime by directive name
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=n>RuntimeWiring</span><span class=o>.</span><span class=na>newRuntimeWiring</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>directive</span><span class=o>(</span><span class=s>&#34;auth&#34;</span><span class=o>,</span> <span class=k>new</span> <span class=n>AuthorisationDirective</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span></code></pre></div><p>这修改了GraphQLFieldDefinition，使得只有在当前授权上下文具有管理器角色时才会调用其原始数据获取器。您使用什么机制进行授权取决于您。例如，您可以使用SpringSecurity，graphql-java并不真正关心。</p><p>您将在graphql输入的执行“上下文”对象中提供此授权检查器，以便稍后可以在DataFetchingEnvironment中访问它:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>AuthorisationCtx</span> <span class=n>authCtx</span> <span class=o>=</span> <span class=n>AuthorisationCtx</span><span class=o>.</span><span class=na>obtain</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>ExecutionInput</span> <span class=n>executionInput</span> <span class=o>=</span> <span class=n>ExecutionInput</span><span class=o>.</span><span class=na>newExecutionInput</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>query</span><span class=o>(</span><span class=n>query</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>context</span><span class=o>(</span><span class=n>authCtx</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span></code></pre></div><h3 id=声明指令 data-numberify>声明指令<a class="anchor ms-1" href=#声明指令></a></h3><p>为了在SDL中使用指令，graphql规范要求在使用它之前必须声明它的形状。我们上面的@auth指令示例在使用之前需要这样声明。</p><pre tabindex=0><code># This is a directive declaration
+directive @auth(role : String!) on FIELD_DEFINITION
+
+type Employee
+  id : ID
+
+  # and this is a usage of that declared directive
+  salary : Float @auth(role : &#34;manager&#34;)
+}
+</code></pre><p>一个例外是@deprecated指令，它为您隐式声明如下：</p><pre tabindex=0><code>directive @deprecated(reason: String = &#34;No longer supported&#34;) on FIELD_DEFINITION | ENUM_VALUE
+</code></pre><p>有效的SDL指令位置如下：</p><ul><li>SCHEMA,</li><li>SCALAR,</li><li>OBJECT,</li><li>FIELD_DEFINITION,</li><li>ARGUMENT_DEFINITION,</li><li>INTERFACE,</li><li>UNION,</li><li>ENUM,</li><li>ENUM_VALUE,</li><li>INPUT_OBJECT,</li><li>INPUT_FIELD_DEFINITION</li></ul><p>指令通常应用于字段定义，但正如您所看到的，有许多地方可以应用它们。</p><p>日期格式是一个贯穿各领域的问题，我们只需要编写一次并在许多领域应用它。
+下面演示了一个示例模式指令，它可以将日期格式应用于LocaleDate对象的字段。
+这个例子中最棒的是，它为应用它的每个字段添加了一个额外的格式参数。因此，客户端可以选择您为每个请求提供的日期格式。</p><pre tabindex=0><code>directive @dateFormat on FIELD_DEFINITION
+
+type Query {
+  dateField : String @dateFormat
+}
+</code></pre><p>那么我们的运行时代码可以是：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-JAVA data-lang=JAVA><span class=line><span class=cl><span class=kd>public</span> <span class=kd>static</span> <span class=kd>class</span> <span class=nc>DateFormatting</span> <span class=kd>implements</span> <span class=n>SchemaDirectiveWiring</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>GraphQLFieldDefinition</span> <span class=nf>onField</span><span class=o>(</span><span class=n>SchemaDirectiveWiringEnvironment</span><span class=o>&lt;</span><span class=n>GraphQLFieldDefinition</span><span class=o>&gt;</span> <span class=n>environment</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>GraphQLFieldDefinition</span> <span class=n>field</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getElement</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>GraphQLFieldsContainer</span> <span class=n>parentType</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getFieldsContainer</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// DataFetcherFactories.wrapDataFetcher is a helper to wrap data fetchers so that CompletionStage is handled correctly
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// along with POJOs
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>DataFetcher</span> <span class=n>originalFetcher</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=na>getCodeRegistry</span><span class=o>().</span><span class=na>getDataFetcher</span><span class=o>(</span><span class=n>parentType</span><span class=o>,</span> <span class=n>field</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>DataFetcher</span> <span class=n>dataFetcher</span> <span class=o>=</span> <span class=n>DataFetcherFactories</span><span class=o>.</span><span class=na>wrapDataFetcher</span><span class=o>(</span><span class=n>originalFetcher</span><span class=o>,</span> <span class=o>((</span><span class=n>dataFetchingEnvironment</span><span class=o>,</span> <span class=n>value</span><span class=o>)</span> <span class=o>-&gt;</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>DateTimeFormatter</span> <span class=n>dateTimeFormatter</span> <span class=o>=</span> <span class=n>buildFormatter</span><span class=o>(</span><span class=n>dataFetchingEnvironment</span><span class=o>.</span><span class=na>getArgument</span><span class=o>(</span><span class=s>&#34;format&#34;</span><span class=o>));</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(</span><span class=n>value</span> <span class=k>instanceof</span> <span class=n>LocalDateTime</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=n>dateTimeFormatter</span><span class=o>.</span><span class=na>format</span><span class=o>((</span><span class=n>LocalDateTime</span><span class=o>)</span> <span class=n>value</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>value</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// This will extend the field by adding a new &#34;format&#34; argument to it for the date formatting
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// which allows clients to opt into that as well as wrapping the base data fetcher so it
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// performs the formatting over top of the base values.
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>FieldCoordinates</span> <span class=n>coordinates</span> <span class=o>=</span> <span class=n>FieldCoordinates</span><span class=o>.</span><span class=na>coordinates</span><span class=o>(</span><span class=n>parentType</span><span class=o>,</span> <span class=n>field</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>environment</span><span class=o>.</span><span class=na>getCodeRegistry</span><span class=o>().</span><span class=na>dataFetcher</span><span class=o>(</span><span class=n>coordinates</span><span class=o>,</span> <span class=n>dataFetcher</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>field</span><span class=o>.</span><span class=na>transform</span><span class=o>(</span><span class=n>builder</span> <span class=o>-&gt;</span> <span class=n>builder</span>
+</span></span><span class=line><span class=cl>                <span class=o>.</span><span class=na>argument</span><span class=o>(</span><span class=n>GraphQLArgument</span>
+</span></span><span class=line><span class=cl>                        <span class=o>.</span><span class=na>newArgument</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>                        <span class=o>.</span><span class=na>name</span><span class=o>(</span><span class=s>&#34;format&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>                        <span class=o>.</span><span class=na>type</span><span class=o>(</span><span class=n>Scalars</span><span class=o>.</span><span class=na>GraphQLString</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>                        <span class=o>.</span><span class=na>defaultValueProgrammatic</span><span class=o>(</span><span class=s>&#34;dd-MM-YYYY&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>                <span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=n>DateTimeFormatter</span> <span class=nf>buildFormatter</span><span class=o>(</span><span class=n>String</span> <span class=n>format</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>String</span> <span class=n>dtFormat</span> <span class=o>=</span> <span class=n>format</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>?</span> <span class=n>format</span> <span class=o>:</span> <span class=s>&#34;dd-MM-YYYY&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>DateTimeFormatter</span><span class=o>.</span><span class=na>ofPattern</span><span class=o>(</span><span class=n>dtFormat</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>static</span> <span class=n>GraphQLSchema</span> <span class=nf>buildSchema</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>String</span> <span class=n>sdlSpec</span> <span class=o>=</span> <span class=s>&#34;directive @dateFormat on FIELD_DEFINITION\n&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>                  <span class=s>&#34;type Query {\n&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>                  <span class=s>&#34;    dateField : String @dateFormat \n&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>                  <span class=s>&#34;}&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>TypeDefinitionRegistry</span> <span class=n>registry</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SchemaParser</span><span class=o>().</span><span class=na>parse</span><span class=o>(</span><span class=n>sdlSpec</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>RuntimeWiring</span> <span class=n>runtimeWiring</span> <span class=o>=</span> <span class=n>RuntimeWiring</span><span class=o>.</span><span class=na>newRuntimeWiring</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>directive</span><span class=o>(</span><span class=s>&#34;dateFormat&#34;</span><span class=o>,</span> <span class=k>new</span> <span class=n>DateFormatting</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>new</span> <span class=n>SchemaGenerator</span><span class=o>().</span><span class=na>makeExecutableSchema</span><span class=o>(</span><span class=n>registry</span><span class=o>,</span> <span class=n>runtimeWiring</span><span class=o>);</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>GraphQLSchema</span> <span class=n>schema</span> <span class=o>=</span> <span class=n>buildSchema</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=n>GraphQL</span> <span class=n>graphql</span> <span class=o>=</span> <span class=n>GraphQL</span><span class=o>.</span><span class=na>newGraphQL</span><span class=o>(</span><span class=n>schema</span><span class=o>).</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>root</span> <span class=o>=</span> <span class=k>new</span> <span class=n>HashMap</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>    <span class=n>root</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=s>&#34;dateField&#34;</span><span class=o>,</span> <span class=n>LocalDateTime</span><span class=o>.</span><span class=na>of</span><span class=o>(</span><span class=mi>1969</span><span class=o>,</span> <span class=mi>10</span><span class=o>,</span> <span class=mi>8</span><span class=o>,</span> <span class=mi>0</span><span class=o>,</span> <span class=mi>0</span><span class=o>));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>String</span> <span class=n>query</span> <span class=o>=</span> <span class=s>&#34;&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>            <span class=s>&#34;query {\n&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>            <span class=s>&#34;    default : dateField \n&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>            <span class=s>&#34;    usa : dateField(format : \&#34;MM-dd-YYYY\&#34;) \n&#34;</span> <span class=o>+</span>
+</span></span><span class=line><span class=cl>            <span class=s>&#34;}&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ExecutionInput</span> <span class=n>executionInput</span> <span class=o>=</span> <span class=n>ExecutionInput</span><span class=o>.</span><span class=na>newExecutionInput</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>root</span><span class=o>(</span><span class=n>root</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>query</span><span class=o>(</span><span class=n>query</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ExecutionResult</span> <span class=n>executionResult</span> <span class=o>=</span> <span class=n>graphql</span><span class=o>.</span><span class=na>execute</span><span class=o>(</span><span class=n>executionInput</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>data</span> <span class=o>=</span> <span class=n>executionResult</span><span class=o>.</span><span class=na>getData</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// data[&#39;default&#39;] == &#39;08-10-1969&#39;
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// data[&#39;usa&#39;] == &#39;10-08-1969&#39;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>}</span>
+</span></span></code></pre></div><p>请注意，SDL定义没有格式参数，一旦应用了指令连接，它就被添加到字段定义中，因此客户端可以开始使用它。
+请注意，graphql-java没有随此实现一起提供。这里只提供了一个示例，说明您可以自己添加什么。</p><h3 id=指令链 data-numberify>指令链<a class="anchor ms-1" href=#指令链></a></h3><p>指令按照遇到的顺序应用。例如，想象一下改变字段值大小写的指令。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>directive</span> <span class=nd>@uppercase</span> <span class=n>on</span> <span class=n>FIELD_DEFINITION</span>
+</span></span><span class=line><span class=cl><span class=n>directive</span> <span class=nd>@lowercase</span> <span class=n>on</span> <span class=n>FIELD_DEFINITION</span>
+</span></span><span class=line><span class=cl><span class=n>directive</span> <span class=nd>@mixedcase</span> <span class=n>on</span> <span class=n>FIELD_DEFINITION</span>
+</span></span><span class=line><span class=cl><span class=n>directive</span> <span class=nd>@reversed</span> <span class=n>on</span> <span class=n>FIELD_DEFINITION</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>type</span> <span class=n>Query</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>lowerCaseValue</span> <span class=o>:</span> <span class=n>String</span> <span class=nd>@uppercase</span>
+</span></span><span class=line><span class=cl>  <span class=n>upperCaseValue</span> <span class=o>:</span> <span class=n>String</span> <span class=nd>@lowercase</span>
+</span></span><span class=line><span class=cl>  <span class=n>mixedCaseValue</span> <span class=o>:</span> <span class=n>String</span> <span class=nd>@mixedcase</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=err>#</span>
+</span></span><span class=line><span class=cl>  <span class=err>#</span> <span class=n>directives</span> <span class=n>are</span> <span class=n>applied</span> <span class=n>in</span> <span class=n>order</span> <span class=n>hence</span> <span class=k>this</span> <span class=n>will</span> <span class=n>be</span> <span class=n>lower</span><span class=o>,</span> <span class=n>then</span> <span class=n>upper</span><span class=o>,</span> <span class=n>then</span> <span class=n>mixed</span> <span class=n>then</span> <span class=n>reversed</span>
+</span></span><span class=line><span class=cl>  <span class=err>#</span>
+</span></span><span class=line><span class=cl>  <span class=n>allTogetherNow</span> <span class=o>:</span> <span class=n>String</span> <span class=nd>@lowercase</span> <span class=nd>@uppercase</span> <span class=nd>@mixedcase</span> <span class=nd>@reversed</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>当执行上述指令时，每个指令将一个应用于另一个之上。每个指令实现都应该小心地保留以前的数据获取器以保持行为（当然，除非您打算放弃它）</p></div></div></div><div class=card-footer><div class="post-navs d-flex justify-content-evenly"><div class="post-nav post-prev"><i class="fas fa-fw fa-chevron-down post-prev-icon me-1" data-fa-transform=rotate-90></i>
+<a href=/blog/2022/11/graphql%E8%A7%84%E8%8C%83/>Graphql规范</a></div><div class="post-nav post-next"><a href=/blog/2022/11/jdk%E6%96%B0%E7%89%B9%E6%80%A7/>Jdk新特性</a>
+<i class="fas fa-fw fa-chevron-down post-next-icon ms-1" data-fa-transform=rotate-270></i></div></div></div></article><section class="related-posts row card component"><div class=card-header><h2 class="card-title fs-4 my-2 text-surface">相关文章</h2></div><div class="card-body slide px-1"><div class="slide-inner row gx-0"><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/graphql%E8%A7%84%E8%8C%83/>Graphql规范</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/graphql-spring/>Graphql-Spring</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/opentelemetry/>Opentelemetry</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/1/01/></a><div class="post-meta mb-0">1年1月1日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/1/01/></a><div class="post-meta mb-0">1年1月1日</div></div></div></div><button class=slide-control-left>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-90></i>
+<span class=visually-hidden>Left</span></button>
+<button class=slide-control-right>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-270></i>
+<span class=visually-hidden>Right</span></button></div></section><div class="card component row post-comments" id=post-comments><div class=card-header><h2 class="card-title my-2 fs-4 text-surface">评论</h2></div><div class=card-body></div></div></div></div><aside class="col-xxl-4 sidebar d-flex"><div class="container d-flex flex-column"><div class="accordion profile"><div class="accordion-item card row text-center component"><div class="accordion-header card-header border-0" id=profile-header><a class="accordion-button d-lg-none mb-2 shadow-none p-0 bg-transparent text-surface collapsed" role=button data-bs-toggle=collapse href=#profile aria-expanded=false aria-controls=profile>Profile</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=profile aria-labelledby=profile-header><div class="col-12 d-flex align-items-center justify-content-center"><picture><img class="profile-avatar rounded-circle" alt=小胖子 src=https://banrenshan.github.io/images/profile.webp loading=lazy data-viewer-invisible width=400 height=400></picture></div><div class="col-12 profile-meta"><div class="profile-name fw-fold fs-lg">小胖子</div><div class=profile-bio>每天一点点</div></div></div></div></div><div class="accordion taxonomies-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#taxonomies-toggle aria-expanded=false aria-controls=taxonomies-toggle>Taxonomies</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=taxonomies-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=taxonomyCategoriesTab data-bs-toggle=tab data-bs-target=#taxonomyCategories type=button role=tab aria-controls=taxonomyCategories aria-selected=true>
+分类</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyTagsTab data-bs-toggle=tab data-bs-target=#taxonomyTags type=button role=tab aria-controls=taxonomyTags aria-selected=true>
+标签</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyArchivesTab data-bs-toggle=tab data-bs-target=#taxonomyArchives type=button role=tab aria-controls=taxonomyArchives aria-selected=true>
+归档</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=taxonomyCategories role=tabpanel aria-labelledby=taxonomyCategoriesTab tabindex=0><a href=/categories/%E6%8A%80%E6%9C%AF/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=技术>技术
+<span class="badge badge-sm text-secondary bg-white ms-1">24</span></a>
+<a href=/categories/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">9</span></a>
+<a href=/categories/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=操作系统>操作系统
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=中间件>中间件
+<span class="badge badge-sm text-secondary bg-white ms-1">7</span></a>
+<a href=/categories/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/categories/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-boot/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-boot>spring-boot
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-cloud/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-cloud>spring-cloud
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/unbutu/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=Unbutu>Unbutu
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/categories class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">13</span></a></div><div class=tab-pane id=taxonomyTags role=tabpanel aria-labelledby=taxonomyTagsTab tabindex=0><a href=/tags/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">31</span></a>
+<a href=/tags/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=监控>监控
+<span class="badge badge-sm text-secondary bg-white ms-1">4</span></a>
+<a href=/tags/gradle/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=gradle>gradle
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/graphql/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=graphql>graphql
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/shell/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=shell>shell
+<span class="badge badge-sm text-secondary bg-white ms-1">2</span></a>
+<a href=/tags/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/filebeat/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=filebeat>filebeat
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/grafana/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=grafana>grafana
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/tags class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">22</span></a></div><div class=tab-pane id=taxonomyArchives role=tabpanel aria-labelledby=taxonomyArchivesTab tabindex=0><a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=2022>2022 <span class="badge badge-sm text-secondary bg-white ms-1">48</span></a>
+<a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=0001>0001 <span class="badge badge-sm text-secondary bg-white ms-1">5</span></a></div></div></div></div></div><div class="accordion posts-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#posts-toggle aria-expanded=false aria-controls=posts-toggle>文章</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=posts-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=recent-posts-tab data-bs-toggle=tab data-bs-target=#recent-posts type=button role=tab aria-controls=recent-posts aria-selected=true>
+最近文章</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=recent-posts role=tabpanel aria-labelledby=recent-posts-tab tabindex=0><ul class="post-list list-unstyled ms-1"><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/grafana/>Grafana</a><div class="post-meta mt-2"><span class=post-date>2022年12月10日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/gradle-basic/>Gradle-Basic</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/zero-copy/>Zero-Copy</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-lock/>Java-Lock</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-log/>Java-Log</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li></ul></div></div></div></div></div><div class="accordion post-toc d-none d-lg-block"><div class="accordion-item row mb-4 card component" id=postTOC><div class="card-header accordion-header"><h2 class="card-title fs-4 my-2 text-surface d-none d-lg-block">目录</h2><a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" role=button data-bs-toggle=collapse href=#post-toc aria-expanded=false aria-controls=post-toc>目录</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=post-toc><nav id=TableOfContents><ul><li><a href=#执行>执行</a><ul><li><a href=#查询>查询</a></li><li><a href=#data-fetchers>Data Fetchers</a></li><li><a href=#获取数据的时候发生异常>获取数据的时候发生异常</a></li><li><a href=#返回数据和错误>返回数据和错误</a></li><li><a href=#序列化结果成json>序列化结果成JSON</a></li><li><a href=#上下文对象>上下文对象</a></li></ul></li><li><a href=#数据获取>数据获取</a><ul><li><a href=#graphql-如何获取数据>graphql 如何获取数据</a></li><li><a href=#自定义propertydatafetcher>自定义PropertyDataFetcher</a></li><li><a href=#datafetchingenvironment核心方法>DataFetchingEnvironment核心方法</a></li></ul></li><li><a href=#数据映射>数据映射</a></li><li><a href=#异常>异常</a></li><li><a href=#字段选择>字段选择</a></li><li><a href=#字段的可见性>字段的可见性</a></li><li><a href=#标量>标量</a><ul><li><a href=#自定义标量>自定义标量</a></li><li><a href=#验证输入输出>验证输入输出</a></li></ul></li><li><a href=#创建schema>创建schema</a><ul><li><a href=#datafetcher-和-typeresolver>DataFetcher 和 TypeResolver</a></li><li><a href=#使用sdl的方式创建schema>使用SDL的方式创建Schema</a></li></ul></li><li><a href=#指令>指令</a><ul><li><a href=#声明指令>声明指令</a></li><li><a href=#指令链>指令链</a></li></ul></li></ul></nav></div></div></div></div></aside></div></main><footer class="footer mt-auto py-3 text-center container"></footer><script data-precache src=/assets/main/bundle.min.f06ce52438e0e6eee8225a013aaf3de719542ffc5ef58241be98c0f5d1df9732.js integrity="sha256-8GzlJDjg5u7oIloBOq895xlUL/xe9YJBvpjA9dHflzI=" crossorigin=anonymous async></script><script data-precache src=/assets/icons/bundle.min.4f30d5267a9f2f9d45ed93969d45ec626100a969a8b91f71f753315a261e9034.js integrity="sha256-TzDVJnqfL51F7ZOWnUXsYmEAqWmouR9x91MxWiYekDQ=" crossorigin=anonymous defer></script>
+<script data-precache src=/assets/viewer/bundle.min.0a0d0099935beee41b7a7bf4543cd55e793e5f830a571b0794ef8c3602c5823c.js integrity="sha256-Cg0AmZNb7uQbenv0VDzVXnk+X4MKVxsHlO+MNgLFgjw=" crossorigin=anonymous defer></script>
+<script src=/js/sw-register.js defer></script></body></html>

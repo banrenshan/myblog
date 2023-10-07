@@ -1,0 +1,407 @@
+<!doctype html><html class=position-relative itemscope itemtype=https://schema.org/WebPage lang=zh-hans data-bs-theme=auto data-palette=purple><head><script src=/assets/init/bundle.min.d893010142cc6ee98760d32b7e1e90d3786505dcd396e888f1ee101971e02785.js integrity="sha256-2JMBAULMbumHYNMrfh6Q03hlBdzTluiI8e4QGXHgJ4U=" crossorigin=anonymous></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>graphql规范 -</title><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_16x16_resize_q75_h2_box_2.webp sizes=16x16 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_32x32_resize_q75_h2_box_2.webp sizes=32x32 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_150x150_resize_q75_h2_box_2.webp sizes=150x150 type=image/webp><link rel=apple-touch-icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_180x180_resize_q75_h2_box_2.webp sizes=180x180 type=image/webp><link rel=icon href=/favicon_hucccd9e706a19cc8586335b155a80c266_43860_192x192_resize_q75_h2_box_2.webp sizes=192x192 type=image/webp><link rel=mask-icon href=/safari-pinned-tab.svg color=#6f42c1><meta name=keywords content="Hugo,Bootstrap,Blog Theme"><meta name=description content="GraphQL 是一个用于 API 的查询语言，是一个使用基于类型系统来执行查询的服务端运行时。GraphQL 并没有和任何特定数据库或者存储引擎绑定，而是依靠你现有的代码和数据支撑。
+schema定义 schema定义由普通对象类型和内置类型组成。其中内置类型是query(用于查询)和mutation（用于修改） ，两者之一必须存在schema文件中（ 因为其是GraphQL 查询的入口）。有必要记住的是，除了作为 schema 的入口，Query 和 Mutation 类型与其它 GraphQL 对象类型别无二致，它们的字段也是一样的工作方式。
+下面是一个示例文件：
+scalar LocalDate type Query { #必须类型 queryUsers: [User] queryByBirth(birth:LocalDate):User queryByDetail(birth:LocalDate,name:String):User } type User { # 可选类型 id: String name: String age: Int birth: LocalDate } 类型 标量类型 GraphQL 自带一组默认标量类型：
+Int：有符号 32 位整数。 Float：有符号双精度浮点值。 String：UTF‐8 字符序列。 Boolean：true 或者 false。 ID：ID 标量类型表示一个唯一标识符，通常用以重新获取对象或者作为缓存中的键。ID 类型使用和 String 一样的方式序列化； 当然我们也可以自定义标量类型，例如上面的 LocalDate 。 除此之外，还需要在我们的实现中定义序列化、反序列化和验证等方法。
+枚举类型 enum Episode { NEWHOPE EMPIRE JEDI } 列表类型 在 GraphQL schema 语言中，我们通过将类型包在方括号（[ 和 ]）中的方式来标记列表："><meta name=twitter:card content="summary"><meta name=twitter:title content="graphql规范"><meta name=twitter:description content="GraphQL 是一个用于 API 的查询语言，是一个使用基于类型系统来执行查询的服务端运行时。GraphQL 并没有和任何特定数据库或者存储引擎绑定，而是依靠你现有的代码和数据支撑。
+schema定义 schema定义由普通对象类型和内置类型组成。其中内置类型是query(用于查询)和mutation（用于修改） ，两者之一必须存在schema文件中（ 因为其是GraphQL 查询的入口）。有必要记住的是，除了作为 schema 的入口，Query 和 Mutation 类型与其它 GraphQL 对象类型别无二致，它们的字段也是一样的工作方式。
+下面是一个示例文件：
+scalar LocalDate type Query { #必须类型 queryUsers: [User] queryByBirth(birth:LocalDate):User queryByDetail(birth:LocalDate,name:String):User } type User { # 可选类型 id: String name: String age: Int birth: LocalDate } 类型 标量类型 GraphQL 自带一组默认标量类型：
+Int：有符号 32 位整数。 Float：有符号双精度浮点值。 String：UTF‐8 字符序列。 Boolean：true 或者 false。 ID：ID 标量类型表示一个唯一标识符，通常用以重新获取对象或者作为缓存中的键。ID 类型使用和 String 一样的方式序列化； 当然我们也可以自定义标量类型，例如上面的 LocalDate 。 除此之外，还需要在我们的实现中定义序列化、反序列化和验证等方法。
+枚举类型 enum Episode { NEWHOPE EMPIRE JEDI } 列表类型 在 GraphQL schema 语言中，我们通过将类型包在方括号（[ 和 ]）中的方式来标记列表："><meta property="og:title" content="graphql规范"><meta property="og:description" content="GraphQL 是一个用于 API 的查询语言，是一个使用基于类型系统来执行查询的服务端运行时。GraphQL 并没有和任何特定数据库或者存储引擎绑定，而是依靠你现有的代码和数据支撑。
+schema定义 schema定义由普通对象类型和内置类型组成。其中内置类型是query(用于查询)和mutation（用于修改） ，两者之一必须存在schema文件中（ 因为其是GraphQL 查询的入口）。有必要记住的是，除了作为 schema 的入口，Query 和 Mutation 类型与其它 GraphQL 对象类型别无二致，它们的字段也是一样的工作方式。
+下面是一个示例文件：
+scalar LocalDate type Query { #必须类型 queryUsers: [User] queryByBirth(birth:LocalDate):User queryByDetail(birth:LocalDate,name:String):User } type User { # 可选类型 id: String name: String age: Int birth: LocalDate } 类型 标量类型 GraphQL 自带一组默认标量类型：
+Int：有符号 32 位整数。 Float：有符号双精度浮点值。 String：UTF‐8 字符序列。 Boolean：true 或者 false。 ID：ID 标量类型表示一个唯一标识符，通常用以重新获取对象或者作为缓存中的键。ID 类型使用和 String 一样的方式序列化； 当然我们也可以自定义标量类型，例如上面的 LocalDate 。 除此之外，还需要在我们的实现中定义序列化、反序列化和验证等方法。
+枚举类型 enum Episode { NEWHOPE EMPIRE JEDI } 列表类型 在 GraphQL schema 语言中，我们通过将类型包在方括号（[ 和 ]）中的方式来标记列表："><meta property="og:type" content="article"><meta property="og:url" content="https://banrenshan.github.io/blog/2022/11/graphql%E8%A7%84%E8%8C%83/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-11-27T19:02:18+00:00"><meta property="article:modified_time" content="2023-10-07T19:19:27+08:00"><meta itemprop=name content="graphql规范"><meta itemprop=description content="GraphQL 是一个用于 API 的查询语言，是一个使用基于类型系统来执行查询的服务端运行时。GraphQL 并没有和任何特定数据库或者存储引擎绑定，而是依靠你现有的代码和数据支撑。
+schema定义 schema定义由普通对象类型和内置类型组成。其中内置类型是query(用于查询)和mutation（用于修改） ，两者之一必须存在schema文件中（ 因为其是GraphQL 查询的入口）。有必要记住的是，除了作为 schema 的入口，Query 和 Mutation 类型与其它 GraphQL 对象类型别无二致，它们的字段也是一样的工作方式。
+下面是一个示例文件：
+scalar LocalDate type Query { #必须类型 queryUsers: [User] queryByBirth(birth:LocalDate):User queryByDetail(birth:LocalDate,name:String):User } type User { # 可选类型 id: String name: String age: Int birth: LocalDate } 类型 标量类型 GraphQL 自带一组默认标量类型：
+Int：有符号 32 位整数。 Float：有符号双精度浮点值。 String：UTF‐8 字符序列。 Boolean：true 或者 false。 ID：ID 标量类型表示一个唯一标识符，通常用以重新获取对象或者作为缓存中的键。ID 类型使用和 String 一样的方式序列化； 当然我们也可以自定义标量类型，例如上面的 LocalDate 。 除此之外，还需要在我们的实现中定义序列化、反序列化和验证等方法。
+枚举类型 enum Episode { NEWHOPE EMPIRE JEDI } 列表类型 在 GraphQL schema 语言中，我们通过将类型包在方括号（[ 和 ]）中的方式来标记列表："><meta itemprop=datePublished content="2022-11-27T19:02:18+00:00"><meta itemprop=dateModified content="2023-10-07T19:19:27+08:00"><meta itemprop=wordCount content="853"><meta itemprop=keywords content="graphql,"><meta property="og:image" content="https://banrenshan.github.io/images/logo.png"><meta name=twitter:image content="https://banrenshan.github.io/images/logo.png"><meta property="og:image:alt" content="graphql规范"><meta name=twitter:image:alt content="graphql规范"><link rel=manifest href=/manifest.json><link data-precache rel=stylesheet href="/assets/main/bundle.min.906e48a4015f207e7ad2852421d4b8e6fda8fb5c6d1fff31855591474e60da12.css" integrity="sha256-kG5IpAFfIH560oUkIdS45v2o+1xtH/8xhVWRR05g2hI=" crossorigin=anonymous><link data-precache rel=stylesheet href=/assets/viewer/bundle.min.eb914844636cd41f221f109e99c887bbc3b6b5ffb2af7c664b284cea2d1b54b7.css integrity="sha256-65FIRGNs1B8iHxCemciHu8O2tf+yr3xmSyhM6i0bVLc=" crossorigin=anonymous></head><body><header class="mb-4 sticky-top"><nav class="top-app-bar shadow navbar navbar-expand-xxl"><div class=container><a class="navbar-brand d-flex align-items-center flex-grow-1 flex-xxl-grow-0 justify-content-xxl-start ms-2 ms-xxl-0 mx-auto me-xxl-2" href=https://banrenshan.github.io/><picture><img class=logo alt=Logo src=https://banrenshan.github.io/images/logo.webp loading=lazy width=400 height=400></picture></a><div class="offcanvas-xxl offcanvas-end flex-grow-1" data-bs-scroll=true tabindex=-1 id=navbarMenus aria-labelledby=navbarMenusLabel><div class="offcanvas-header px-4 pb-0"><div class="offcanvas-title h5" id=navbarMenusLabel></div><button type=button class="btn-close btn-close-white" data-bs-dismiss=offcanvas data-bs-target=#navbarMenus aria-label=Close></button></div><div class="offcanvas-body p-4 pt-0 p-xxl-0"><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center me-auto"><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/docs/><span class="menu-icon me-1"><i class="fas fa-fw fa-book"></i></span>文档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/series/><span class="menu-icon me-1"><i class="fas fa-fw fa-columns"></i></span>专栏</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/categories/><span class="menu-icon me-1"><i class="fas fa-fw fa-folder"></i></span>分类</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/archives/><span class="menu-icon me-1"><i class="fas fa-fw fa-file-archive"></i></span>归档</a></li><li class="nav-item col-6 col-xxl-auto"><a class="nav-link py-2 px-0 px-xxl-2" href=https://banrenshan.github.io/tags/><span class="menu-icon me-1"><i class="fas fa-fw fa-tags"></i></span>标签</a></li></ul><hr class=d-xxl-none><form class="search-bar ms-auto my-auto" action=/search/ novalidate><div class="input-group input-group-sm align-items-center"><span class="btn btn-search disabled position-absolute left-0 border-0 px-1"><i class="fas fa-fw fa-search fa-lg"></i></span>
+<input class="my-1 form-control border-white rounded-5 search-input bg-body" name=q type=search placeholder=搜索 aria-label=Search required>
+<span class="search-shortcut position-absolute end-0 top-0 me-2"><kbd class="bg-primary rounded shadow">/</kbd></span></div></form><hr class=d-xxl-none><ul class="navbar-nav flex-row flex-wrap align-items-center ms-md-auto"><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=fontSizeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-font"></i>
+<span class=d-xxl-none>字体大小</span></a><ul class="font-size-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=fontSizeDropdown><li><button class="font-size-item dropdown-item" data-size=xs>
+特小号</button></li><li><button class="font-size-item dropdown-item" data-size=sm>
+小号</button></li><li><button class="font-size-item dropdown-item active" data-size=md>
+中等</button></li><li><button class="font-size-item dropdown-item" data-size=lg>
+大号</button></li><li><button class="font-size-item dropdown-item" data-size=xl>
+特大号</button></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=paletteDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="fas fa-fw fa-palette"></i>
+<span class=d-xxl-none>配色</span></a><ul class="palette-dropdown-menu dropdown-menu dropdown-menu-end px-2 row g-2" aria-labelledby=paletteDropdown><li class="col-4 my-1"><a role=button id=palette-blue aria-label=蓝色 class="btn btn-sm w-100 palette text-bg-blue" data-palette=blue></a></li><li class="col-4 my-1"><a role=button id=palette-blue-gray aria-label=蓝灰色 class="btn btn-sm w-100 palette text-bg-blue-gray" data-palette=blue-gray></a></li><li class="col-4 my-1"><a role=button id=palette-brown aria-label=棕色 class="btn btn-sm w-100 palette text-bg-brown" data-palette=brown></a></li><li class="col-4 my-1"><a role=button id=palette-cyan aria-label=青色 class="btn btn-sm w-100 palette text-bg-cyan" data-palette=cyan></a></li><li class="col-4 my-1"><a role=button id=palette-green aria-label=绿色 class="btn btn-sm w-100 palette text-bg-green" data-palette=green></a></li><li class="col-4 my-1"><a role=button id=palette-indigo aria-label=靛青色 class="btn btn-sm w-100 palette text-bg-indigo" data-palette=indigo></a></li><li class="col-4 my-1"><a role=button id=palette-orange aria-label=橙色 class="btn btn-sm w-100 palette text-bg-orange" data-palette=orange></a></li><li class="col-4 my-1"><a role=button id=palette-pink aria-label=粉色 class="btn btn-sm w-100 palette text-bg-pink" data-palette=pink></a></li><li class="col-4 my-1"><a role=button id=palette-purple aria-label=紫色 class="btn btn-sm w-100 palette text-bg-purple" data-palette=purple></a></li><li class="col-4 my-1"><a role=button id=palette-red aria-label=红色 class="btn btn-sm w-100 palette text-bg-red" data-palette=red></a></li><li class="col-4 my-1"><a role=button id=palette-teal aria-label=蓝绿色 class="btn btn-sm w-100 palette text-bg-teal" data-palette=teal></a></li><li class="col-4 my-1"><a role=button id=palette-yellow aria-label=黄色 class="btn btn-sm w-100 palette text-bg-yellow" data-palette=yellow></a></li></ul></li><li class="nav-item dropdown col-6 col-xxl-auto"><a class="nav-link px-0 py-2 px-xxl-1" href=# id=modeDropdown role=button data-bs-toggle=dropdown aria-expanded=false><i class="mode-icon fas fa-fw fa-adjust" id=modeIcon></i>
+<span class=d-xxl-none>模式</span></a><ul class="mode-dropdown-menu dropdown-menu dropdown-menu-end" aria-labelledby=modeDropdown><li class=mode-item data-color-mode=light data-icon=sun><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-sun"></i> 浅色</button></li><li class=mode-item data-color-mode=dark data-icon=moon><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-moon"></i> 深色</button></li><li class="mode-item active" data-color-mode=auto data-icon=adjust><button class=dropdown-item>
+<i class="mode-icon fas fa-fw fa-adjust"></i> 自动</button></li></ul></li></ul></div></div><div class=d-flex><button class="navbar-toggler order-5 border-0" type=button data-bs-toggle=offcanvas data-bs-target=#navbarMenus aria-controls=navbarMenus aria-expanded=false aria-label="Toggle navigation">
+<i class="fas fa-ellipsis-h"></i></button></div></div></nav></header><main class=container><div class="row content"><noscript><div class="alert alert-danger" role=alert>你的浏览器不支持 JavaScript。</div></noscript><div class=col-xxl-8><div class=container><nav class="row card component" aria-label=breadcrumb><div class="card-body pb-0"><ol class="hbs-breadcrumb breadcrumb flex-nowrap"><li class="breadcrumb-item text-surface"><a href=/>主页</a></li><li class="breadcrumb-item text-surface"><a href=/blog/>Blogs</a></li><li class="breadcrumb-item active">Graphql规范</li></ol></div></nav><div class="post-panel-wrapper position-relative d-flex justify-content-center"><div class="d-flex flex-row justify-content-center rounded-5 border post-panel position-fixed px-3 py-1 surface shadow-1"><a class="action action-toc d-none d-xxl-block" href=#postTOC role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-toc d-block d-xxl-none" href=#post-toc-container role=button title="Table of contents"><i class="fas fa-fw fa-list-alt"></i></a>
+<a class="action action-post-comments" href=#post-comments role=button aria-label=Comments title=Comments><i class="fas fa-fw fa-comments"></i></a>
+<a id=sidebarToggler class="action action-sidebar-toggler d-none d-xxl-block" role=button title="Sidebar toggler"><i class="fas fa-fw fa-expand-alt" data-fa-transform=rotate-45></i></a></div></div><article class="row card component mb-4 post"><div class=card-header><h1 class="card-title post-title my-2">Graphql规范</h1></div><div class=card-body><div class="post-meta mb-3"><span class="post-date me-1 mb-1" title="创建于 2022-11-27 19:02:18 +0000 UTC，更新于 2023-10-07 11:19:27 +0000 UTC。">2022年11月27日</span><span class="post-reading-time me-1 mb-1">5 分钟阅读</span><a href=/categories/%E8%A7%84%E8%8C%83/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-category">
+<i class="fas fa-fw fa-folder me-1"></i>规范</a><a href=/tags/graphql/ class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-taxonomy-sm post-tag">Graphql</a></div><div class="mt-2 mb-3 d-block d-xxl-none"><h2 class="text-surface mb-3">目录</h2><div id=post-toc-container></div><hr class=text-secondary></div><div class="post-content mb-3" data-bs-spy=scroll data-bs-target=#TableOfContents tabindex=0><div id=post-content-body><p>GraphQL 是一个用于 API 的查询语言，是一个使用基于类型系统来执行查询的服务端运行时。GraphQL 并没有和任何特定数据库或者存储引擎绑定，而是依靠你现有的代码和数据支撑。</p><h2 id=schema定义 data-numberify>schema定义<a class="anchor ms-1" href=#schema定义></a></h2><p>schema定义由普通对象类型和内置类型组成。其中内置类型是query(用于查询)和mutation（用于修改） ，两者之一必须存在schema文件中（ 因为其是GraphQL 查询的<strong>入口</strong>）。有必要记住的是，除了作为 schema 的入口，Query 和 Mutation 类型与其它 GraphQL 对象类型别无二致，它们的字段也是一样的工作方式。</p><p>下面是一个示例文件：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-graphql data-lang=graphql><span class=line><span class=cl><span class=kd>scalar</span><span class=w> </span><span class=nc>LocalDate</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>type</span><span class=w> </span><span class=nc>Query</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c>#必须类型</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>query</span><span class=nc>Users</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=nc>User</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>query</span><span class=nc>ByBirth</span><span class=p>(</span><span class=py>birth</span><span class=p>:</span><span class=nc>LocalDate</span><span class=p>):</span><span class=nc>User</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>query</span><span class=nc>ByDetail</span><span class=p>(</span><span class=py>birth</span><span class=p>:</span><span class=nc>LocalDate</span><span class=p>,</span><span class=py>name</span><span class=p>:</span><span class=nc>String</span><span class=p>):</span><span class=nc>User</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>type</span><span class=w> </span><span class=nc>User</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c># 可选类型</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=py>id</span><span class=p>:</span><span class=w> </span><span class=nc>String</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=py>name</span><span class=p>:</span><span class=w> </span><span class=nc>String</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=py>age</span><span class=p>:</span><span class=w> </span><span class=nc>Int</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=py>birth</span><span class=p>:</span><span class=w> </span><span class=nc>LocalDate</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h3 id=类型 data-numberify>类型<a class="anchor ms-1" href=#类型></a></h3><h4 id=标量类型 data-numberify>标量类型<a class="anchor ms-1" href=#标量类型></a></h4><p>GraphQL 自带一组默认标量类型：</p><ul><li>Int：有符号 32 位整数。</li><li>Float：有符号双精度浮点值。</li><li>String：UTF‐8 字符序列。</li><li>Boolean：true 或者 false。</li><li>ID：ID 标量类型表示一个唯一标识符，通常用以重新获取对象或者作为缓存中的键。ID 类型使用和 String 一样的方式序列化；</li></ul><p>当然我们也可以自定义标量类型，例如上面的 <code>LocalDate</code> 。 除此之外，还需要在我们的实现中定义序列化、反序列化和验证等方法。</p><h4 id=枚举类型 data-numberify>枚举类型<a class="anchor ms-1" href=#枚举类型></a></h4><pre tabindex=0><code>enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+</code></pre><h4 id=列表类型 data-numberify>列表类型<a class="anchor ms-1" href=#列表类型></a></h4><p>在 GraphQL schema 语言中，我们通过将类型包在方括号（[ 和 ]）中的方式来标记列表：</p><pre tabindex=0><code>myField: [String]
+</code></pre><h4 id=接口 data-numberify>接口<a class="anchor ms-1" href=#接口></a></h4><p><strong>接口</strong>是一个抽象类型，它包含某些字段，而对象类型必须包含这些字段，才能算实现了这个接口。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-graphql data-lang=graphql><span class=line><span class=cl><span class=kd>interface</span><span class=w> </span><span class=nc>Animal</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=py>id</span><span class=p>:</span><span class=w> </span><span class=nc>ID</span><span class=p>!</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=py>name</span><span class=p>:</span><span class=w> </span><span class=nc>String</span><span class=p>!</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><p>具体的实现：</p><pre tabindex=0><code>type Cat implements Animal{
+  id: ID!
+  name: String!
+  color: String
+}
+</code></pre><h4 id=联合类型 data-numberify>联合类型<a class="anchor ms-1" href=#联合类型></a></h4><pre tabindex=0><code>union SearchResult = Human | Droid | Starship
+</code></pre><p>联合类型的成员需要是具体对象类型；你不能使用接口或者其他联合类型来创造一个联合类型。</p><h4 id=输入类型input-types data-numberify>输入类型（Input Types）<a class="anchor ms-1" href=#输入类型input-types></a></h4><p>目前为止，我们只讨论过将例如枚举和字符串等标量值作为参数传递给字段，但是怎么传递复杂对象呢？这在变更（mutation）中特别有用。答案是输入对象，其看上去和常规对象一模一样，除了关键字是 input 而不是 type：</p><pre tabindex=0><code>input ReviewInput {
+  stars: Int!
+  commentary: String
+}
+</code></pre><p>你可以像这样在变更（mutation）中使用输入对象类型：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-graphql data-lang=graphql><span class=line><span class=cl><span class=kd>mutation</span><span class=w> </span><span class=nc>CreateReviewForEpisode</span><span class=p>(</span><span class=nv>$ep</span><span class=p>:</span><span class=w> </span><span class=nc>Episode</span><span class=p>!,</span><span class=w> </span><span class=nv>$review</span><span class=p>:</span><span class=w> </span><span class=nc>ReviewInput</span><span class=p>!)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=py>createReview</span><span class=p>(</span><span class=py>episode</span><span class=p>:</span><span class=w> </span><span class=nv>$ep</span><span class=p>,</span><span class=w> </span><span class=nc>review</span><span class=p>:</span><span class=w> </span><span class=nv>$review</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nc>stars</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=py>commentary</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><p>输入：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;ep&#34;</span><span class=p>:</span> <span class=s2>&#34;JEDI&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;review&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;stars&#34;</span><span class=p>:</span> <span class=mi>5</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;commentary&#34;</span><span class=p>:</span> <span class=s2>&#34;This is a great movie!&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>输出：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;data&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;createReview&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;stars&#34;</span><span class=p>:</span> <span class=mi>5</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;commentary&#34;</span><span class=p>:</span> <span class=s2>&#34;This is a great movie!&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=非空限制 data-numberify>非空限制<a class="anchor ms-1" href=#非空限制></a></h3><pre tabindex=0><code>type Character {
+  name: String!
+  appearsIn: [Episode]!
+}
+</code></pre><p>类型名后面添加一个感叹号!将其标注为<strong>非空</strong>，这表示我们的服务器对于这个字段，总是会返回一个非空值，如果它结果得到了一个空值，那么事实上将会触发一个 GraphQL 执行错误，以让客户端知道发生了错误。</p><p>非空和列表修饰符可以组合使用。例如你可以要求一个非空字符串的数组：</p><pre tabindex=0><code>myField: [String!]
+</code></pre><p>这表示<strong>数组本身</strong>可以为空，但是其不能有任何空值成员。用 JSON 举例如下：</p><pre tabindex=0><code>myField: null // 有效
+myField: [] // 有效
+myField: [&#39;a&#39;, &#39;b&#39;] // 有效
+myField: [&#39;a&#39;, null, &#39;b&#39;] // 错误
+</code></pre><p>然后，我们来定义一个不可为空的字符串数组：</p><pre tabindex=0><code>myField: [String]!
+</code></pre><p>这表示数组本身不能为空，但是其可以包含空值成员：</p><pre tabindex=0><code>myField: null // 错误
+myField: [] // 有效
+myField: [&#39;a&#39;, &#39;b&#39;] // 有效
+myField: [&#39;a&#39;, null, &#39;b&#39;] // 有效
+</code></pre><h3 id=参数 data-numberify>参数<a class="anchor ms-1" href=#参数></a></h3><p>GraphQL 对象类型上的每一个字段都可能有零个或者多个参数，表示可以在该字段上进行筛选。例如下面的 length 字段：</p><pre tabindex=0><code>type Starship {
+  id: ID!
+  name: String!
+  length(unit: LengthUnit = METER): Float
+}
+</code></pre><p>所有参数都是具名的,上面的例子中，unit是参数的名称，LengthUnit是参数的类型，METER是默认值。</p><h2 id=查询 data-numberify>查询<a class="anchor ms-1" href=#查询></a></h2><h3 id=基础查询 data-numberify>基础查询<a class="anchor ms-1" href=#基础查询></a></h3><pre tabindex=0><code>{
+  hero {
+    name
+    # 查询可以有注释
+    friends {
+      name
+    }
+  }
+}
+</code></pre><p>返回结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;data&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;hero&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;R2-D2&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;friends&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Luke Skywalker&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Han Solo&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Leia Organa&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=带参数的查询 data-numberify>带参数的查询<a class="anchor ms-1" href=#带参数的查询></a></h3><p>单个参数：</p><pre tabindex=0><code>{
+  human(id: &#34;1000&#34;) {
+    name
+    height
+  }
+}
+</code></pre><p>多个参数：</p><pre tabindex=0><code>
+{
+  human(id: &#34;1000&#34;) {
+    name
+    height(unit: FOOT)
+  }
+}
+</code></pre><h3 id=别名 data-numberify>别名<a class="anchor ms-1" href=#别名></a></h3><p>通过不同参数值来查询相同字段。这便是为何你需要<strong>别名</strong> —— 这可以让你重命名结果中的字段为任意的名字。</p><pre tabindex=0><code>{
+  empireHero: hero(episode: EMPIRE) {
+    name
+  }
+  jediHero: hero(episode: JEDI) {
+    name
+  }
+}
+</code></pre><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;data&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;empireHero&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Luke Skywalker&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;jediHero&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;R2-D2&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=变量 data-numberify>变量<a class="anchor ms-1" href=#变量></a></h3><p>上面讲述的所有例子中，参数是限定好的。有些情况下，我们需要动态选择参数。变量可以帮我实现这个功能。</p><p>使用变量之前，我们得做三件事：</p><ol><li>使用 $variableName 替代查询中的静态值。</li><li>声明 $variableName 为查询接受的变量之一。</li><li>将 variableName: value 传递到查询中。</li></ol><pre tabindex=0><code>{ &#34;graphiql&#34;: true, &#34;variables&#34;: { &#34;episode&#34;: JEDI } } # 传递变量
+
+query HeroNameAndFriends($episode: Episode = &#34;JEDI&#34;) { #声明变量
+  hero(episode: $episode) {# 使用变量
+    name
+    friends {
+      name
+    }
+  }
+}
+</code></pre><p>这样一来，我们的客户端代码就只需要传入不同的变量，而不用构建一个全新的查询了。这事实上也是一个良好实践，意味着查询的参数将是动态的 —— 我们决不能使用用户提供的值来字符串插值以构建查询。</p><h3 id=操作名称 data-numberify>操作名称<a class="anchor ms-1" href=#操作名称></a></h3><p>上面的示例中，我们使用了操作名称：HeroNameAndFriends。这是详细写法，也鼓励这么做。因为它对于调试和服务器端日志记录非常有用。</p><h3 id=片段 data-numberify>片段<a class="anchor ms-1" href=#片段></a></h3><p><strong>片段</strong>是可复用单元</p><pre tabindex=0><code>{
+  leftComparison: hero(episode: EMPIRE) {
+    ...comparisonFields  # 使用片段
+  }
+  rightComparison: hero(episode: JEDI) {
+    ...comparisonFields
+  }
+}
+# 声明片段
+fragment comparisonFields on Character {
+  name
+  appearsIn
+  friends {
+    name
+  }
+}
+</code></pre><p>在片段中使用变量：</p><pre tabindex=0><code>query HeroComparison($first: Int = 3) {
+  leftComparison: hero(episode: EMPIRE) {
+    ...comparisonFields
+  }
+  rightComparison: hero(episode: JEDI) {
+    ...comparisonFields
+  }
+}
+
+fragment comparisonFields on Character {
+  name
+  friendsConnection(first: $first) {
+    totalCount
+    edges {
+      node {
+        name
+      }
+    }
+  }
+}
+</code></pre><h3 id=内联片段 data-numberify>内联片段<a class="anchor ms-1" href=#内联片段></a></h3><p>如果你查询的字段返回的是接口或者联合类型，那么你可能需要使用<strong>内联片段</strong>来取出下层具体类型的数据：</p><pre tabindex=0><code>query HeroForEpisode($ep: Episode!) {
+  hero(episode: $ep) {
+    name
+    ... on Droid {
+      primaryFunction
+    }
+    ... on Human {
+      height
+    }
+  }
+}
+</code></pre><p>传入变量：</p><pre tabindex=0><code>{
+  &#34;ep&#34;: &#34;JEDI&#34;
+}
+</code></pre><p>返回数据</p><pre tabindex=0><code>{
+  &#34;data&#34;: {
+    &#34;hero&#34;: {
+      &#34;name&#34;: &#34;R2-D2&#34;,
+      &#34;primaryFunction&#34;: &#34;Astromech&#34;
+    }
+  }
+}
+</code></pre><p>如果要请求具体类型上的字段，你需要使用一个类型条件<strong>内联片段</strong>。因为第一个片段标注为 &mldr; on Droid，primaryFunction 仅在 hero 返回的 Character 为 Droid 类型时才会执行。</p><h3 id=内省 data-numberify>内省<a class="anchor ms-1" href=#内省></a></h3><p>我们有时候会需要去问 GraphQL Schema 它支持哪些查询。GraphQL 通过内省系统让我们可以做到这点！</p><p>查询所有类型：</p><pre tabindex=0><code>{
+  __schema {
+    types {
+      name
+    }
+  }
+}
+</code></pre><p>返回结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;data&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;__schema&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;types&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Boolean&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Int&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;LocalDate&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Query&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;String&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;User&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__Directive&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__DirectiveLocation&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__EnumValue&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__Field&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__InputValue&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__Schema&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__Type&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;__TypeKind&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><ul><li>String, Boolean - 这些是内建的标量，由类型系统提供。</li><li><code>__Schema</code>, <code>__Type</code>,<code>__TypeKind</code>, <code>__Field</code>, <code>__InputValue</code>, <code>__EnumValue</code>, <code>__Directive</code> - 这些有着两个下划线的类型是内省系统的一部分。</li></ul><h3 id=修改 data-numberify>修改<a class="anchor ms-1" href=#修改></a></h3><p>GraphQL 的大部分讨论集中在数据获取，但是任何完整的数据平台也都需要一个改变服务端数据的方法。</p><pre tabindex=0><code>mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
+  createReview(episode: $ep, review: $review) {
+    stars
+    commentary
+  }
+}
+</code></pre><p>变量：</p><pre tabindex=0><code>{
+  &#34;ep&#34;: &#34;JEDI&#34;,
+  &#34;review&#34;: {
+    &#34;stars&#34;: 5,
+    &#34;commentary&#34;: &#34;This is a great movie!&#34;
+  }
+}
+</code></pre><pre tabindex=0><code>{
+  &#34;data&#34;: {
+    &#34;createReview&#34;: {
+      &#34;stars&#34;: 5,
+      &#34;commentary&#34;: &#34;This is a great movie!&#34;
+    }
+  }
+}
+</code></pre><p>注意 createReview 字段如何返回了新建的 review 的 stars 和 commentary 字段。</p><p><strong>查询字段时，是并行执行，而变更字段时，是线性执行，一个接着一个。</strong></p><p>这意味着如果我们一个请求中发送了两个 incrementCredits 变更，第一个保证在第二个之前执行，以确保我们不会出现竞态。</p><h3 id=指令 data-numberify>指令<a class="anchor ms-1" href=#指令></a></h3><p>我们上面讨论的变量使得我们可以避免手动字符串插值构建动态查询。传递变量给参数解决了一大堆这样的问题，但是我们可能也需要一个方式使用变量动态地改变我们查询的结构。</p><pre tabindex=0><code>query Hero($episode: Episode, $withFriends: Boolean!) {
+  hero(episode: $episode) {
+    name
+    friends @include(if: $withFriends) {
+      name
+    }
+  }
+}
+</code></pre><p>传入变量：</p><pre tabindex=0><code>{
+  &#34;episode&#34;: &#34;JEDI&#34;,
+  &#34;withFriends&#34;: false
+}
+</code></pre><p>输出结果：</p><pre tabindex=0><code>{
+  &#34;data&#34;: {
+    &#34;hero&#34;: {
+      &#34;name&#34;: &#34;R2-D2&#34;
+    }
+  }
+}
+</code></pre><p>尝试修改上面的变量，传递 true 给 withFriends，看看结果的变化。</p><p>我们用了 GraphQL 中一种称作<strong>指令</strong>的新特性。一个指令可以附着在字段或者片段包含的字段上，然后以任何服务端期待的方式来改变查询的执行。GraphQL 的核心规范包含两个指令，其必须被任何规范兼容的 GraphQL 服务器实现所支持：</p><ul><li>@include(if: Boolean) 仅在参数为 true 时，包含此字段。</li><li>@skip(if: Boolean) 如果参数为 true，跳过此字段。</li></ul><h2 id=http请求 data-numberify>HTTP请求<a class="anchor ms-1" href=#http请求></a></h2><p>你的 GraphQL HTTP 服务器应当能够处理 HTTP GET 和 POST 方法。</p><h3 id=get-请求 data-numberify>GET 请求<a class="anchor ms-1" href=#get-请求></a></h3><p>在收到一个 HTTP GET 请求时，应当在 “query” 查询字符串（query string）中指定 GraphQL 查询。例如，如果我们要执行以下 GraphQL 查询：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-graphql data-lang=graphql><span class=line><span class=cl><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=py>me</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=py>name</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><p>此请求可以通过 HTTP GET 发送，如下所示：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>http</span><span class=o>:</span><span class=c1>//myapi/graphql?query={me{name}}
+</span></span></span></code></pre></div><p>查询变量可以作为 JSON 编码的字符串发送到名为 <code>variables</code> 的附加查询参数中。如果查询包含多个具名操作，则可以使用一个 <code>operationName</code> 查询参数来控制哪一个应当执行。</p><h3 id=post-请求 data-numberify>POST 请求<a class="anchor ms-1" href=#post-请求></a></h3><p>标准的 GraphQL POST 请求应当使用 <code>application/json</code> 内容类型（content type），并包含以下形式 JSON 编码的请求体：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;query&#34;</span><span class=o>:</span> <span class=s2>&#34;...&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;operationName&#34;</span><span class=o>:</span> <span class=s2>&#34;...&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;variables&#34;</span><span class=o>:</span> <span class=p>{</span> <span class=s2>&#34;myVariable&#34;</span><span class=o>:</span> <span class=s2>&#34;someValue&#34;</span><span class=p>,</span> <span class=p>...</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p><code>operationName</code> 和 <code>variables</code> 是可选字段。仅当查询中存在多个操作时才需要 <code>operationName</code>。</p><p>除了上边这种请求之外，我们还建议支持另外两种情况：</p><ul><li>如果存在 “query” 这一查询字符串参数（如上面的 GET 示例中），则应当以与 HTTP GET 相同的方式进行解析和处理。</li><li>如果存在 “application/graphql” Content-Type 头，则将 HTTP POST 请求体内容视为 GraphQL 查询字符串。</li></ul><p>如果你使用的是 express-graphql，那么你已经直接获得了这些支持。</p><h3 id=响应 data-numberify>响应<a class="anchor ms-1" href=#响应></a></h3><p>无论使用任何方法发送查询和变量，响应都应当以 JSON 格式在请求正文中返回。如规范中所述，查询结果可能会是一些数据和一些错误，并且应当用以下形式的 JSON 对象返回：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;data&#34;</span><span class=o>:</span> <span class=p>{</span> <span class=p>...</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;errors&#34;</span><span class=o>:</span> <span class=p>[</span> <span class=p>...</span> <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>如果没有返回错误，响应中不应当出现 <code>"errors"</code> 字段。如果没有返回数据，则 <a href=http://spec.graphql.cn//#sec-Data- target=_blank rel="noopener noreferrer">根据 GraphQL 规范<i class="fas fa-external-link-square-alt ms-1"></i></a>，只能在执行期间发生错误时才能包含 <code>"data"</code> 字段。</p></div></div></div><div class=card-footer><div class="post-navs d-flex justify-content-evenly"><div class="post-nav post-prev"><i class="fas fa-fw fa-chevron-down post-prev-icon me-1" data-fa-transform=rotate-90></i>
+<a href=/blog/2022/11/graphql-spring/>Graphql-Spring</a></div><div class="post-nav post-next"><a href=/blog/2022/11/graphql-java%E5%AE%9E%E7%8E%B0/>Graphql Java实现</a>
+<i class="fas fa-fw fa-chevron-down post-next-icon ms-1" data-fa-transform=rotate-270></i></div></div></div></article><section class="related-posts row card component"><div class=card-header><h2 class="card-title fs-4 my-2 text-surface">相关文章</h2></div><div class="card-body slide px-1"><div class="slide-inner row gx-0"><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/graphql-java%E5%AE%9E%E7%8E%B0/>Graphql Java实现</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/graphql-spring/>Graphql-Spring</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/2022/11/opentelemetry/>Opentelemetry</a><div class="post-meta mb-0">2022年11月27日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/1/01/></a><div class="post-meta mb-0">1年1月1日</div></div></div><div class="col-12 col-md-6 col-lg-4 me-2"><div class="post-card card card-body p-0 border-0 surface"><div class="post-card-default-img card-img-top d-flex align-items-center justify-content-center bg-body-secondary mb-1">NO IMAGE</div><a class=post-title href=/blog/1/01/></a><div class="post-meta mb-0">1年1月1日</div></div></div></div><button class=slide-control-left>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-90></i>
+<span class=visually-hidden>Left</span></button>
+<button class=slide-control-right>
+<i class="fas fa-2x fa-chevron-circle-down" data-fa-transform=rotate-270></i>
+<span class=visually-hidden>Right</span></button></div></section><div class="card component row post-comments" id=post-comments><div class=card-header><h2 class="card-title my-2 fs-4 text-surface">评论</h2></div><div class=card-body></div></div></div></div><aside class="col-xxl-4 sidebar d-flex"><div class="container d-flex flex-column"><div class="accordion profile"><div class="accordion-item card row text-center component"><div class="accordion-header card-header border-0" id=profile-header><a class="accordion-button d-lg-none mb-2 shadow-none p-0 bg-transparent text-surface collapsed" role=button data-bs-toggle=collapse href=#profile aria-expanded=false aria-controls=profile>Profile</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=profile aria-labelledby=profile-header><div class="col-12 d-flex align-items-center justify-content-center"><picture><img class="profile-avatar rounded-circle" alt=小胖子 src=https://banrenshan.github.io/images/profile.webp loading=lazy data-viewer-invisible width=400 height=400></picture></div><div class="col-12 profile-meta"><div class="profile-name fw-fold fs-lg">小胖子</div><div class=profile-bio>每天一点点</div></div></div></div></div><div class="accordion taxonomies-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#taxonomies-toggle aria-expanded=false aria-controls=taxonomies-toggle>Taxonomies</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=taxonomies-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=taxonomyCategoriesTab data-bs-toggle=tab data-bs-target=#taxonomyCategories type=button role=tab aria-controls=taxonomyCategories aria-selected=true>
+分类</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyTagsTab data-bs-toggle=tab data-bs-target=#taxonomyTags type=button role=tab aria-controls=taxonomyTags aria-selected=true>
+标签</button></li><li class=nav-item role=presentation><button class=nav-link id=taxonomyArchivesTab data-bs-toggle=tab data-bs-target=#taxonomyArchives type=button role=tab aria-controls=taxonomyArchives aria-selected=true>
+归档</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=taxonomyCategories role=tabpanel aria-labelledby=taxonomyCategoriesTab tabindex=0><a href=/categories/%E6%8A%80%E6%9C%AF/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=技术>技术
+<span class="badge badge-sm text-secondary bg-white ms-1">24</span></a>
+<a href=/categories/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">9</span></a>
+<a href=/categories/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=操作系统>操作系统
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=中间件>中间件
+<span class="badge badge-sm text-secondary bg-white ms-1">7</span></a>
+<a href=/categories/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/categories/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-boot/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-boot>spring-boot
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/spring-cloud/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=spring-cloud>spring-cloud
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/categories/unbutu/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=Unbutu>Unbutu
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/categories class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">13</span></a></div><div class=tab-pane id=taxonomyTags role=tabpanel aria-labelledby=taxonomyTagsTab tabindex=0><a href=/tags/java/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=java>java
+<span class="badge badge-sm text-secondary bg-white ms-1">31</span></a>
+<a href=/tags/linux/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=linux>linux
+<span class="badge badge-sm text-secondary bg-white ms-1">8</span></a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=监控>监控
+<span class="badge badge-sm text-secondary bg-white ms-1">4</span></a>
+<a href=/tags/gradle/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=gradle>gradle
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/graphql/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=graphql>graphql
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/spring/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=spring>spring
+<span class="badge badge-sm text-secondary bg-white ms-1">3</span></a>
+<a href=/tags/shell/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=shell>shell
+<span class="badge badge-sm text-secondary bg-white ms-1">2</span></a>
+<a href=/tags/docker/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=docker>docker
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/filebeat/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=filebeat>filebeat
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=/tags/grafana/ class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=grafana>grafana
+<span class="badge badge-sm text-secondary bg-white ms-1">1</span></a>
+<a href=https://banrenshan.github.io/tags class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title=全部>全部
+<span class="badge badge-sm text-secondary bg-white ms-1">22</span></a></div><div class=tab-pane id=taxonomyArchives role=tabpanel aria-labelledby=taxonomyArchivesTab tabindex=0><a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=2022>2022 <span class="badge badge-sm text-secondary bg-white ms-1">48</span></a>
+<a href class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title=0001>0001 <span class="badge badge-sm text-secondary bg-white ms-1">5</span></a></div></div></div></div></div><div class="accordion posts-toggle"><div class="row card component accordion-item"><div class="accordion-header card-header border-0"><a class="accordion-button d-lg-none mb-1 shadow-none p-0 bg-transparent collapsed" role=button data-bs-toggle=collapse href=#posts-toggle aria-expanded=false aria-controls=posts-toggle>文章</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=posts-toggle><ul class="nav nav-pills nav-fill" role=tablist><li class=nav-item role=presentation><button class="nav-link active" id=recent-posts-tab data-bs-toggle=tab data-bs-target=#recent-posts type=button role=tab aria-controls=recent-posts aria-selected=true>
+最近文章</button></li></ul><div class="tab-content mt-3"><div class="tab-pane active" id=recent-posts role=tabpanel aria-labelledby=recent-posts-tab tabindex=0><ul class="post-list list-unstyled ms-1"><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/grafana/>Grafana</a><div class="post-meta mt-2"><span class=post-date>2022年12月10日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/gradle-basic/>Gradle-Basic</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/zero-copy/>Zero-Copy</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-lock/>Java-Lock</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li><li class=mb-2><div class=d-flex><div class="flex-grow-1 d-flex flex-column h-auto justify-content-center"><a class=post-title href=/blog/2022/12/java-log/>Java-Log</a><div class="post-meta mt-2"><span class=post-date>2022年12月2日</span></div></div></div></li></ul></div></div></div></div></div><div class="accordion post-toc d-none d-lg-block"><div class="accordion-item row mb-4 card component" id=postTOC><div class="card-header accordion-header"><h2 class="card-title fs-4 my-2 text-surface d-none d-lg-block">目录</h2><a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" role=button data-bs-toggle=collapse href=#post-toc aria-expanded=false aria-controls=post-toc>目录</a></div><div class="card-body collapse accordion-collapse accordion-body d-lg-block" id=post-toc><nav id=TableOfContents><ul><li><a href=#schema定义>schema定义</a><ul><li><a href=#类型>类型</a></li><li><a href=#非空限制>非空限制</a></li><li><a href=#参数>参数</a></li></ul></li><li><a href=#查询>查询</a><ul><li><a href=#基础查询>基础查询</a></li><li><a href=#带参数的查询>带参数的查询</a></li><li><a href=#别名>别名</a></li><li><a href=#变量>变量</a></li><li><a href=#操作名称>操作名称</a></li><li><a href=#片段>片段</a></li><li><a href=#内联片段>内联片段</a></li><li><a href=#内省>内省</a></li><li><a href=#修改>修改</a></li><li><a href=#指令>指令</a></li></ul></li><li><a href=#http请求>HTTP请求</a><ul><li><a href=#get-请求>GET 请求</a></li><li><a href=#post-请求>POST 请求</a></li><li><a href=#响应>响应</a></li></ul></li></ul></nav></div></div></div></div></aside></div></main><footer class="footer mt-auto py-3 text-center container"></footer><script data-precache src=/assets/main/bundle.min.f06ce52438e0e6eee8225a013aaf3de719542ffc5ef58241be98c0f5d1df9732.js integrity="sha256-8GzlJDjg5u7oIloBOq895xlUL/xe9YJBvpjA9dHflzI=" crossorigin=anonymous async></script><script data-precache src=/assets/icons/bundle.min.4f30d5267a9f2f9d45ed93969d45ec626100a969a8b91f71f753315a261e9034.js integrity="sha256-TzDVJnqfL51F7ZOWnUXsYmEAqWmouR9x91MxWiYekDQ=" crossorigin=anonymous defer></script>
+<script data-precache src=/assets/viewer/bundle.min.0a0d0099935beee41b7a7bf4543cd55e793e5f830a571b0794ef8c3602c5823c.js integrity="sha256-Cg0AmZNb7uQbenv0VDzVXnk+X4MKVxsHlO+MNgLFgjw=" crossorigin=anonymous defer></script>
+<script src=/js/sw-register.js defer></script></body></html>

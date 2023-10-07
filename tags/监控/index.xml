@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>监控 on</title><link>https://banrenshan.github.io/tags/%E7%9B%91%E6%8E%A7/</link><description>Recent content in 监控 on</description><generator>Hugo -- gohugo.io</generator><language>zh-hans</language><copyright/><lastBuildDate>Sun, 27 Nov 2022 20:15:32 +0000</lastBuildDate><atom:link href="https://banrenshan.github.io/tags/%E7%9B%91%E6%8E%A7/index.xml" rel="self" type="application/rss+xml"/><item><title>filebeat</title><link>https://banrenshan.github.io/blog/2022/11/filebeat/</link><pubDate>Sun, 27 Nov 2022 20:15:32 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/filebeat/</guid><description>FileBeat 概述 Filebeat 是一个用于转发和集中日志数据的轻量级传送器。作为代理安装在您的服务器上，Filebeat 监控您指定位置的日志文件，收集日志事件，并将它们转发到Elasticsearch或 Logstash以进行索引。
+以下是 Filebeat 的工作原理：当您启动 Filebeat 时，它会启动一个或多个输入，这些输入去您指定的位置中查找日志文件。对于 Filebeat 定位的每个日志，Filebeat 都会启动一个收集器**(harvester)**。每个harvester 读取单个日志以获取新内容并将新日志数据发送到libbeat，libbeat 聚合事件并将聚合数据发送到配置好的输出。
+Filebeat 是 Elastic Beat，基于libbeat 框架。
+为每个文件启动一个收集器， 其逐行读取文件，并将内容发送到输出。 收集器负责打开和关闭文件，这意味着在收集器运行时文件描述符保持打开状态。
+Filebeat 如何保持文件的状态？ Filebeat 会保存每个文件的状态，并经常在将状态刷新到注册表文件。 该状态用于记住收集器读取的最后一个偏移量，并确保发送所有日志行。 如果无法访问 Elasticsearch 或 Logstash 等输出，Filebeat 会跟踪发送的最后几行，并在输出再次可用时继续读取文件。 在 Filebeat 运行时，每个输入的状态信息也会保存在内存中。 当 Filebeat 重新启动时，来自注册表文件的数据用于重建状态，并且 Filebeat 在最后一个已知位置继续每个收集器。
+对于每个输入，Filebeat 都会保存它找到的每个文件的状态。 因为文件可以重命名或移动，所以文件名和路径不足以识别文件。 对于每个文件，Filebeat 都会存储唯一标识符，以检测文件是否以前被收集过。
+Filebeat 如何确保至少一次交付？ Filebeat 保证事件将至少传递到配置的输出一次，并且不会丢失数据。Filebeat 能够实现这种行为是因为它将每个事件的传递状态存储在注册表文件中。
+在定义的输出被阻塞并且没有确认所有事件的情况下，Filebeat 将继续尝试发送事件，直到输出确认它已收到事件。
+如果 Filebeat 在发送事件的过程中关闭，它不会在关闭前等待输出确认所有事件。任何发送到输出但在 Filebeat 关闭之前未确认的事件，在 Filebeat 重新启动时会再次发送。这可确保每个事件至少发送一次，但最终可能会将重复的事件发送到输出。您可以通过设置shutdown_timeout选项将 Filebeat 配置为在关闭之前等待特定的时间。
+与es集成 索引策略 索引生命周期是elasticsearch管理索引的一种方式，可以根据运行状态决定创建新的索引、删除索引等。
+从 7.0 版本开始，Filebeat 在连接支持生命周期管理的es集群时，默认使用索引生命周期管理。具体说，filebeat会在连接ES时，在ES上创建filebeat定义好的生命周期。您可以在 Kibana 的索引生命周期策略 UI 中查看和编辑策略。</description></item><item><title>loki</title><link>https://banrenshan.github.io/blog/2022/11/loki/</link><pubDate>Sun, 27 Nov 2022 19:52:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/loki/</guid><description>架构 Distributor 分发服务器服务负责处理客户端的传入流。这是日志数据写入路径的第一站。一旦分发服务器接收到一组流，就验证每个流的正确性，并确保其在配置的租户（或全局）限制内。然后将有效的块分割成批，并并行发送给多个ingesters。
+Validation distributor 采取的第一步是确保所有传入数据符合规范。这包括检查标签是否是有效的Prometheus标签，以及确保时间戳不是太旧或太新，或者日志行不是太长。
+Preprocessing 目前，distributor改变传入数据的唯一方法是规范标签。这意味着使{foo=“bar”，bazz=“buzz”}等同于{bazz=”buzz“，foo=”bar“}，或者换句话说，对标签进行排序。这使得Loki可以确定地缓存和散列它们。
+Rate limiting distributor还可以根据每个租户对传入日志进行速率限制。它通过检查每个租户的限额并将其除以当前的distributor来实现这一点。这允许在集群级别为每个租户指定速率限制，并使我们能够向上或向下扩展distributor，并相应地调整每个distributor的限额。例如，假设我们有10个distributor，租户A有10MB的费率限制。在限制之前，每个分配器最多允许1MB/秒。现在，假设另一个大租户加入集群，我们需要再组建10个distributor。现在的20家distributor将调整其租户A的费率限制为（10MB/20家distributor）=500KB/s！这就是为什么全局限制允许Loki集群更简单、更安全的操作。
+Forwarding 一旦distributor完成了所有的验证任务，它就会将数据转发给最终负责确认写入的ingester 组件。
+Replication factor 为了减少在任何单个ingester上丢失数据的可能性，distributor将在转发写操作时添加复制因子。通常情况下，这是3。复制允许在写入失败的情况下重新启动和rollouts ingester，并在某些情况下增加了防止数据丢失的额外保护。
+对于推送到distributor的每个标签集（称为流），它将对标签进行哈希，根据hash值查找环中的 ingesters （需要多个，根据replication_factor决定）。然后，它将尝试将相同的数据写入到多个ingesters。如果成功写入的次数少于法定人数（quorum ），则会出错。
+quorum 被定义为floor（replication_factor/2）+1。因此，对于replication_factor为3，我们需要两次写入成功。如果成功写入的次数少于两次，则distributor返回错误，可以重试写入。
+不过，复制因素并不是防止数据丢失的唯一方式。ingester 组件现在包括一个预写日志，该日志保存对磁盘的传入写入，以确保在磁盘未损坏的情况下不会丢失这些写入。复制因子和WAL的互补性确保了数据不会丢失，除非这两种机制都出现重大故障（即多个摄取者死亡并丢失/损坏其磁盘）。
+Hashing 分发服务器使用一致的哈希和可配置的复制因子来确定ingester 服务的哪些实例应该接收给定的流。
+流是与租户和唯一标签集相关联的一组日志。使用租户ID和标签集对流进行哈希，然后使用哈希查找要将流发送到的ingester 。
+为了进行哈希查找，分发者会找到值大于流哈希值的最小适当令牌。当复制因子大于1时，属于不同ingester 的下一个后续令牌（环中的顺时针方向）也将包含在结果中。
+这种哈希设置的效果是，ingester 拥有的每个令牌都负责一系列哈希。如果存在值为0、25和50的三个令牌，ingester 拥有令牌25负责1-25的哈希范围。
+Ingester ingester服务负责将日志数据写入写入路径上的长期存储后端（DynamoDB、S3、Cassandra等），并在读取路径上返回内存查询的日志数据。
+ingester接收的每个日志流都在内存中构建成一组多个“块”，并以可配置的间隔刷新到备份存储后端。在以下情况下，块将被压缩并标记为只读：
+当前区块已达到容量（可配置值）。 当前区块已过了太多时间没有更新 发生flush。 每当一个块被压缩并标记为只读时，一个可写块就会取代它。
+如果ingester进程突然崩溃或退出，所有尚未刷新的数据都将丢失。Loki通常被配置为复制每个日志的多个副本（通常为3个），以减轻此风险。
+当持久存储提供程序发生刷新时，将根据其租户、标签和内容对块进行哈希。这意味着具有相同数据副本的多个ingester不会将相同数据写入备份存储两次，但如果对其中一个副本的任何写入失败，将在备份存储中创建多个不同的块对象。有关如何消除重复数据的信息，请参阅查询器。
+Timestamp Ordering 当未配置为接受无序写入时，摄取器将验证摄取的日志行是否正常。当摄取者接收到不符合预期顺序的日志行时，该行将被拒绝，并向用户返回错误。 摄取器验证日志行是否按时间戳升序接收。每个日志都有一个时间戳，该时间戳发生的时间晚于之前的日志。当摄取器接收到不遵循此顺序的日志时，将拒绝日志行并返回错误。
+如果ingester 进程突然崩溃或退出，所有尚未刷新的数据都可能丢失。Loki通常配置有预写日志，该日志可以在ingester 重新启动时重播，并且每个日志的复制因子（通常为3）可以减轻此风险。
+当未配置为接受无序写入时，针对给定流（标签的唯一组合）推送到Loki的所有行必须具有比之前接收到的行更新的时间戳。然而，有两种情况可用于处理具有相同纳秒时间戳的同一流的日志：
+如果传入的行与先前接收的行完全匹配（同时匹配先前的时间戳和日志文本），则传入的行将被视为完全重复的行并被忽略。 如果传入行具有与前一行相同的时间戳，但内容不同，则接受日志行。这意味着可以对同一时间戳使用两个不同的日志行。 虽然ingesters 确实支持通过BoltDB写入文件系统，但这只在单进程模式下工作，因为查询者需要访问同一后端存储，而BoltDB只允许一个进程在给定时间锁定数据库。
+Query frontend 查询前端将较大的查询拆分为多个较小的查询，在下游查询器上并行执行这些查询，并再次将结果拼接在一起。这可以防止大型（多天等）查询在单个查询器中导致内存不足问题，并有助于更快地执行它们。
+查询前端在内部执行一些查询调整，并将查询保存在内部队列中。在此设置中，查询器充当从队列中提取作业、执行作业并将其返回到查询前端进行聚合的工作人员。查询器需要配置查询前端地址（通过-queries.frontend-address CLI标志），以允许它们连接到查询前端。
+查询前端排队机制用于：
+确保在失败时重试可能导致查询器内存不足（OOM）错误的大型查询。这允许管理员为查询提供不足的内存，或者乐观地并行运行更多的小查询，这有助于降低TCO。 通过使用先进先出队列（FIFO）将多个大型请求分发到所有查询器，防止在单个查询器上护送这些请求。 通过公平调度租户之间的查询，防止单个租户一直占用而拒绝服务（DOSing）其他租户。 查询前端支持缓存度量查询结果，并在后续查询中重用它们。如果缓存的结果不完整，查询前端将计算所需的子查询，并在下游查询器上并行执行它们。查询前端可以选择将查询与其步骤参数对齐，以提高查询结果的可缓存性。结果缓存与任何loki缓存后端兼容（当前为memcached、redis和内存缓存）。
+缓存日志（过滤器、正则表达式）查询正在积极开发中。
+Querier querier服务使用LogQL查询语言处理查询，从ingesters 和长期存储中获取日志。</description></item><item><title>grafana</title><link>https://banrenshan.github.io/blog/2022/11/grafana/</link><pubDate>Sun, 27 Nov 2022 19:49:23 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/grafana/</guid><description>报警 警报规则
+设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。
+Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。
+一旦创建了警报规则，它们将经历各种状态和转换。
+命名空间
+创建 Grafana 管理的规则时，该文件夹可用于访问控制。
+组
+组内的所有规则都以相同的时间间隔进行评估。
+组中的警报规则和记录规则将始终按顺序进行评估。
+警报实例
+Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。
+请考虑以下 PromQL 表达式：
+sum by(cpu) ( rate(node_cpu_seconds_total{mode!=&amp;#34;idle&amp;#34;}[1m]) ) 使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。
+标签
+将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。
+通知策略
+设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。
+联络点
+定义警报触发时如何通知联系人。支持多种ChatOps工具。
+注解
+注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。
+标签
+标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。
+在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉$labels变量，它保存警报实例的标签键/值对，以及$value变量，它保持警报实例的评估值。
+在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。
+例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：
+Instance {{ $labels.instance }} has been down for more than 5 minutes 对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：
+{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }}) Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容：</description></item><item><title>opentelemetry</title><link>https://banrenshan.github.io/blog/2022/11/opentelemetry/</link><pubDate>Sun, 27 Nov 2022 12:41:11 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/opentelemetry/</guid><description>collector基本组件 Receiver Filelog Receiver Field Default Description include required 匹配的文件列表，支持glob模式 exclude [] 排除的文件列表，支持glob模式 start_at end 启动时，从哪里开始读取日志。选项是beginning 或 end multiline 定义日志行，默认文件中的每行作为一个日志行，注意和操作符recombine的区别 。multiline定义了什么是日志行。 recombine是将多个日志行合并在一起。 force_flush_period 500ms 自上次从文件读取数据以来的时间，在此之后，当前缓冲的日志应发送到管道等待的时间。零意味着永远等待新数据 encoding utf-8 文件的编码 include_file_name true 是否添加文件名称到属性 log.file.name. include_file_path false 是否添加文件路径到属性 log.file.path. include_file_name_resolved false 是否将符号链接解析后的文件名添加到属性log.file.name_resolved。 include_file_path_resolved false 是否将符号链接解析后的文件路径添加到属性log.file.path_resolved。 poll_interval 200ms 文件系统轮询之间的持续时间 fingerprint_size 1kb 用于标识文件的字节数。 max_log_size 1MiB 日志行的最大大小 max_concurrent_files 1024 并发读取日志的最大日志文件数。如果包含模式中匹配的文件数超过此数，则将批量处理文件。每个poll_interval 处理一批 attributes {} 要添加到entry的 属性键：值对的映射 resource {} 要添加到entry 资源的键：值对的映射 operators [] 处理日志的操作 operators converter { max_flush_count: 100, flush_interval: 100ms, worker_count:max(1,runtime.</description></item></channel></rss>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>spring-cloud-gateway on</title><link>https://banrenshan.github.io/tags/spring-cloud-gateway/</link><description>Recent content in spring-cloud-gateway on</description><generator>Hugo -- gohugo.io</generator><language>zh-hans</language><copyright/><lastBuildDate>Fri, 02 Dec 2022 11:46:10 +0000</lastBuildDate><atom:link href="https://banrenshan.github.io/tags/spring-cloud-gateway/index.xml" rel="self" type="application/rss+xml"/><item><title>spring-cloud-gateway</title><link>https://banrenshan.github.io/blog/2022/12/spring-cloud-gateway/</link><pubDate>Fri, 02 Dec 2022 11:46:10 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-cloud-gateway/</guid><description>spring cloud gateway 概述 基于版本3.1.1
+该项目提供了一个建立在Spring生态系统之上的API网关，包括：Spring 5，Spring Boot 2和Project Reactor。Spring Cloud Gateway旨在提供一种简单而有效的方法来路由到API，并为它们提供跨领域的关注点，例如：安全性，监控/指标和可伸缩性。
+org.springframework.cloud:spring-cloud-starter-gateway
+路由：网关的基本构建基块。它由 ID、目标 URI、谓词集合和筛选器集合定义。如果聚合谓词为 true，则匹配路由。 谓词：这是一个 Java 8 函数谓词。输入类型是Spring Framework ServerWebExchange。这使您可以匹配 HTTP 请求中的任何内容，例如标头或参数。 过滤器：这些是使用特定工厂构建的网关过滤器实例。在这里，您可以修改发送下游请求之前或之后的请求和响应。 如何工作 客户端向 Spring Cloud Gateway 发出请求。 如果Gateway Handler Mapping确定请求与路由匹配，则将其发送到Gateway Web Handler。 此处理程序通过特定于请求的过滤器链运行请求。 过滤器被虚线分隔的原因是过滤器可以在发送代理请求之前和之后运行逻辑。 执行所有“pre”过滤器逻辑。 然后进行代理请求。 发出代理请求后，将运行“post”过滤器逻辑。
+如何配置 有两种方法可以配置谓词和过滤器：简洁方式和完全模式。
+简洁方式
+spring: cloud: gateway: routes: - id: after_route uri: https://example.org predicates: - Cookie=mycookie,mycookievalue 定义了 路由谓词工厂（Cookie ），cookie 名称(mycookie) 和匹配值(mycookievalue)。
+完全模式
+spring: cloud: gateway: routes: - id: after_route uri: https://example.</description></item></channel></rss>

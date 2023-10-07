@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title/><link>https://banrenshan.github.io/</link><description>Recent content on</description><generator>Hugo -- gohugo.io</generator><language>zh-hans</language><copyright/><lastBuildDate>Sat, 10 Dec 2022 13:56:12 +0000</lastBuildDate><atom:link href="https://banrenshan.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>grafana</title><link>https://banrenshan.github.io/blog/2022/12/grafana/</link><pubDate>Sat, 10 Dec 2022 13:56:12 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/grafana/</guid><description><![CDATA[exemplars exemplar表示在给定时间间隔内的metrics对应的trace。虽然metrics擅长为您提供系统的聚合视图，但trace可以为您提供单个请求的细粒度视图；exemplar是将两者联系起来的一种方式。
+假设您的公司网站正在经历流量激增。虽然超过80%的用户能够在两秒内访问网站，但一些用户的响应时间比正常时间长，导致用户体验不佳。要确定导致延迟的因素，必须将快速响应的trace与慢速响应的trace进行比较。考虑到典型生产环境中的大量数据，这将是一项极其费力和耗时的工作。
+使用exemplars，查询在一段时间间隔内表现出高延迟的trace，帮助诊断数据分布中的问题。一旦将延迟问题定位为几个exemplars trace，就可以将其与其他基于系统的信息或位置属性相结合，以更快地执行根本原因分析，从而快速解决性能问题。
+对exemplars的支持仅适用于Prometheus数据源。启用该功能后，默认情况下exemplars数据可用。具体配置参考 configuring exemplars in Prometheus data source
+Grafana在Explore视图和仪表板中显示了exemplars以及metrics。每个exemplars为突出显示的星形。您可以将光标悬停在exemplars上查看更多，它是键值对的组合。要进一步调查，请单击traceID属性旁边的蓝色按钮。
+配置 Grafana具有默认和自定义配置文件。您可以通过修改自定义配置文件或使用环境变量来自定义Grafana实例。Grafana实例的默认设置存储在$WORKING_DIR/conf/defaults.ini 文件。不要更改此文件。你可以使用 &ndash;config 参数指定自定义文件。
+Grafana使用分号（；）注释.ini文件中的行。
+变量替换 不要使用环境变量添加新的配置。相反，使用环境变量替代现有选项。
+GF_&lt;SectionName&gt;_&lt;KeyName&gt; SectionName 和 KeyName要全大写 . 和 - 要替换成 _ # default section instance_name = ${HOSTNAME} [security] admin_user = admin [auth.google] client_secret = 0ldS3cretKey [plugin.grafana-image-renderer] rendering_ignore_https_errors = true [feature_toggles] enable = newNavigation export GF_DEFAULT_INSTANCE_NAME=my-instance export GF_SECURITY_ADMIN_USER=owner export GF_AUTH_GOOGLE_CLIENT_SECRET=newS3cretKey export GF_PLUGIN_GRAFANA_IMAGE_RENDERER_RENDERING_IGNORE_HTTPS_ERRORS=true export GF_FEATURE_TOGGLES_ENABLE=newNavigation 变量扩展 如果配置包含表达式$__&lt;provider&gt;{&lt;argument&gt;}或${&lt;environmentvariable&gt;}，则它们将由Grafana的变量扩展器处理。有三个提供程序：env、file和vault。
+Env provider env提供程序可用于扩展环境变量。如果将选项设置为$__env｛PORT｝，则将在其位置使用PORT环境变量。对于环境变量，您还可以使用速记语法${PORT}。
+[paths] logs = $__env{LOGDIR}/grafana File provider file从文件系统读取文件。它删除文件开头和结尾的空白。以下示例中的数据库密码将替换为/etc/secrets/gf_sql_password文件的内容：]]></description></item><item><title>gradle-basic</title><link>https://banrenshan.github.io/blog/2022/12/gradle-basic/</link><pubDate>Fri, 02 Dec 2022 16:43:59 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/gradle-basic/</guid><description>核心概念 1. Gradle 是一个通用的构建工具 Gradle 可以用于构建（build）任何软件，因为它对你要构建的东西或构建方式几乎不做任何假设。不过当前它最大的限制是，只支持兼容 Maven 和 lvy 的仓库和文件系统。
+这并不意味着你需要为构建做许多工作。Gradle 可以通过插件（plugins）添加一层约定（convention）以及预构建功能（prebuild functionality）来让常见的项目类型，例如 Java 库，更容易被构建。你甚至能将自己的约定和构建功能封装成插件来发布。
+2. 核心模型基于 task task 是 Gradle 的工作单元。Gradle 的构建模型就是一个 task 的定向无环图（Directed Acyclic Graphs, DAGs）。也就是说，构建本质上是在配置一个由 task 组成的定向无环图。task 之间根据它们的依赖关系相连。一旦 task 图被创建，Gradle 就能确定该以何种顺序执行 task。
+这张图显示了两个 task 图的例子，一个是抽象的，一个是具体的，task 之间的依赖关系用箭头表示：
+几乎所有的构建过程都可以通过这种方式建模为一个 task 图，这也是 Gradle 灵活的原因之一。而且这个 task 图可以由插件和你的构建脚本来定义，并通过 task 依赖机制将 task 连接起来。
+一个 task 包括：
+动作（Actions）——执行某些工作。例如复制文件或者编译源码。 输入（Inputs）——给动作使用或操作的值、文件和目录 输出（Outputs）——由动作修改或生成的文件和目录 以上内容都是可选的，使用与否取决于实际需要。一些 task，比如标准生命周期 task（standard lifecycle tasks），甚至没有任何动作。它们只是将多个任务聚合在一起，以方便使用。
+你可以选择你需要的 task 来运行。为了节约时间，请选择刚好能满足需要的 task。如果想运行单元测试，就选择执行单元测试的 task——通常是 test。如果想打包一个应用，大多数构建都提供一个 assemble task 以供使用。</description></item><item><title>zero-copy</title><link>https://banrenshan.github.io/blog/2022/12/zero-copy/</link><pubDate>Fri, 02 Dec 2022 13:06:18 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/zero-copy/</guid><description>零拷贝 概述 零拷贝（Zero-copy）技术指在计算机执行操作时，CPU 不需要先将数据从一个内存区域复制到另一个内存区域，从而可以减少上下文切换以及 CPU 的拷贝时间。它的作用是在数据报从网络设备到用户程序空间传递的过程中，减少数据拷贝次数，减少系统调用，实现 CPU 的零参与，彻底消除 CPU 在这方面的负载。实现零拷贝用到的最主要技术是 DMA 数据传输技术和内存区域映射技术。
+零拷贝机制可以减少数据在内核缓冲区和用户进程缓冲区之间反复的 I/O 拷贝操作。
+零拷贝机制可以减少用户进程地址空间和内核地址空间之间因为上下文切换而带来的 CPU 开销。
+物理内存和虚拟内存 进程之间是共享 CPU 和内存资源的，因此需要一套内存管理机制防止进程之间内存泄漏的问题。为了更加有效地管理内存并减少出错，现代操作系统提供了一种对主存的抽象概念，即是虚拟内存（Virtual Memory）。虚拟内存为每个进程提供了一个一致的、私有的地址空间，它让每个进程产生了一种自己在独享主存的错觉（每个进程拥有一片连续完整的内存空间）。
+物理内存：物理内存（Physical memory）是相对于虚拟内存（Virtual Memory）而言的。物理内存指通过物理内存条而获得的内存空间，而虚拟内存则是指将硬盘的一块区域划分来作为内存。内存主要作用是在计算机运行时为操作系统和各种程序提供临时储存。
+虚拟内存：是计算机系统内存管理的一种技术。 它使得应用程序认为它拥有连续的可用的内存（一个连续完整的地址空间）。而实际上，虚拟内存通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换，加载到物理内存中来。 目前，大多数操作系统都使用了虚拟内存，如 Windows 系统的虚拟内存、Linux 系统的交换空间等等。
+虚拟内存地址和用户进程紧密相关，一般来说不同进程里的同一个虚拟地址指向的物理地址是不一样的，所以离开进程谈虚拟内存没有任何意义。每个进程所能使用的虚拟地址大小和 CPU 位数有关。在 32 位的系统上，虚拟地址空间大小是 2 ^ 32 = 4G，在 64位系统上，虚拟地址空间大小是 2 ^ 64 = 2 ^ 34G，而实际的物理内存可能远远小于虚拟内存的大小。每个用户进程维护了一个单独的页表（Page Table），虚拟内存和物理内存就是通过这个页表实现地址空间的映射的。下面给出两个进程 A、B 各自的虚拟内存空间以及对应的物理内存之间的地址映射示意图：
+当进程执行一个程序时，需要先从内存中读取该进程的指令然后执行，获取指令时用到的就是虚拟地址。这个虚拟地址是程序链接时确定的（内核加载并初始化进程时会调整动态库的地址范围）。为了获取到实际的数据，CPU 需要将虚拟地址转换成物理地址，CPU 转换地址时需要用到进程的页表（Page Table），而页表（Page Table）里面的数据由操作系统维护。
+其中页表（Page Table）可以简单的理解为单个内存映射（Memory Mapping）的链表（当然实际结构很复杂），里面的每个内存映射（Memory Mapping）都将一块虚拟地址映射到一个特定的地址空间（物理内存或者磁盘存储空间）。每个进程拥有自己的页表（Page Table），和其它进程的页表（Page Table）没有关系。
+通过上面的介绍，我们可以简单的将用户进程申请并访问物理内存（或磁盘存储空间）的过程总结如下：
+用户进程向操作系统发出内存申请请求
+系统会检查进程的虚拟地址空间是否被用完，如果有剩余，给进程分配虚拟地址
+系统为这块虚拟地址创建的内存映射（Memory Mapping），并将它放进该进程的页表（Page Table）</description></item><item><title>java-lock</title><link>https://banrenshan.github.io/blog/2022/12/java-lock/</link><pubDate>Fri, 02 Dec 2022 13:03:48 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/java-lock/</guid><description>Java锁 对象头 Java对象保存在内存中时，由以下三部分组成：对象头、实例数据、对齐填充字节。
+java的对象头由以下三部分组成：Mark Word、指向类的指针、数组长度（只有数组对象才有）
+Mark Word在不同的锁状态下存储的内容不同，在32位JVM中是这么存的：
+Syschronized底层的原理 Monitor Monitor被翻译为监视器或管程
+每个Java对象都可以关联一个Monitor对象,如果使用synchronized给对象上锁(重量级)之后【之前可能要先经过轻量级锁或者偏向锁】，该对象头的Mark Word中就被设置指向Monitor对象的指针。
+Monitor的结果如下：
+刚开始Monitor中Owner为null
+当Thread-2执行synchronized(obj)就会将Monitor的所有者Owner置为Thread-2, Monitor中只能有一一个Owner
+在Thread-2持有锁的过程中，如果Thread-3, Thread-4， Thread-5 也来执行synchronized(obj)， 就会进入EntryList BLOCKED
+Thread-2执行完同步代码块的内容，然后唤醒EntryL ist中等待的线程来竞争锁，竞争的时是非公平的
+图中WaitSet中的Thread-0，Thread-1 是之前获得过锁，但条件不满足进入WAITING状态的线程，后面讲wait-notify时会分析
+注意:
+synchronized必须是进入同一个对象的monitor才有上述的效果
+不加synchronized的对象不会关联监视器， 不遵从以上规则
+字节码层面的上理解 static final Object lock = new Object();
+static int counter = 0;
+public static void main(String[] args) {
+synchronized (lock) {
+​ counter++;
+}
+}
+Code:
+​ stack=2, locals=3, args_size=1
+​ 0: getstatic #2 // 获取静态变量
+​ 3: dup // 压入操作数栈顶</description></item><item><title>java-log</title><link>https://banrenshan.github.io/blog/2022/12/java-log/</link><pubDate>Fri, 02 Dec 2022 13:02:32 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/java-log/</guid><description><![CDATA[JAVA日志体系 日志门面 SLF4J(Simple Logging Facade for Java)是一套日志门面，或者说规范。其他的日志组件都是基于这个门面进行实际实现，比如 java.util.logging, logback 和 reload4j.
+用户只需要在代码中使用SLF4J的API，而不需要关系具体的实现，是不是与JDBC很像。
+快速入门 在类路径添加依赖：slf4j-api-xx.jar 编写下面示例代码： import org.slf4j.Logger; import org.slf4j.LoggerFactory; public class HelloWorld { public static void main(String[] args) { Logger logger = LoggerFactory.getLogger(HelloWorld.class); logger.info(&#34;Hello World&#34;); } } 运行此代码，控制台会打印以下警告信息：
+SLF4J: Failed to load class &#34;org.slf4j.impl.StaticLoggerBinder&#34;. SLF4J: Defaulting to no-operation (NOP) logger implementation SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details. 打印此警告是因为在类路径上找不到 slf4j 绑定实现。此时我们将 slf4j-simple-xxx.jar 添加到类路径，就会打印出下面的正常日志信息：
+0 [main] INFO HelloWorld - Hello World 典型的使用方式 占位符]]></description></item><item><title>flyway</title><link>https://banrenshan.github.io/blog/2022/12/flyway/</link><pubDate>Fri, 02 Dec 2022 13:01:55 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/flyway/</guid><description><![CDATA[Flyway 工作原理 项目启动，应用程序完成数据库连接池的建立后，Flyway自动运行。 初次使用时，Flyway会创建一个flyway_schema_history表，用于记录sql执行记录。 Flyway会扫描项目指定路径下(默认是classpath:db/migration)的所有sql脚本，与flyway_schema_history表脚本记录进行比对。根据脚本的名称提取版本号来比对 如果脚本没有执行过，则执行脚本。如果脚本执行过，则比对文件是否发生变更，如果发生了变更，则抛出异常，终止迁移 在spring boot中使用 初始化一个SpringBoot项目，引入MySQL数据库驱动依赖等，并且需要引入Flyway依赖： &lt;dependency&gt; &lt;groupId&gt;org.flywaydb&lt;/groupId&gt; &lt;artifactId&gt;flyway-core&lt;/artifactId&gt; &lt;version&gt;6.1.0&lt;/version&gt; &lt;/dependency&gt; 添加Flyway配置： spring: # 数据库连接配置 datasource: driver-class-name: com.mysql.cj.jdbc.Driver url: jdbc:mysql://localhost:3306/ssm-demo?characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=GMT%2B8 username: xxx password: xxx flyway: # 是否启用flyway enabled: true # 编码格式，默认UTF-8 encoding: UTF-8 # 迁移sql脚本文件存放路径，默认db/migration locations: classpath:db/migration # 迁移sql脚本文件名称的前缀，默认V sql-migration-prefix: V # 迁移sql脚本文件名称的分隔符，默认2个下划线__.前面的用作版本号，后面的用作描述信息 sql-migration-separator: __ # 迁移sql脚本文件名称的后缀 sql-migration-suffixes: .sql # 迁移时是否进行校验，默认true validate-on-migrate: true # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表 baseline-on-migrate: 根据在配置文件的脚本存放路径的配置，在resource目录下建立文件夹db/migration。 添加需要运行的sql脚本。sql脚本的命名规范为：V+版本号(版本号的数字间以”.“或”_“分隔开)+双下划线(用来分隔版本号和描述)+文件描述+后缀名，例如：V20201100__create_user.sql。如图所示： 启动项目。启动成功后，在数据库中可以看到已按照定义好的脚本，完成数据库变更，并在flyway_schema_history表插入了sql执行记录： 主要配置项 flyway.baseline-on-migrate： 当迁移时发现目标schema非空，而且带有没有元数据的表时，是否自动执行基准迁移（创建元数据表，然后执行sql脚本），默认false.
+flyway.baseline-version开始执行基准迁移时对现有的schema的版本打标签，默认值为1.
+flyway.validate-on-migrate迁移时是否校验，默认为true. 校验机制检查本地迁移是否仍与数据库中已执行的迁移具有相同的校验和。主要防止已迁移的本地文件发生了变动，数据库却没有更新这种变化。这是一种预警机制。
+flyway.clean-on-validation-error当发现校验错误时是否自动调用clean，这是开发环境中的方便机制。默认false. 警告！ 不要在生产中启用！]]></description></item><item><title>spring-boot-deploy</title><link>https://banrenshan.github.io/blog/2022/12/spring-boot-deploy/</link><pubDate>Fri, 02 Dec 2022 13:00:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-boot-deploy/</guid><description><![CDATA[Spring Boot应用部署 传统服务器部署 除了使用 java -jar 命令运行程序之外，你还可以将jar包制作成可执行的，这样你只需要使用 ./xx.jar 的方式就可以启动程序。
+完全可执行的 jar 文件通过在文件前面嵌入一个额外的脚本来工作。 包含 jar 的目录用作应用程序的工作目录。
+可以通过构建工具制作完全可执行jar：
+maven方式：
+&lt;plugin&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt; &lt;configuration&gt; &lt;executable&gt;true&lt;/executable&gt; &lt;/configuration&gt; &lt;/plugin&gt; gradle方式：
+tasks.named(&#39;bootJar&#39;) { launchScript() } 安装成Systemd服务 我们可以将可执行jar与系统服务结合使用，例如systemd。
+假设您在/var/myapp中安装了 Spring Boot 应用程序，要将 Spring Boot 应用程序安装为systemd服务，请创建一个名为myapp.service的脚本并将其放置在/etc/systemd/system目录中：
+[Unit] Description=myapp After=syslog.target [Service] User=myapp ExecStart=/var/myapp/myapp.jar SuccessExitStatus=143 [Install] WantedBy=multi-user.target 请注意，与作为init.d服务运行时不同，运行应用程序的用户、PID 文件和控制台日志文件由systemd自身管理，因此必须使用“service”脚本中的适当字段进行配置。
+自定启动脚本 有两种方式可以更改启动脚本，一种是在写入之前，另一种是在启动之前。
+写入之前 所谓写入之前，即在脚本写入到jar包的时候。你可以使用maven插件的embeddedLaunchScriptProperties或 gradle的launchScript更改脚本的内容。
+默认脚本支持以下属性替换：
+参数 描述 Gradle default Maven default mode 脚本的模式 auto auto initInfoProvides 服务的名称 ${task.baseName} ${project.artifactId} initInfoRequiredStart 服务启动前依赖的其他服务 $remote_fs $syslog $network $remote_fs $syslog $network initInfoRequiredStop 服务关闭前的，需要关闭的其他的服务 $remote_fs $syslog $network $remote_fs $syslog $network initInfoDefaultStart 服务的启动级别 2 3 4 5 2 3 4 5 initInfoDefaultStop 服务的关闭级别 0 1 6 0 1 6 initInfoShortDescription 服务的简短描述 Single-line version of ${project.]]></description></item><item><title>spring-boot-starter-actuator</title><link>https://banrenshan.github.io/blog/2022/12/spring-boot-starter-actuator/</link><pubDate>Fri, 02 Dec 2022 12:59:36 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-boot-starter-actuator/</guid><description>Spring Boot性能监控 Spring Boot 包含许多附加功能，可帮助您在将应用程序推送到生产环境时对其进行监控和管理。 您可以选择使用 HTTP 端点或 JMX 来管理和监视您的应用程序。 审计、健康和指标收集也可以自动应用于您的应用程序。
+这些功能是通过 spring-boot-actuator 模块实现的，你只需要在类路径添加spring-boot-starter-actuator 依赖即可。
+dependencies { implementation &amp;#39;org.springframework.boot:spring-boot-starter-actuator&amp;#39; } 端点 执行器端点使您可以监视应用程序并与之交互。Spring Boot 包含许多内置端点，并允许您添加自己的端点。例如，health端点提供基本的应用程序健康信息。
+您可以启用或禁用每个单独的端点并通过 HTTP 或 JMX 公开它们（使它们可以远程访问）。当端点被启用和公开时，它被认为是可用的。内置端点仅在可用时才会自动配置。大多数应用程序选择通过 HTTP 公开，其中端点的 ID 和前缀/actuator映射到 URL。例如，默认情况下，health端点映射到/actuator/health.
+以下与技术无关的端点：
+ID 描述 auditevents 公开当前应用程序的审计事件信息。需要一个AuditEventRepository bean。 beans 显示应用程序中所有 Spring bean 的完整列表。 caches 公开可用的缓存。 conditions 显示在配置和自动配置类上评估的条件以及它们匹配或不匹配的原因。 configprops 显示所有@ConfigurationProperties. env 公开 Spring 的ConfigurableEnvironment. flyway 显示已应用的任何 Flyway 数据库迁移。需要一个或多个Flyway bean。 health 显示应用程序运行状况信息。 httptrace 显示 HTTP 跟踪信息（默认情况下，最近 100 个 HTTP 请求-响应交换）。需要一个HttpTraceRepository bean。 info 显示任意应用程序信息。 integrationgraph 显示 Spring 集成图。需要依赖spring-integration-core.</description></item><item><title>spring-mvc</title><link>https://banrenshan.github.io/blog/2022/12/spring-mvc/</link><pubDate>Fri, 02 Dec 2022 12:56:09 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-mvc/</guid><description><![CDATA[spring mvc官方文档 DispatcherServlet 与其他许多Web框架一样，Spring MVC围绕前端控制器模式进行设计，在该模式下，中央Servlet DispatcherServlet提供了用于请求处理的共享算法，而实际工作是由可配置的委托组件执行的。 该模型非常灵活，并支持多种工作流程。
+与任何Servlet一样，都需要使用Java配置或在web.xml中根据Servlet规范声明和映射DispatcherServlet。 反过来，DispatcherServlet使用Spring配置发现请求映射，视图解析，异常处理等所需的委托组件。
+以下Java配置示例注册并初始化DispatcherServlet，该容器由Servlet容器自动检测到（请参阅Servlet Config）：
+public class MyWebApplicationInitializer implements WebApplicationInitializer { @Override public void onStartup(ServletContext servletContext) { // 加载 Spring web application configuration AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext(); context.register(AppConfig.class); // 创建并注册DispatcherServlet DispatcherServlet servlet = new DispatcherServlet(context); ServletRegistration.Dynamic registration = servletContext.addServlet(&#34;app&#34;, servlet); registration.setLoadOnStartup(1); registration.addMapping(&#34;/app/*&#34;); } } 除了使用 ServletContext API，你也可以继承AbstractAnnotationConfigDispatcherServletInitializer，覆盖指定的方法来配置DispatcherServlet,参考Conetxt层级关系中的例子
+Context的层级关系 DispatcherServlet需要配置WebApplicationContext（纯ApplicationContext的扩展）为自身属性。 WebApplicationContext具有指向ServletContext和与其关联的Servlet的链接。它还绑定到ServletContext，以便应用程序可以在RequestContextUtils上使用静态方法来查找WebApplicationContext（如果需要访问它们）。
+对于许多应用程序来说，拥有一个WebApplicationContext很简单并且足够。也可能具有上下文层次结构，其中一个根WebApplicationContext在多个DispatcherServlet（或其他Servlet）实例之间共享，每个实例都有其自己的子WebApplicationContext配置。有关上下文层次结构功能的更多信息，请参见ApplicationContext的其他功能。
+根WebApplicationContext通常包含基础结构bean，例如需要在多个Servlet实例之间共享的数据存储库和业务服务。这些Bean是有效继承的，并且可以在Servlet特定的子WebApplicationContext中重写（即重新声明），该子WebApplicationContext通常包含给定Servlet本地的Bean。下图显示了这种关系：
+下面的例子配置WebApplicationContext
+public class MyWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer { @Override protected Class&lt;?&gt;[] getRootConfigClasses() { return new Class&lt;?]]></description></item><item><title>Resilience4j</title><link>https://banrenshan.github.io/blog/2022/12/resilience4j/</link><pubDate>Fri, 02 Dec 2022 12:54:32 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/resilience4j/</guid><description><![CDATA[简介 Resilience4j一个轻量级（只依赖Vavr第三方库）的，易于使用的容错框架，灵感来源于Netflix Hystrix，依托于java8的函数式编程。
+Resilience4j提供了断路器、限速、重试、Bulkhead等功能。你可以任意选择和搭配这些功能。
+Bulkhead(隔板模式)是一种容错的应用程序设计。 在隔板架构中，应用程序的元素被隔离到池中，因此，如果其中一个失败，则其他元素将继续运行。 它是根据船体的分段隔板（凸头）来命名的。 如果船体受损，则只有损坏的部分会充满水，从而防止船下沉。
+以下示例显示了如何使用CircuitBreaker和Retry装饰lambda表达式，以便在发生异常时最多重试3次。
+// 创建默认的断路器 CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults(&#34;backendService&#34;); // 创建默认的重试器，重拾3次，间隔为500ms Retry retry = Retry.ofDefaults(&#34;backendService&#34;); // 创建默认的隔离器 Bulkhead bulkhead = Bulkhead.ofDefaults(&#34;backendService&#34;); //具体的业务调用 Supplier&lt;String&gt; supplier = () -&gt; backendService.doSomething(param1, param2) // 使用装扮器装扮函数 Supplier&lt;String&gt; decoratedSupplier = Decorators.ofSupplier(supplier) .withCircuitBreaker(circuitBreaker) .withBulkhead(bulkhead) .withRetry(retry) .decorate(); // 执行函数，并设置后退函数 String result = Try.ofSupplier(decoratedSupplier) .recover(throwable -&gt; &#34;Hello from Recovery&#34;).get(); // 不使用装扮器，直接使用断路器调用函数 String result = circuitBreaker .executeSupplier(backendService::doSomething); // 使用ThreadPoolBulkhead在另外的线程中异步运行 ThreadPoolBulkhead threadPoolBulkhead = ThreadPoolBulkhead.ofDefaults(&#34;backendService&#34;); // 设定超时机制，超时需要Scheduler来调度 ScheduledExecutorService scheduledExecutorService = Executors.]]></description></item><item><title>spring-cloud-Circuit-breaker</title><link>https://banrenshan.github.io/blog/2022/12/spring-cloud-circuit-breaker/</link><pubDate>Fri, 02 Dec 2022 12:54:03 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-cloud-circuit-breaker/</guid><description><![CDATA[Spring Cloud Circuit breaker 提供了跨不同断路器实现的抽象。 它提供了在您的应用程序中使用的一致 API，让您（开发人员）可以选择最适合您的应用程序需求的断路器实现。
+可用的实现如下：
+Resilience4J Sentinel Spring Retry 快速入门 在API中使用CircuitBreakerFactory 类创建CircuitBreaker断路器。当你添加实现了断路器的依赖时，会自动创建CircuitBreakerFactory bean，下面代码是使用例子：
+@Service public static class DemoControllerService { private RestTemplate rest; private CircuitBreakerFactory cbFactory; public DemoControllerService(RestTemplate rest, CircuitBreakerFactory cbFactory) { this.rest = rest; this.cbFactory = cbFactory; } public String slow() { return cbFactory.create(&#34;slow&#34;).run( //断路器的名称 () -&gt; rest.getForObject(&#34;/slow&#34;, String.class), //业务方法 throwable -&gt; &#34;fallback&#34; //后备方法 ); } } 如果reactor在你的classpath下，你可以使用ReactiveCircuitBreakerFactory 来处理响应式代码：
+@Service public static class DemoControllerService { private ReactiveCircuitBreakerFactory cbFactory; private WebClient webClient; public DemoControllerService(WebClient webClient, ReactiveCircuitBreakerFactory cbFactory) { this.]]></description></item><item><title>spring-cloud-loadBalancer</title><link>https://banrenshan.github.io/blog/2022/12/spring-cloud-loadbalancer/</link><pubDate>Fri, 02 Dec 2022 12:53:28 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-cloud-loadbalancer/</guid><description>Spring Cloud 提供了自己的客户端负载均衡器抽象和实现。 对于负载均衡机制，添加了 ReactiveLoadBalancer 接口，从响应式的ServiceInstanceListSupplier 中选择实例，并为其提供了基于 Round 和 Random 的实现。 目前，我们支持基于服务发现的ServiceInstanceListSupplier，该实现使用类路径中可用的发现发现客户端检索可用实例。
+如何切换负载均衡算法 默认使用的 ReactiveLoadBalancer 实现是 RoundRobinLoadBalancer。 要为选定的服务或所有服务切换到不同的实现，您可以使用自定义 LoadBalancer 配置机制。
+例如，可以通过@LoadBalancerClient的configuration 属性配置RandomLoadBalancer：
+public class CustomLoadBalancerConfiguration { //注意不要添加 @Configuration @Bean ReactorLoadBalancer&amp;lt;ServiceInstance&amp;gt; randomLoadBalancer(Environment environment, LoadBalancerClientFactory loadBalancerClientFactory) { String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME); return new RandomLoadBalancer(loadBalancerClientFactory .getLazyProvider(name, ServiceInstanceListSupplier.class), name); } } 如何集成负载均衡客户端 为了方便使用 Spring Cloud LoadBalancer，我们提供了可与 WebClient 一起使用的 ReactorLoadBalancerExchangeFilterFunction 和与 RestTemplate 一起使用的 BlockingLoadBalancerClient。 您可以在以下部分中查看更多信息和用法示例：
+RestTemplate @Configuration public class MyConfiguration { @LoadBalanced @Bean RestTemplate restTemplate() { return new RestTemplate(); } } public class MyClass { @Autowired private RestTemplate restTemplate; public String doOtherStuff() { String results = restTemplate.</description></item><item><title>spring-cloud-discovery</title><link>https://banrenshan.github.io/blog/2022/12/spring-cloud-discovery/</link><pubDate>Fri, 02 Dec 2022 12:53:04 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-cloud-discovery/</guid><description>@EnableDiscoveryClient Spring Cloud Commons 提供了 @EnableDiscoveryClient 注解。 这会在META-INF/spring.factories（org.springframework.cloud.client.discovery.EnableDiscoveryClient是key，value是具体的实现） 文件中搜索 DiscoveryClient 和 ReactiveDiscoveryClient 接口的实现。 DiscoveryClient 实现的示例包括 Spring Cloud Netflix Eureka、Spring Cloud Consul Discovery 和 Spring Cloud Zookeeper Discovery。
+默认情况下，Spring Cloud 将提供阻塞和反应式服务发现客户端。 您可以通过设置 spring.cloud.discovery.blocking.enabled=false 或 spring.cloud.discovery.reactive.enabled=false 轻松禁用阻塞和/或反应客户端。 要完全禁用服务发现，您只需设置 spring.cloud.discovery.enabled=false。
+默认情况下， DiscoveryClient 的实现会自动向远程发现服务器注册本地 Spring Boot 应用。 可以通过在 @EnableDiscoveryClient 中设置 autoRegister=false 来禁用此行为。
+@EnableDiscoveryClient不需要显示声明。 只需要在类路径上放置一个 DiscoveryClient 实现。
+健康检查 spring.cloud.discovery.client.health-indicator.enabled=false.禁用健康检查 要禁用描述字段，请设置 spring.cloud.discovery.client.health-indicator.include-description=false。 否则，它可能会冒泡作为汇总的 HealthIndicator 的描述。 要禁用服务检索，请设置 spring.cloud.discovery.client.health-indicator.use-services-query=false。 默认情况下，指标调用客户端的 getServices 方法。 在具有许多注册服务的部署中，在每次检查期间检索所有服务的成本可能太高。 这将跳过服务检索，而是使用客户端的探测方法。 DiscoveryCompositeHealthContributor复合健康指标基于所有已注册的 DiscoveryHealthIndicator bean。 要禁用，请设置 spring.</description></item><item><title>nginx</title><link>https://banrenshan.github.io/blog/2022/12/nginx/</link><pubDate>Fri, 02 Dec 2022 12:51:30 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/nginx/</guid><description>访问日志解码请求参数 打印post请求的请求体信息 默认的日志打印不包含请求体的内容,如果要打印改值,只需要在log_format中添加$request_body 即可,更多日志打印变量参考官方文档
+另外,即使打印出来请求体,内容不支持中文,都是经过url编码后的字符串.
+添加或启动新模块 nginx不支持动态安装、加载模块的，所以当你安装第三方模块或者启动nginx本身的新模块功能的时候，都是覆盖nginx的；所以，一定要注意：首先查看你已经安装的nginx模块！然后安装新东西的时候，要把已安装的，再次配置。
+1.查看ngnix已经安装的模块./nginx -V
+2.执行configure和make
+./configure --prefix=/usr/local/nginx \ --with-http_stub_status_module \ --with-http_ssl_module --with-http_realip_module \ --with-http_image_filter_module \ --add-module=../ngx_pagespeed-master make 3.替换nginx二进制文件
+cp /root/nginx-1.8.1/objs/nginx /usr/local/nginx/sbin/nginx X-Forwarded-For 和 X-Real-IP X-Forwarded-For:被代理服务器使用,用来记录经过的代理服务信息. X-Real-IP:被代理服务器使用,用来记录客户端的真实IP地址.
+举例: 现在有ngnix代理服务器A和B,请求先请过A[10.187.144.41],然后B[10.187.112.151],最后到达服务器[10.176.175.149]处理该请求.
+A的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; B的ngnix配置
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 服务器的响应
+x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 connection:close x-real-ip:114.141.166.125 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 变动1:如果B的配置也加上proxy_set_header X-Real-IP $remote_addr呢,服务器收到的请求头信息会是神马呢?
+x-real-ip:10.187.144.41 x-forwarded-for:114.141.166.125, 10.187.144.41 host:10.176.175.149:8080 getRemoteAddr:10.187.112.151 getRemoteHost:10.187.112.151 getServerName:10.176.175.149 需要注意的是x-forwarded-for并没有把最后一个代理添加上去
+我们看到x-real-ip的地址发生改变,不再是真实的客户端ip,而是代理A的ip,说明此时的$remote_addr的值是代理A的IP,如何修改这个值为真实的IP呢? 可以使用ngx_http_realip_module模块
+ngx_http_realip_module模块 安装请参考模块安装,A配置不变,B配置如下:
+set_real_ip_from 10.187.144.41 real_ip_header X-Real-IP ; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Real-IP $remote_addr; set_real_ip_from:指定真实IP的地址是在哪个代理机器上 real_ip_header:真实IP所在的请求头字段</description></item><item><title>spring-security</title><link>https://banrenshan.github.io/blog/2022/12/spring-security/</link><pubDate>Fri, 02 Dec 2022 12:50:01 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-security/</guid><description><![CDATA[快速入门 第一步：依赖 &lt;dependency&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt; &lt;/dependency&gt; 第二步：编写测试controller @RestController @RequestMapping(&#34;/hello&#34;) public class HelloController { @GetMapping public String hello() { return &#34;hello&#34;; } } 第三步启动并测试 浏览器中输入： http://localhost:8080/hello 浏览器会呈现登录页，如下： 用户名是 user ，密码在启动的控制台中打印。
+至此，一个安全的web应用就产生了。接下来，我们来看一下spring默认的配置。
+spring boot 自动配置 启用 Spring Security 的默认配置，它创建一个 servlet 过滤器（名为 springSecurityFilterChain 的 bean）。 此 bean 负责应用程序中的所有安全性（保护应用程序 URL、验证提交的用户名和密码、重定向到登录表单等）。 使用用户名 user 和随机生成的密码创建一个 UserDetailsService bean，该密码登录到控制台。 使用名为 springSecurityFilterChain 的 bean 向 Servlet 容器注册过滤器。 Spring Boot 配置的并不多，但是却做了很多。 功能摘要如下：
+需要经过身份验证的用户才能与应用程序进行任何交互
+为您生成默认登录表单
+让用户名 user 和登录到控制台的密码的用户使用基于表单的身份验证进行身份验证]]></description></item><item><title>CompletableFuture</title><link>https://banrenshan.github.io/blog/2022/12/completablefuture/</link><pubDate>Fri, 02 Dec 2022 12:48:41 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/completablefuture/</guid><description></description></item><item><title>Guava</title><link>https://banrenshan.github.io/blog/2022/12/guava/</link><pubDate>Fri, 02 Dec 2022 12:48:14 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/guava/</guid><description><![CDATA[集合 List操作 // 创建ArrayList ArrayList&lt;String&gt; arrayList1 = Lists.newArrayList(); ArrayList&lt;String&gt; arrayList2 = Lists.newArrayList(&#34;1&#34;, &#34;2&#34;, &#34;3&#34;); ArrayList&lt;String&gt; arrayList3 = Lists.newArrayList(arrayList1); ArrayList&lt;String&gt; arrayList4 = Lists.newArrayListWithCapacity(10); //创建LinkedList LinkedList&lt;Object&gt; linkedList1 = Lists.newLinkedList(); LinkedList&lt;String&gt; linkedList2 = Lists.newLinkedList(arrayList1); //创建CopyOnWriteArrayList CopyOnWriteArrayList&lt;Object&gt; copyOnWriteArrayList1 = Lists.newCopyOnWriteArrayList(); CopyOnWriteArrayList&lt;String&gt; copyOnWriteArrayList2 = Lists.newCopyOnWriteArrayList(arrayList1); //反转list List&lt;String&gt; reverse = Lists.reverse(arrayList2); System.err.println(reverse); //[3, 2, 1] //切分list List&lt;List&lt;String&gt;&gt; partition = Lists.partition(arrayList2, 2); System.err.println(partition); //[[1, 2], [3]] //笛卡尔集 List&lt;List&lt;String&gt;&gt; lists = Lists.cartesianProduct(Lists.newArrayList(&#34;A&#34;, &#34;B&#34;), arrayList2); System.err.println(lists);//[[A, 1], [A, 2], [A, 3], [B, 1], [B, 2], [B, 3]] //转化集合元素 List&lt;String&gt; transform = Lists.]]></description></item><item><title>reactor</title><link>https://banrenshan.github.io/blog/2022/12/reactor/</link><pubDate>Fri, 02 Dec 2022 12:47:03 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/reactor/</guid><description><![CDATA[响应式编程是观察者设计模式的扩展 对比迭代器模式，一个重要区别是，迭代器基于拉模式，reactive streams基于推模式 使用迭代器是一种命令式编程，即必须通过Iterable访问值，这就需要开发者手动next()访问值。reactive streams采用的是Publisher-Subscriber：发布者在新的可用值到来时通知订阅者，这种基于推的模式是响应式编程的核心。此外，应用于推送值的操作是以声明的方式而不是命令的方式表达的，程序员表达计算的逻辑而不是描述其确切的控制流程。
+发布者可以向其订阅者推送新值（通过调用 onNext），但也可以发出错误（通过调用 onError）或完成（通过调用 onComplete信号。 错误和完成信号都会终止序列。 这可以总结如下：
+onNext x 0..N [onError | onComplete] reactor实现了两种Publisher：
+Flux: 0..N个item的响应式序列 Mono: 0..1个item的响应式序列 这两种类型更多的是语义上的区别。例如，一个http请求仅产生一个响应，这时候使用Mono比 Flux更好，毕竟前者表示了0或1的意思。两者之间也可以相互转化，例如count操作符，Flux执行count返回 Mono
+下面是Flux的基本弹珠图：
+所有的事件，甚至终止事件，都是可选的：
+没有onNext事件，只有OnComplete事件，表示一个空序列。 没有任何事件，表示一个空的无限序列。 同样，无限序列不一定为空。 例如，Flux.interval（Duration）产生Flux ，它是无限的并从时钟发出规则的滴答声。 Mono是一个特殊的Publisher，它通过onNext信号最多发出一项，然后以onComplete信号（成功的Mono）终止，或仅发出一个onError信号（失败的Mono）。
+订阅 subscribe(); //订阅并触发序列 subscribe(Consumer&lt;? super T&gt; consumer); //对每个产生的价值做一些事情。 subscribe(Consumer&lt;? super T&gt; consumer, Consumer&lt;? super Throwable&gt; errorConsumer); //处理值的同时也要对错误做出反应。 subscribe(Consumer&lt;? super T&gt; consumer, Consumer&lt;? super Throwable&gt; errorConsumer, Runnable completeConsumer); //处理值和错误，但也会在序列成功完成时运行一些代码。 subscribe(Consumer&lt;? super T&gt; consumer, Consumer&lt;? super Throwable&gt; errorConsumer, Runnable completeConsumer, Consumer&lt;?]]></description></item><item><title>oauth2</title><link>https://banrenshan.github.io/blog/2022/12/oauth2/</link><pubDate>Fri, 02 Dec 2022 12:45:48 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/oauth2/</guid><description><![CDATA[为了理解OAuth的适用场合，让我举一个假设的例子。
+有一个&quot;云冲印&quot;的网站，可以将用户储存在Google的照片，冲印出来。用户为了使用该服务，必须让&quot;云冲印&quot;读取自己储存在Google上的照片。
+问题是只有得到用户的授权，Google才会同意&quot;云冲印&quot;读取这些照片。那么，&ldquo;云冲印&quot;怎样获得用户的授权呢？
+传统方法是，用户将自己的Google用户名和密码，告诉&quot;云冲印&rdquo;，后者就可以读取用户的照片了。这样的做法有以下几个严重的缺点:
+&ldquo;云冲印&quot;为了后续的服务，会保存用户的密码，这样很不安全。 &ldquo;云冲印&quot;拥有了获取用户储存在Google所有资料的权力，用户没法限制&quot;云冲印&quot;获得授权的范围和有效期。 用户只有修改密码，才能收回赋予&quot;云冲印&quot;的权力。但是这样做，会使得其他所有获得用户授权的第三方应用程序全部失效。 只要有一个第三方应用程序被破解，就会导致用户密码泄漏，以及所有被密码保护的数据泄漏。 OAuth就是为了解决上面这些问题而诞生的。
+名词定义 在详细讲解OAuth 2.0之前，需要了解几个专用名词。
+Third-party application：第三方应用程序，本文中又称&quot;客户端&rdquo;（client），即上门面的&quot;云冲印&rdquo;。 HTTP service：HTTP服务提供商（Provider），本文中简称&quot;服务提供商&quot;，即上一节例子中的Google。 Resource Owner：资源所有者，本文中又称&quot;用户&quot;（user）。 User Agent：用户代理，本文中就是指浏览器。 Authorization server：认证服务器，即服务提供商专门用来处理认证的服务器。 Resource server：资源服务器，即服务提供商存放用户生成的资源的服务器。它与认证服务器，可以是同一台服务器，也可以是不同的服务器。 OAuth的作用就是让&quot;客户端&quot;安全可控地获取&quot;用户&quot;的授权，与&quot;服务商提供商&quot;进行互动。
+OAuth在&quot;客户端&quot;与&quot;服务提供商&quot;之间，设置了一个授权层（authorization layer）。&ldquo;客户端&quot;不能直接登录&quot;服务提供商&rdquo;，只能登录授权层，以此将用户与客户端区分开来。&ldquo;客户端&quot;登录授权层所用的令牌（token），与用户的密码不同。用户可以在登录的时候，指定授权层令牌的权限范围和有效期。
+&ldquo;客户端&quot;登录授权层以后，&ldquo;服务提供商&quot;根据令牌的权限范围和有效期，向&quot;客户端&quot;开放用户储存的资料。
+运行流程 OAuth 2.0的运行流程如下图，摘自RFC 6749。
+（A）用户打开客户端以后，客户端要求用户给予授权。
+（B）用户同意给予客户端授权。
+（C）客户端使用上一步获得的授权，向认证服务器申请令牌。
+（D）认证服务器对客户端进行认证以后，确认无误，同意发放令牌。
+（E）客户端使用令牌，向资源服务器申请获取资源。
+（F）资源服务器确认令牌无误，同意向客户端开放资源。
+不难看出来，上面六个步骤之中，B是关键，即用户怎样才能给于客户端授权。有了这个授权以后，客户端就可以获取令牌，进而凭令牌获取资源。下面一一讲解客户端获取授权的四种模式。
+授权模式 客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0定义了四种授权方式。
+授权码模式（authorization code） 简化模式（implicit） 密码模式（resource owner password credentials） 客户端模式（client credentials） 授权码模式 授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与&quot;服务提供商&quot;的认证服务器进行互动。
+（A）用户访问客户端，后者将用户重定向认证服务器。
+（B）用户选择是否给予客户端授权。
+（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的&quot;重定向URI&rdquo;（redirection URI），同时附上一个授权码。
+（D）客户端收到授权码，附上早先的&quot;重定向URI&rdquo;，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。
+（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和刷新令牌（refresh token）。
+A步骤中，客户端申请认证的URI，包含以下参数：
+response_type：表示授权类型，必选项，此处的值固定为&quot;code&rdquo; client_id：表示客户端的ID，必选项 redirect_uri：表示重定向URI，可选项 scope：表示申请的权限范围，可选项 state：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。 GET /authorize?]]></description></item><item><title>json-web-token</title><link>https://banrenshan.github.io/blog/2022/12/json-web-token/</link><pubDate>Fri, 02 Dec 2022 12:45:09 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/json-web-token/</guid><description><![CDATA[跨域认证的问题 互联网服务离不开用户认证。一般流程是下面这样:
+1、用户向服务器发送用户名和密码。
+2、服务器验证通过后，在当前对话（session）里面保存相关数据，比如用户角色、登录时间等等。
+3、服务器向用户返回一个 session_id，写入用户的 Cookie。
+4、用户随后的每一次请求，都会通过 Cookie，将 session_id 传回服务器。
+5、服务器收到 session_id，找到前期保存的数据，由此得知用户的身份。
+JWT 的原理是，服务器认证以后，生成一个 JSON 对象，发回给用户，就像下面这样:
+{ &#34;姓名&#34;: &#34;张三&#34;, &#34;角色&#34;: &#34;管理员&#34;, &#34;到期时间&#34;: &#34;2018年7月1日0点0分&#34; } 以后，用户与服务端通信的时候，都要发回这个 JSON 对象。服务器完全只靠这个对象认定用户身份。为了防止用户篡改数据，服务器在生成这个对象的时候，会加上签名（详见后文）。服务器就不保存任何 session 数据了，也就是说，服务器变成无状态了，从而比较容易实现扩展。
+客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage。
+此后，客户端每次与服务器通信，都要带上这个 JWT。你可以把它放在 Cookie 里面自动发送，但是这样不能跨域，所以更好的做法是放在 HTTP 请求的头信息Authorization字段里面( Authorization: Bearer &lt;token&gt; )。
+JWT特点：
+（1）JWT 默认是不加密，但也是可以加密的。生成原始 Token 以后，可以用密钥再加密一次。
+（2）JWT 不加密的情况下，不能将隐秘数据写入 JWT。
+（3）JWT 不仅可以用于认证，也可以用于交换信息。有效使用 JWT，可以降低服务器查询数据库的次数。
+（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。
+（5）JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT 的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。
+（6）为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。]]></description></item><item><title>spring-security-oauth2</title><link>https://banrenshan.github.io/blog/2022/12/spring-security-oauth2/</link><pubDate>Fri, 02 Dec 2022 12:43:31 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-security-oauth2/</guid><description>OAuth2的配置属性 Spring Boot 2.x ClientRegistration spring.security.oauth2.client.registration.[registrationId] registrationId spring.security.oauth2.client.registration.[registrationId].client-id clientId spring.security.oauth2.client.registration.[registrationId].client-secret clientSecret spring.security.oauth2.client.registration.[registrationId].client-authentication-method clientAuthenticationMethod spring.security.oauth2.client.registration.[registrationId].authorization-grant-type authorizationGrantType spring.security.oauth2.client.registration.[registrationId].redirect-uri redirectUri spring.security.oauth2.client.registration.[registrationId].scope scopes spring.security.oauth2.client.registration.[registrationId].client-name clientName spring.security.oauth2.client.provider.[providerId].authorization-uri providerDetails.authorizationUri spring.security.oauth2.client.provider.[providerId].token-uri providerDetails.tokenUri spring.security.oauth2.client.provider.[providerId].jwk-set-uri providerDetails.jwkSetUri spring.security.oauth2.client.provider.[providerId].issuer-uri providerDetails.issuerUri spring.security.oauth2.client.provider.[providerId].user-info-uri providerDetails.userInfoEndpoint.uri spring.security.oauth2.client.provider.[providerId].user-info-authentication-method providerDetails.userInfoEndpoint.authenticationMethod spring.security.oauth2.client.provider.[providerId].user-name-attribute providerDetails.userInfoEndpoint.userNameAttributeName 配置举例：
+spring: security: oauth2: client: registration: okta: client-id: okta-client-id client-secret: okta-client-secret provider: okta: authorization-uri: https://your-subdomain.oktapreview.com/oauth2/v1/authorize token-uri: https://your-subdomain.oktapreview.com/oauth2/v1/token user-info-uri: https://your-subdomain.oktapreview.com/oauth2/v1/userinfo user-name-attribute: sub jwk-set-uri: https://your-subdomain.oktapreview.com/oauth2/v1/keys OAuth2ClientAutoConfiguration 类主要做了下面的工作：
+注册 ClientRegistrationRepository@Bean，该Bean由配置的OAuth客户端属性中的ClientRegistry组成。 注册 SecurityFilterChain@Bean，并通过httpSecurity.oauth2Login()启用OAuth 2.0登录。 如果你想覆盖自动配置可以通过下面的方式：
+注册 ClientRegistrationRepository bean 注册 SecurityFilterChain bean 完全覆盖自动注册类 注册 ClientRegistrationRepository bean @Configuration public class OAuth2LoginConfig { @Bean public ClientRegistrationRepository clientRegistrationRepository() { return new InMemoryClientRegistrationRepository(this.</description></item><item><title>spring-boot-how-to</title><link>https://banrenshan.github.io/blog/2022/12/spring-boot-how-to/</link><pubDate>Fri, 02 Dec 2022 12:42:53 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-boot-how-to/</guid><description><![CDATA[构建时替换属性 您可以使用构建工具中设定的属性来替换应用属性，而不是对项目的生成配置中指定的某些属性进行硬编码。这在Maven和Gradle都是可能的。
+maven 您可以通过使用资源过滤从Maven项目自动展开属性。如果使用spring-boot-starter-parent，则可以使用@..@占位符引用Maven的“project properties，如下例所示：
+app.encoding=@project.build.sourceEncoding@ app.java.version=@java.version@ 如果启用addResources标志，springboot:run目标可以将src/main/resources直接添加到类路径（用于热重新加载）。这样做可以避免资源筛选和此功能。相反，您可以使用exec:java目标或自定义插件的配置。有关详细信息，请参见插件使用页面。????
+如果不使用starter父级，则需要在pom.xml的＜build/＞元素中包含以下元素：
+&lt;resources&gt; &lt;resource&gt; &lt;directory&gt;src/main/resources&lt;/directory&gt; &lt;filtering&gt;true&lt;/filtering&gt; &lt;/resource&gt; &lt;/resources&gt; 您还需要在＜plugins/＞中包含以下元素：
+&lt;plugin&gt; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;maven-resources-plugin&lt;/artifactId&gt; &lt;version&gt;2.7&lt;/version&gt; &lt;configuration&gt; &lt;delimiters&gt; &lt;delimiter&gt;@&lt;/delimiter&gt; &lt;/delimiters&gt; &lt;useDefaultDelimiters&gt;false&lt;/useDefaultDelimiters&gt; &lt;/configuration&gt; &lt;/plugin&gt; Gradle 您可以通过配置Java插件的processResources任务来自动扩展Gradle项目中的属性，如下例所示：
+tasks.named(&#39;processResources&#39;) { expand(project.properties) } 然后，可以使用占位符引用Gradle项目的属性，如以下示例所示：
+app.name=${name} app.description=${description} Gradle的expand方法使用Groovy的SimpleTemplateEngine，它转换${..}标记。${..}样式与Spring自己的属性占位符机制冲突。要将Spring属性占位符与自动扩展一起使用，请按如下方式转义Spring属性占位符：${..}。
+生成build信息 Maven插件和Gradle插件都允许生成包含项目坐标、名称和版本的构建信息。插件还可以通过配置文件添加附加属性。当存在这样的文件时，Spring Boot会自动配置BuildProperties bean。
+要使用Maven生成构建信息，请为执行添加build-info 目标，如下例所示：
+&lt;build&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt; &lt;version&gt;2.7.5&lt;/version&gt; &lt;executions&gt; &lt;execution&gt; &lt;goals&gt; &lt;goal&gt;build-info&lt;/goal&gt; &lt;/goals&gt; &lt;/execution&gt; &lt;/executions&gt; &lt;/plugin&gt; &lt;/plugins&gt; &lt;/build&gt; 以下示例对Gradle执行相同操作：
+springBoot { buildInfo() } 生成git信息 Maven和Gradle都允许生成git.properties文件，其中包含有关项目生成时git源代码存储库状态的信息。
+对于Maven用户，spring-boot-starter-parent POM包括一个预配置的插件，用于生成 git.properties 文件。要使用它，请将以下声明添加到POM中：]]></description></item><item><title>spring-boot-core</title><link>https://banrenshan.github.io/blog/2022/12/spring-boot-core/</link><pubDate>Fri, 02 Dec 2022 12:42:06 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-boot-core/</guid><description><![CDATA[SpringApplication SpringApplication类提供了一种从main方法启动的Spring应用程序方法。在许多情况下，您可以委托给静态的SpringApplication.run方法，如下例所示：
+@SpringBootApplication public class MyApplication { public static void main(String[] args) { SpringApplication.run(MyApplication.class, args); } } 当应用程序启动时，您应该会看到类似于以下输出的内容：
+. ____ _ __ _ _ /\\ / ___&#39;_ __ _ _(_)_ __ __ _ \ \ \ \ ( ( )\___ | &#39;_ | &#39;_| | &#39;_ \/ _` | \ \ \ \ \\/ ___)| |_)| | | | | || (_| | ) ) ) ) &#39; |____| .__|_| |_|_| |_\__, | / / / / =========|_|==============|___/=/_/_/_/ :: Spring Boot :: (v2.]]></description></item><item><title>jackson</title><link>https://banrenshan.github.io/blog/2022/12/jackson/</link><pubDate>Fri, 02 Dec 2022 12:41:07 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/jackson/</guid><description><![CDATA[ObjectMapper 基本使用 public class Car { private String color; private String type; // standard getters setters } 序列化:
+ObjectMapper objectMapper = new ObjectMapper(); Car car = new Car(&#34;yellow&#34;, &#34;renault&#34;); objectMapper.writeValue(new File(&#34;target/car.json&#34;), car); {&#34;color&#34;:&#34;yellow&#34;,&#34;type&#34;:&#34;renault&#34;} ObjectMapper类的writeValueAsString和writeValueAsBytes方法从Java对象生成JSON，并将生成的JSON作为字符串或字节数组返回：
+String carAsString = objectMapper.writeValueAsString(car); 反序列化：
+String json = &#34;{ \&#34;color\&#34; : \&#34;Black\&#34;, \&#34;type\&#34; : \&#34;BMW\&#34; }&#34;; Car car = objectMapper.readValue(json, Car.class);	readValue函数还接受其他形式的输入，例如包含JSON字符串的文件：
+Car car = objectMapper.readValue(new File(&#34;src/test/resources/json_car.json&#34;), Car.class); 或者从URL中：
+Car car = objectMapper.readValue(new URL(&#34;file:src/test/resources/json_car.json&#34;), Car.class); JsonNode：json的表示对象 或者，可以将JSON解析为JsonNode对象，并用于从特定节点检索数据：]]></description></item><item><title>spring容器</title><link>https://banrenshan.github.io/blog/2022/12/spring%E5%AE%B9%E5%99%A8/</link><pubDate>Fri, 02 Dec 2022 12:02:30 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring%E5%AE%B9%E5%99%A8/</guid><description>1.容器和 Bean 介绍 控制反转也叫依赖注入(DI)，这是一个过程。对象通过下面的方式，知道自己的依赖项：
+构造函数参数 工厂方法创建对象时的参数 对象的setter方法参数 然后容器在创建bean时，注入这些依赖。在这个过程中，bean控制着自身的创建，通过类上的构造函数等机制搜索所需的依赖，因此称为控制反转。
+org.springframework.beans 和 org.springframework.context 包是 Spring Framework 的 IoC 容器的基础。 BeanFactory 接口管理容器中的bean。 ApplicationContext 是 BeanFactory 的扩展子接口，扩展项如下：
+更容易与 Spring 的 AOP 特性集成 消息资源处理（用于国际化） 事件发布 应用层特定上下文，例如用于 Web 应用程序的 WebApplicationContext。 简而言之，BeanFactory 提供了配置框架和基本功能，ApplicationContext 增加了更多企业特定的功能。
+在 Spring 中，构成应用程序主干并由 Spring IoC 容器管理的对象称为 bean。 bean 是由 Spring IoC 容器实例化、组装和管理的对象。
+2.容器概览 org.springframework.context.ApplicationContext接口表示Spring IoC容器，并负责实例化，配置和组装Bean。 容器通过读取配置元数据获取有关要实例化，配置和组装哪些对象的指令。 配置元数据以XML，Java批注或Java代码表示。 它使您能够表达组成应用程序的对象以及这些对象之间的丰富相互依赖关系。
+Spring提供了ApplicationContext接口的几种实现。 在独立应用程序中，通常创建ClassPathXmlApplicationContext或FileSystemXmlApplicationContext的实例。 尽管XML是定义配置元数据的传统格式，但是您可以通过提供少量XML配置来声明性地启用对这些其他元数据格式的支持，从而指示容器将Java注释或代码用作元数据格式。
+在大多数应用场景中，不需要显式用户代码即可实例化一个Spring IoC容器的一个或多个实例。 例如，在Web应用程序场景中，应用程序的web.xml文件中配置简单八行样板XML就足够了（请参阅Web应用程序的便捷ApplicationContext实例化）。
+下图显示了Spring的工作原理的高级视图。 您的应用程序类与配置元数据结合在一起，以便在创建和初始化ApplicationContext之后，您将拥有一个完全配置且可执行的系统或应用程序。
+配置元数据 如上图所示，Spring IoC容器使用一种形式的配置元数据。 此配置元数据表示您作为应用程序开发人员如何告诉Spring容器实例化，配置和组装应用程序中的对象。
+传统上，配置元数据以简单直观的XML格式提供，这是本章大部分内容用来传达Spring IoC容器的关键概念和功能的内容。
+有关在Spring容器中使用其他形式的元数据的信息，请参见：</description></item><item><title>spring-boot-admin</title><link>https://banrenshan.github.io/blog/2022/12/spring-boot-admin/</link><pubDate>Fri, 02 Dec 2022 11:58:00 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-boot-admin/</guid><description><![CDATA[Spring Boot Admin codecentric 的 Spring Boot Admin 是一个社区项目，用于管理和监控您的 Spring Boot ® 应用程序。 应用程序使用 Spring Boot Admin Client 向我们注册（通过 HTTP）或使用 Spring Cloud （例如 Eureka、Consul）被发现。
+使用 Pyctuator 可以支持 Python 应用程序。
+快速开始 安装Spring Boot Admin Server 首先，您需要设置您的服务器。 为此，只需设置一个简单的启动项目（使用 start.spring.io）。 Spring Boot Admin Server 能够作为 servlet 或 webflux 应用程序运行，你可以根据需要添加相应的 Spring Boot Starter。 在这个例子中，我们使用了 servlet web starter：
+&lt;dependency&gt; &lt;groupId&gt;de.codecentric&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-admin-starter-server&lt;/artifactId&gt; &lt;version&gt;3.0.0-M3&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt; &lt;/dependency&gt; 然后，在配置类上添加@EnableAdminServer注解
+@Configuration @EnableAutoConfiguration @EnableAdminServer public class SpringBootAdminApplication { public static void main(String[] args) { SpringApplication.]]></description></item><item><title>spring-batch</title><link>https://banrenshan.github.io/blog/2022/12/spring-batch/</link><pubDate>Fri, 02 Dec 2022 11:51:23 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-batch/</guid><description>spring batch 核心概念 一个作业有一到多个步骤，每个步骤正好有一个ItemReader、一个ItemProcessor和一个ItemWriter。需要使用JobLauncher启动作业，JobRepository存储关于当前运行作业的元数据。
+作业（Job） 作业是封装整个批处理过程的实体。是整个层次结构的顶部，如下图所示：
+在SpringBatch中，作业只是步骤实例的容器。它将逻辑上属于一个流的多个步骤组合在一起，并允许配置所有步骤的全局属性，例如可重启性。作业配置包含：
+名称 步骤的顺序 作业是否需要重启 对于那些使用Java配置的人，SpringBatch以SimpleJob类的形式提供了作业接口的默认实现，它在作业之上创建了一些标准功能。使用基于java的配置时，可以使用构建器集合来实例化作业，如下例所示：
+@Bean public Job footballJob() { return this.jobBuilderFactory.get(&amp;#34;footballJob&amp;#34;) .start(playerLoad()) .next(gameLoad()) .next(playerSummarization()) .build(); } JobInstance JobInstance是job运行时的概念，这样说可能有些抽象。假如我们有个作业A，在每天快要结束的时候运行。那么一月一日运行该job就会创建一个JobInstance,一月二日则会创建一个新的JobInstance。
+但是，会有这样的情况，一月一日的JobInstance运行失败了，在一月二日会继续运行这个失败的JobInstance,同时一月二日的JobInstance照旧执行。
+因此，JobInstacen可能会多次执行（这是后面的JobExecution概念）。并且在给定时刻只能运行一个对应于特定作业和JobParameters的JobInstance。
+JobInstance的定义与要加载的数据完全没有关系。如何加载数据完全取决于ItemReader实现。使用新的JobInstance意味着“从头开始”，而使用现有实例通常意味着“从您停止的地方开始”。
+JobParameters 如何区分不同的JobInstance呢？答案：JobParameters。JobParameters对象包含一组用于启动批处理作业的参数。它们可用于识别，甚至在运行期间用作参考数据，如下图所示：
+并非所有作业参数都需要用于标识作业实例。默认情况下，它们会这样做。但是，该框架还允许提交带有不影响JobInstance标识的参数的作业。
+JobExecution JobExecution是指一次尝试运行作业的技术概念。执行可能以失败或成功结束，但对应的JobInstance不会被视为已完成，除非执行成功完成。假如任务A第一次执行失败，此时JobInstance会被标记会失败，当下次继续执行这个失败的JobInstance时，如果成功了，就会变更JobInstance为成功。
+Job定义了什么是作业以及如何执行作业，而JobInstance是一个纯粹的组织对象，用于将执行分组在一起，主要是为了实现正确的重启语义。然而，JobExecution是运行期间实际发生的事情的主要存储机制，它包含许多必须控制和持久化的属性，如下表所示：
+属性 定义 Status 指示执行状态的BatchStatus对象。运行时，状态为BatchStatus#STARTED。如果失败，则为BatchStatus#FAILED。如果成功完成，则为BatchStatus#COMPLETED startTime java.util.Date ,表示开始执行的时间，没有执行则为空 endTime java.util.Date,执行结束的时间 exitStatus 执行的结果，空代表还没有结束 createTime java.util.Date,创建的时间 lastUpdated java.util.Date executionContext 属性包，包含在执行之间需要的用户数据。 failureExceptions 作业执行期间遇到的异常列表 这些属性很重要，因为它们是持久化的，可用于完全确定执行状态。例如，如果01-01的EndOfDay作业在晚上9:00执行，但在9:30失败，则在批处理元数据表中创建以下条目：
+为了清晰和格式，列名可能已被缩写或删除。
+表：BATCH_JOB_INSTANCE
+JOB_INST_ID JOB_NAME 1 EndOfDayJob 表：BATCH_JOB_EXECUTION_PARAMS
+JOB_EXECUTION_ID TYPE_CD KEY_NAME DATE_VAL IDENTIFYING 1 DATE schedule.Date 2017-01-01 TRUE 表：BATCH_JOB_EXECUTION</description></item><item><title>spring-cloud-gateway</title><link>https://banrenshan.github.io/blog/2022/12/spring-cloud-gateway/</link><pubDate>Fri, 02 Dec 2022 11:46:10 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/spring-cloud-gateway/</guid><description>spring cloud gateway 概述 基于版本3.1.1
+该项目提供了一个建立在Spring生态系统之上的API网关，包括：Spring 5，Spring Boot 2和Project Reactor。Spring Cloud Gateway旨在提供一种简单而有效的方法来路由到API，并为它们提供跨领域的关注点，例如：安全性，监控/指标和可伸缩性。
+org.springframework.cloud:spring-cloud-starter-gateway
+路由：网关的基本构建基块。它由 ID、目标 URI、谓词集合和筛选器集合定义。如果聚合谓词为 true，则匹配路由。 谓词：这是一个 Java 8 函数谓词。输入类型是Spring Framework ServerWebExchange。这使您可以匹配 HTTP 请求中的任何内容，例如标头或参数。 过滤器：这些是使用特定工厂构建的网关过滤器实例。在这里，您可以修改发送下游请求之前或之后的请求和响应。 如何工作 客户端向 Spring Cloud Gateway 发出请求。 如果Gateway Handler Mapping确定请求与路由匹配，则将其发送到Gateway Web Handler。 此处理程序通过特定于请求的过滤器链运行请求。 过滤器被虚线分隔的原因是过滤器可以在发送代理请求之前和之后运行逻辑。 执行所有“pre”过滤器逻辑。 然后进行代理请求。 发出代理请求后，将运行“post”过滤器逻辑。
+如何配置 有两种方法可以配置谓词和过滤器：简洁方式和完全模式。
+简洁方式
+spring: cloud: gateway: routes: - id: after_route uri: https://example.org predicates: - Cookie=mycookie,mycookievalue 定义了 路由谓词工厂（Cookie ），cookie 名称(mycookie) 和匹配值(mycookievalue)。
+完全模式
+spring: cloud: gateway: routes: - id: after_route uri: https://example.</description></item><item><title>docker-basic</title><link>https://banrenshan.github.io/blog/2022/12/docker-basic/</link><pubDate>Fri, 02 Dec 2022 10:34:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/docker-basic/</guid><description><![CDATA[docker安装 ubuntu # 卸载已安装的docker sudo apt-get remove docker docker-engine docker.io containerd runc # 更新apt软件包索引并安装软件包（允许apt通过HTTPS使用仓库）： sudo apt-get update sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common # 安装GPG证书 curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add - # 写入软件源信息 sudo add-apt-repository &#34;deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable&#34; # 安装 sudo apt-get -y update sudo apt-get -y install docker-ce 设置镜像加速器 sudo mkdir -p /etc/docker sudo tee /etc/docker/daemon.json &lt;&lt;-&#39;EOF&#39; { &#34;registry-mirrors&#34;: [&#34;https://p6qarvcy.mirror.aliyuncs.com&#34;] } EOF sudo systemctl daemon-reload sudo systemctl restart docker ]]></description></item><item><title>linux 系统信息</title><link>https://banrenshan.github.io/blog/2022/12/linux-%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF/</link><pubDate>Thu, 01 Dec 2022 11:21:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/linux-%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF/</guid><description><![CDATA[查看linux系统信息 查看内核信息 zzq@Zhao:~$ uname -a Linux Zhao 5.10.16.3-microsoft-standard-WSL2 #1 SMP Fri Apr 2 22:23:49 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux zzq@Zhao:~$ cat /proc/version Linux version 5.10.16.3-microsoft-standard-WSL2 (oe-user@oe-host) (x86_64-msft-linux-gcc (GCC) 9.3.0, GNU ld (GNU Binutils) 2.34.0.20200220) #1 SMP Fri Apr 2 22:23:49 UTC 2021 查看系统的发行版本 zzq@Zhao:~$ ls /etc/*release /etc/lsb-release /etc/os-release zzq@Zhao:~$ cat /etc/os-release NAME=&#34;Ubuntu&#34; VERSION=&#34;20.04.4 LTS (Focal Fossa)&#34; ID=ubuntu ID_LIKE=debian PRETTY_NAME=&#34;Ubuntu 20.04.4 LTS&#34; VERSION_ID=&#34;20.04&#34; HOME_URL=&#34;https://www.ubuntu.com/&#34; SUPPORT_URL=&#34;https://help.ubuntu.com/&#34; BUG_REPORT_URL=&#34;https://bugs.launchpad.net/ubuntu/&#34; PRIVACY_POLICY_URL=&#34;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&#34; VERSION_CODENAME=focal UBUNTU_CODENAME=focal 常见目录 FHS（Filesystem Hierarchy Standard），文件系统层次化标准，该标准规定了 Linux 系统中所有一级目录以及部分二级目录（/usr 和 /var）的用途。发布此标准的主要目的就是为了让用户清楚地了解每个目录应该存放什么类型的文件。]]></description></item><item><title>linux 杂项</title><link>https://banrenshan.github.io/blog/2022/12/linux-%E6%9D%82%E9%A1%B9/</link><pubDate>Thu, 01 Dec 2022 11:21:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/linux-%E6%9D%82%E9%A1%B9/</guid><description><![CDATA[VboX网络 NAT 网络地址转换Network Address Translation 是从虚拟机访问外部网络的最简单方法。通常，它 不需要在主机网络和来宾系统上进行任何配置 。因此，它是Vbox中的默认联网模式。
+启用了NAT的虚拟机的行为就像是一台通过路由器连接到Internet的真实计算机。在这种情况下，路由器是Vbox网络引擎，该引擎透明地映射来往虚拟机的流量。在Vbox中，此路由器放置在每个虚拟机和主机之间。由于默认情况下虚拟机无法相互通信，因此这种隔离可最大程度地提高安全性。
+虚拟机之间不能相互通信，现实中同一个路由器连接下的机器可以相互通信。
+NAT模式的缺点是，就像路由器后面的专用网络一样，虚拟机是不可见的，外部Internet上的主机不能访问该虚拟机。除非设置端口转发。
+虚拟机发出的网络帧由Vbox的NAT引擎接收，该引擎提取TCP/IP数据并使用主机操作系统发送出去。对于主机上的应用程序，或与主机相同网络上的另一台计算机，数据就好像是由主机上的Vbox发送出来的，使用的是主机的IP地址。Vbox监听已发送数据包的回复数据，然后重新打包并将它们重新发送到其专用网络上的虚拟机.
+VM也可以访问主机的环回接口和在其上运行的网络服务。主机的环回接口可通过IP地址10.0.2.2访问。
+虚拟机从集成到Vbox的DHCP服务器接收专用网络上的网络地址和配置。这样分配给虚拟机的IP地址通常与主机位于完全不同的网络上。由于可以将虚拟机的多个卡设置为使用NAT，因此第一张卡连接到专用网络10.0.2.0，第二张卡连接到网络10.0.3.0，依此类推。如果您需要更改来宾分配的IP范围,参考 Section 9.8, “Fine Tuning the Vbox NAT Engine”.
+配置端口转发 由于虚拟机连接到Vbox内部的专用网络并且对主机不可见，因此主机或同一网络上的其他计算机将无法访问客户机上的网络服务。但是，就像物理路由器一样，Vbox可以通过端口转发使选定的服务对来宾外部的世界可用。这意味着Vbox侦听主机上的某些端口，并在相同或不同端口上将到达主机的所有数据包重新发送给来宾。对于主机上的应用程序或网络上的其他物理或虚拟机，看起来好像代理的服务实际上在主机上运行。
+要配置端口转发，可以使用图形化的端口转发编辑器，该编辑器可在网络设置对话框中找到，用于配置为使用NAT的网络适配器。在这里，您可以将主机端口映射到来宾端口，以将网络流量路由到来宾中的特定端口。
+转发低于1024的主机端口。在基于UNIX的主机(例如Linux，Oracle Solaris和Mac OS X)上，无法从非root用户运行的应用程序绑定到低于1024的端口。因此，如果您尝试配置此类端口转发，则VM将拒绝启动。
+NAT网络 网络地址转换(NAT)服务的工作方式与家用路由器类似，将使用该服务的系统分组到网络中，并防止该网络外部的系统直接访问其内部的系统，但允许内部的系统相互通信并与之通信。外部系统在IPv4和IPv6上使用TCP和UDP。
+网络需要设置成静态IP。
+桥接网络 通过桥接网络，Vbox使用主机系统上的设备驱动程序来过滤来自物理网络适配器的数据。这使Vbox可以拦截来自物理网络的数据并将注入一些其他信息，从而有效地在软件中创建新的网络接口。当来宾使用这种新的软件接口时，它看起来像是使用网络电缆将来宾物理连接到主机系统的主机系统。主机可以通过该接口向来宾发送数据，并从中接收数据。这意味着您可以在客户机与网络的其余部分之间设置路由或桥接。
+要启用桥接网络，请打开虚拟机的“设置”对话框，转到“网络”页面，然后在“附加到”字段的下拉列表中选择“桥接网络”。从页面底部的列表中选择一个主机接口，其中包含系统的物理网络接口。
+内部网络 内部网络类似于桥接网络，因为VM可以直接与外界通信。但是，外部世界仅限于同一主机上连接到同一内部网络的其他VM。
+即使从技术上讲，使用内部网络可以完成的所有操作也可以使用桥接网络来完成，但是内部网络具有安全性优势。在桥接网络模式下，所有流量都通过主机系统的物理接口。因此，可以将诸如Wireshark的数据包嗅探器附加到主机接口，并记录通过它的所有流量。如果出于某种原因，如果您希望同一台计算机上的两个或多个VM进行私下通信，同时对主机系统和用户隐藏其数据，则桥接网络不是一种选择。
+内部网络会根据需要自动创建。没有中央配置。每个内部网络都简单地通过其名称进行标识。一旦有一个以上具有相同内部网络ID的活动虚拟网卡，Vbox支持驱动程序将自动将这些网卡连接起来并充当网络交换机。Vbox支持驱动程序实现了完整的以太网交换机，并支持广播/多播帧和混杂模式。
+为了将VM的网卡连接到内部网络，请将其网络连接模式设置为Internal Networking。在Vbox图形用户界面中使用VM的“设置”对话框。在设置对话框的“网络”类别中，从网络模式的下拉列表中选择“内部网络”。从下面的下拉列表中选择一个现有内部网络的名称，或在“名称”字段中输入一个新名称。
+网络需要设置成静态IP。
+Host-Only网络 可以将仅主机的网络视为桥接和内部网络模式之间的混合。与桥接网络一样，虚拟机可以彼此通信，也可以与主机进行通信，就像它们通过物理以太网交换机连接一样。与内部网络一样，不需要存在物理网络接口，并且由于虚拟机未连接到物理网络接口，因此它们无法与主机外部的世界进行通信
+使用仅主机网络时，Vbox在主机上创建一个新的软件接口，该接口随后出现在现有网络接口旁边。换句话说，尽管使用桥接网络，但现有物理接口用于将虚拟机连接到其中，而仅主机网络则在主机上创建新的回送接口。而且，尽管使用内部网络，但无法看到虚拟机之间的流量，但是可以拦截主机上环回接口上的流量。
+仅主机网络对于预配置的虚拟设备特别有用，在预配置的虚拟设备中，多个虚拟机一起运送并旨在进行协作。例如，一个虚拟机可能包含一个Web服务器，第二个虚拟机可能包含一个数据库，并且由于它们打算互相通信，因此该设备可以指示Vbox为这两个虚拟机建立仅主机的网络。然后，第二个桥接网络会将Web服务器连接到外部，以向其提供数据，但是外部无法连接到数据库。
+根据上面的概述,采用NAT和Host-only来构建虚拟机,这样虚拟机既可以上外网又可以和主机互通.构建过程如下:
+1.在网络选项卡中设置网卡1为NAT 2.在网络选项卡中设置网卡2为Host-only
+虚拟机网络信息
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever inet6 ::1/128 scope host valid_lft forever preferred_lft forever 2: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000 link/ether 08:00:27:18:fd:f6 brd ff:ff:ff:ff:ff:ff inet 10.]]></description></item><item><title>linux软件和服务管理</title><link>https://banrenshan.github.io/blog/2022/12/linux%E8%BD%AF%E4%BB%B6%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/</link><pubDate>Thu, 01 Dec 2022 11:21:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/linux%E8%BD%AF%E4%BB%B6%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/</guid><description>进程管理 在操作系统中，所有可以执行的程序与命令都会产生进程。只是有些程序和命令非常简单，如 ls 命令、touch 命令等，它们在执行完后就会结束，相应的进程也就会终结，所以我们很难捕捉到这些进程。但是还有一些程和命令，比如 httpd 进程，启动之后就会一直驻留在系统当中，我们把这样的进程称作常驻内存进程。
+某些进程会产生一些新的进程，我们把这些进程称作子进程，而把这个进程本身称作父进程。比如，我们必须正常登录到 Shell 环境中才能执行系统命令，而 Linux 的标准 Shell 是 bash。我们在 bash 当中执行了 ls 命令，那么 bash 就是父进程，而 ls 命令是在 bash 进程中产生的进程，所以 ls 进程是 bash 进程的子进程。也就是说，子进程是依赖父进程而产生的，如果父进程不存在，那么子进程也不存在了。
+进程启动的方式 在 Linux 系统中，每个进程都有一个唯一的进程号（PID），方便系统识别和调度进程。通过简单地输出运行程序的程序名，就可以运行该程序，其实也就是启动了一个进程。
+总体来说，启动一个进程主要有 2 种途径，分别是通过手工启动和通过调度启动（事先进行设置，根据用户要求，进程可以自行启动。
+手工启动进程 手工启动进程指的是由用户输入命令直接启动一个进程，根据所启动的进程类型和性质的不同，其又可以细分为前台启动和后台启动 2 种方式。
+前台启动进程 这是手工启动进程最常用的方式，因为当用户输入一个命令并运行，就已经启动了一个进程，而且是一个前台的进程，此时系统其实已经处于一个多进程的状态（一个是 Shell 进程，另一个是新启动的进程）。
+假如启动一个比较耗时的进程，然后再把该进程挂起，并使用 ps 命令查看，就会看到该进程在 ps 显示列表中，例如：
+[root@localhost ~]# find / -name demo.jpg &amp;lt;--在根目录下查找 demo.jpg 文件，比较耗时 #此处省略了该命令的部分输出信息 #按“CTRL+Z”组合键，即可将该进程挂起 [root@localhost ~]# ps &amp;lt;--查看正在运行的进程 PID TTY TIME CMD 2573 pts/0 00:00:00 bash 2587 pts/0 00:00:01 find 2588 pts/0 00:00:00 ps 将进程挂起，指的是将前台运行的进程放到后台，并且暂停其运行.</description></item><item><title>linux性能管理</title><link>https://banrenshan.github.io/blog/2022/12/linux%E6%80%A7%E8%83%BD%E7%AE%A1%E7%90%86/</link><pubDate>Thu, 01 Dec 2022 11:21:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/linux%E6%80%A7%E8%83%BD%E7%AE%A1%E7%90%86/</guid><description>性能指标 CPU CPU 是操作系统稳定运行的根本，CPU 的速度与性能很大一部分决定了系统整体的性能，因此 CPU 数量越多、主频越高，服务器性能也就相对越好。
+但亊实也并非完全如此，目前大部分 CPU 在同一时间内只能运行一个线程，超线程的处理器可以在同一时间运行多个线程，因而可以利用处理器的超线程特性提髙系统性能。
+而在 Linux 系统下，只有运行 SMP 内核才能支持超线程，但是安装的 CPU 数量越多，从超线程获得的性能上的提高就越少。另外，Linux 内核会把多核的处理器当作多个单独的 CPU 来识别，例如两颗 4 核的 CPU 在 Linux 系统下会认为是 8 颗 CPU。
+注意，从性能角度来讲，两颗 4 核的 CPU 和 8 颗单核的 CPU 并不完全等价，根据权威部门得出的测试结论，前者的整体性能要低于后者 25%〜30%。
+在 Linux 系统中，邮件服务器、动态 Web 服务器等应用对 CPU 性能的要求相对较高，因此对于这类应用，要把 CPU 的配置和性能放在主要位置。
+内存 内存的大小也是影响 Linux 性能的一个重要的因素。内存太小，系统进程将被阻塞，应用也将变得缓慢，甚至失去响应；内存太大，会导致资源浪费。
+Linux 系统采用了物理内存和虚拟内存的概念，虚拟内存虽然可以缓解物理内存的不足，但是占用过多的虚拟内存，应用程序的性能将明显下降。要保证应用程序的高性能运行，物理内存一定要足够大，但不应过大，否则会造成内存资源的浪费。
+例如，在一个 32 位处理器的 Linux 操作系统上，超过 8GB 的物理内存都将被浪费。因此，要使用更大的内存，建议安装 64 位的操作系统，同时开启 Linux 的大内存内核支持。
+不仅如此，由于处理器寻址范围的限制，在 32 位 Linux 操作系统上，应用程序单个进程最大只能使用 2GB 的内存。这样即使系统有更大的内存，应用程序也无法“享”用，解决的办法就是使用 64 位处理器，安装 64 位操作系统，在 64 位操作系统下，可以满足所有应用程序对内存的使用需求，几乎没有限制。</description></item><item><title>linux用户和权限</title><link>https://banrenshan.github.io/blog/2022/12/linux%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90/</link><pubDate>Thu, 01 Dec 2022 11:21:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/linux%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90/</guid><description><![CDATA[登陆 Linux 系统时，虽然输入的是自己的用户名和密码，但其实 Linux 并不认识你的用户名称，它只认识用户名对应的 ID 号（也就是一串数字）。
+要论证 &ldquo;Linux系统不认识用户名&rdquo; 也很简单，网络上下载过 &ldquo;.tar.gz&rdquo; 或 &ldquo;.tar.bz2&rdquo; 格式的文件，解压缩之后的文件中，有时，你会发现文件拥有者的属性显示的是一串数字，这串数字就是用户的 ID（UID）号。之所以没有显示出用户名称，是因为找不到UID对应的用户。
+Linux 系统中，每个用户的 ID 细分为 2 种，分别是用户 ID（User ID，简称 UID）和组 ID（Group ID，简称 GID），这与文件有拥有者和拥有群组两种属性相对应。
+管理用户的文件 创建用户的时候，会默认分配与用户同名的用户组，这个创建时自动分配的用户组叫做初始组。 后面又给该用户添加的其他用户组，叫做附加组。
+每个文件都有自己的拥有者 ID 和群组 ID，当显示文件属性时，系统会根据 /etc/passwd 和 /etc/group 文件中的内容，分别找到 UID 和 GID 对应的用户名和群组名，然后显示出来。
+/etc/passwd 文件 root@zzq:~# cat /etc/passwd root❌0:0:root:/root:/bin/bash daemon❌1:1:daemon:/usr/sbin:/usr/sbin/nologin bin❌2:2:bin:/bin:/usr/sbin/nologin sys❌3:3:sys:/dev:/usr/sbin/nologin sync❌4:65534:sync:/bin:/bin/sync 这些用户中的绝大多数是系统或服务正常运行所必需的用户，这种用户通常称为系统用户或伪用户。系统用户无法用来登录系统，但也不能删除，因为一旦删除，依赖这些用户运行的服务或程序就不能正常执行，会导致系统问题。
+不仅如此，每行用户信息都以 &ldquo;：&rdquo; 作为分隔符，划分为 7 个字段，每个字段所表示的含义如下：
+用户名：密码：UID（用户ID）：GID（组ID）：描述性信息：主目录：默认Shell
+密码 &ldquo;x&rdquo; 表示此用户设有密码，但不是真正的密码，真正的密码保存在 /etc/shadow 文件中。此文件只有 root 用户可以浏览和操作，这样就最大限度地保证了密码的安全。需要注意的是，虽然 &ldquo;x&rdquo; 并不表示真正的密码，但也不能删除，如果删除了 &ldquo;x&rdquo;，那么系统会认为这个用户没有密码，从而导致只输入用户名而不用输入密码就可以登陆
+UID UID，也就是用户 ID。每个用户都有唯一的一个 UID，Linux 系统通过 UID 来识别不同的用户。 实际上，UID 就是一个 0~65535 之间的数，不同范围的数字表示不同的用户身份。]]></description></item><item><title>Systemd服务管理</title><link>https://banrenshan.github.io/blog/2022/12/systemd%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/</link><pubDate>Thu, 01 Dec 2022 11:21:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/systemd%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/</guid><description>历史上Linux的启动一直采用init进程，即下面的命令用来启动服务：
+$ sudo /etc/init.d/apache2 start #或者 $ service apache2 start 这种方法有两个缺点:
+启动时间长。init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。
+启动脚本复杂。init进程只是执行启动脚本，不管其他事情。脚本需要自己处理各种情况，这往往使得脚本变得很长。
+Systemd就是为了解决这些问题而诞生的。它的设计目标是，为系统的启动和管理提供一套完整的解决方案，根据Linux惯例，字母d是守护进程（daemon）的缩写，Systemd这个名字的含义，就是它要守护整个系统。
+概述 使用了Systemd，就不需要再用init了。Systemd取代了initd，成为系统的第一个进程（PID 等于 1），其他进程都是它的子进程。
+Systemd的优点是功能强大，使用方便，缺点是体系庞大，非常复杂。事实上，现在还有很多人反对使用Systemd，理由就是它过于复杂，与操作系统的其他部分强耦合，违反”keep simple, keep stupid”的Unix哲学。
+管理命令 Systemd并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
+systemctl 是Systemd的主命令，用于管理系统 #重启系统 $ sudo systemctl reboot #关闭系统，切断电源 $ sudo systemctl poweroff #CPU停止工作 $ sudo systemctl halt #暂停系统 $ sudo systemctl suspend #让系统进入冬眠状态 $ sudo systemctl hibernate #让系统进入交互式休眠状态 $ sudo systemctl hybrid-sleep #启动进入救援状态（单用户状态） $ sudo systemctl rescue systemd-analyze 命令用于查看启动耗时 #查看启动耗时 [root@k8s ~]# systemd-analyze Startup finished in 2.</description></item><item><title>shell</title><link>https://banrenshan.github.io/blog/2022/12/shell/</link><pubDate>Thu, 01 Dec 2022 11:01:29 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/shell/</guid><description>环境变量 在 Linux 系统中，环境变量是用来定义系统运行环境的一些参数，比如每个用户不同的家目录（HOME）、邮件存放位置（MAIL）等。
+值得一提的是，Linux 系统中环境变量的名称一般都是大写的，这是一种约定俗成的规范。
+我们可以使用 env 命令来查看到 Linux 系统中所有的环境变量，执行命令如下：
+[root@localhost ~]# env ORBIT_SOCKETDIR=/tmp/orbit-root HOSTNAME=livecd.centos GIO_LAUNCHED_DESKTOP_FILE_PID=2065 TERM=xterm SHELL=/bin/bash ...... 下面是几个常用的环境变量：
+环境变量名称 作用 HOME 用户的主目录（也称家目录） SHELL 用户使用的 Shell 解释器名称 PATH 定义命令行解释器搜索用户执行命令的路径 EDITOR 用户默认的文本解释器 RANDOM 生成一个随机数字 LANG 系统语言、语系名称 HISTSIZE 输出的历史命令记录条数 HISTFILESIZE 保存的历史命令记录条数 PS1 Bash解释器的提示符 MAIL 邮件保存路径 Linux 作为一个多用户多任务的操作系统，能够为每个用户提供独立的、合适的工作运行环境，因此，一个相同的环境变量会因为用户身份的不同而具有不同的值。
+例如，使用下述命令来查看 HOME 变量在不同用户身份下都有哪些值：
+[root@localhost ~]# echo $HOME /root [root@localhost ~]# su - user1 &amp;lt;--切换到 user1 用户身份 [user1@localhost ~]$ echo $HOME /home/user1 其实，环境变量是由固定的变量名与用户或系统设置的变量值两部分组成的，我们完全可以自行创建环境变量来满足工作需求。例如，设置一个名称为 WORKDIR 的环境变量，方便用户更轻松地进入一个层次较深的目录，执行命令如下：</description></item><item><title>远程管理协议</title><link>https://banrenshan.github.io/blog/2022/12/%E8%BF%9C%E7%A8%8B%E7%AE%A1%E7%90%86%E5%8D%8F%E8%AE%AE/</link><pubDate>Thu, 01 Dec 2022 10:56:38 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/12/%E8%BF%9C%E7%A8%8B%E7%AE%A1%E7%90%86%E5%8D%8F%E8%AE%AE/</guid><description>远程管理，实际上就是计算机（服务器）之间通过网络进行数据传输（信息交换）的过程，与浏览器需要 HTTP 协议（超文本传输协议）浏览网页一样，远程管理同样需要远程管理协议的支持。
+目前，常用的远程管理协议有以下 4 种：
+RDP（remote desktop protocol）协议：远程桌面协议，大部分 Windows 系统都默认支持此协议，Windows 系统中的远程桌面管理就基于该协议。
+RFB（Remote FrameBuffer）协议：图形化远程管理协议，VNC 远程管理工具就基于此协议。
+Telnet：命令行界面远程管理协议，几乎所有的操作系统都默认支持此协议。此协议的特点是，在进行数据传送时使用明文传输的方式，也就是不对数据进行加密。
+SSH（Secure Shell）协议：命令行界面远程管理协议，几乎所有操作系统都默认支持此协议。和 Telnet 不同，该协议在数据传输时会对数据进行加密并压缩，因此使用此协议传输数据既安全速度又快。
+RDP 协议和 RFB 协议都允许用户通过图形用户界面访问远程系统，但 RFB 协议倾向于传输图像，RDP 协议倾向于传输指令：
+RFB 协议会在服务器端将窗口在显存中画好，然后将图像传给客户端，客户端只需要将得到的图像解码显示即可；
+RDP 会将画图的工作交给客户端，服务器端需要根据客户端的显示能力做适当的调整。
+因此，完成相同的操作，使用 RFB 协议传输的数据量会比 RDP 大，而 RDP 对客户端的要求比 RFB 更苛刻，RFB 适用于瘦客户端，而 RDP 适用于低速网络。</description></item><item><title>linux常用命令</title><link>https://banrenshan.github.io/blog/2022/11/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link><pubDate>Wed, 30 Nov 2022 16:44:17 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid><description>软连接 ext4 文件系统 如果要想说清楚 ln 命令，则必须先解释下 ext 文件系统（Linux 文件系统）是如何工作的。而我们的 Linux 目前使用的是 ext4 文件系统。如果用一张示意图来描述 ext4 文件系统：
+ext4 文件系统会把分区主要分为两大部分（暂时不提超级块）：小部分用于保存文件的 inode (i 节点）信息；剩余的大部分用于保存 block 信息。
+inode 的默认大小为 128 Byte，用来记录文件的权限（r、w、x）、文件的所有者和属组、文件的大小、文件的状态改变时间（ctime）、文件的最近一次读取时间（atime）、文件的最近一次修改时间（mtime）、真正保存文件数据的 block 编号。每个文件需要占用一个 inode。大家如果仔细查看，就会发现 inode 中是不记录文件名的，那是因为文件名记录在文件所在目录的 block 中。
+block 的大小可以是 1KB、2KB、4KB，默认为 4KB。block 用于实际的数据存储，如果一个 block 放不下数据，则可以占用多个 block。例如，有一个 10KB 的文件需要存储，则会占用 3 个 block，虽然最后一个 block 不能占满，但也不能再放入其他文件的数据。这 3 个 block 有可能是连续的，也有可能是分散的。
+由此，我们可以知道以下 2 个重要的信息：
+每个文件都独自占用一个 inode，文件内容由 inode 的记录来指向；
+如果想要读取文件内容，就必须借助目录中记录的文件名找到该文件的 inode，才能成功找到文件内容所在的 block 块；
+了解了 Linux 系统底层文件的存储状态后，接下来学习 ln 命令。
+ln 命令 ln 命令用于给文件创建链接，根据 Linux 系统存储文件的特点，链接的方式分为以下 2 种：</description></item><item><title>filebeat</title><link>https://banrenshan.github.io/blog/2022/11/filebeat/</link><pubDate>Sun, 27 Nov 2022 20:15:32 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/filebeat/</guid><description>FileBeat 概述 Filebeat 是一个用于转发和集中日志数据的轻量级传送器。作为代理安装在您的服务器上，Filebeat 监控您指定位置的日志文件，收集日志事件，并将它们转发到Elasticsearch或 Logstash以进行索引。
+以下是 Filebeat 的工作原理：当您启动 Filebeat 时，它会启动一个或多个输入，这些输入去您指定的位置中查找日志文件。对于 Filebeat 定位的每个日志，Filebeat 都会启动一个收集器**(harvester)**。每个harvester 读取单个日志以获取新内容并将新日志数据发送到libbeat，libbeat 聚合事件并将聚合数据发送到配置好的输出。
+Filebeat 是 Elastic Beat，基于libbeat 框架。
+为每个文件启动一个收集器， 其逐行读取文件，并将内容发送到输出。 收集器负责打开和关闭文件，这意味着在收集器运行时文件描述符保持打开状态。
+Filebeat 如何保持文件的状态？ Filebeat 会保存每个文件的状态，并经常在将状态刷新到注册表文件。 该状态用于记住收集器读取的最后一个偏移量，并确保发送所有日志行。 如果无法访问 Elasticsearch 或 Logstash 等输出，Filebeat 会跟踪发送的最后几行，并在输出再次可用时继续读取文件。 在 Filebeat 运行时，每个输入的状态信息也会保存在内存中。 当 Filebeat 重新启动时，来自注册表文件的数据用于重建状态，并且 Filebeat 在最后一个已知位置继续每个收集器。
+对于每个输入，Filebeat 都会保存它找到的每个文件的状态。 因为文件可以重命名或移动，所以文件名和路径不足以识别文件。 对于每个文件，Filebeat 都会存储唯一标识符，以检测文件是否以前被收集过。
+Filebeat 如何确保至少一次交付？ Filebeat 保证事件将至少传递到配置的输出一次，并且不会丢失数据。Filebeat 能够实现这种行为是因为它将每个事件的传递状态存储在注册表文件中。
+在定义的输出被阻塞并且没有确认所有事件的情况下，Filebeat 将继续尝试发送事件，直到输出确认它已收到事件。
+如果 Filebeat 在发送事件的过程中关闭，它不会在关闭前等待输出确认所有事件。任何发送到输出但在 Filebeat 关闭之前未确认的事件，在 Filebeat 重新启动时会再次发送。这可确保每个事件至少发送一次，但最终可能会将重复的事件发送到输出。您可以通过设置shutdown_timeout选项将 Filebeat 配置为在关闭之前等待特定的时间。
+与es集成 索引策略 索引生命周期是elasticsearch管理索引的一种方式，可以根据运行状态决定创建新的索引、删除索引等。
+从 7.0 版本开始，Filebeat 在连接支持生命周期管理的es集群时，默认使用索引生命周期管理。具体说，filebeat会在连接ES时，在ES上创建filebeat定义好的生命周期。您可以在 Kibana 的索引生命周期策略 UI 中查看和编辑策略。</description></item><item><title>Spring-cloud-openfeign</title><link>https://banrenshan.github.io/blog/2022/11/spring-cloud-openfeign/</link><pubDate>Sun, 27 Nov 2022 20:07:02 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/spring-cloud-openfeign/</guid><description><![CDATA[Feign是一个声明式的Web服务客户端，web调用的代码仅仅只需要声明接口和注解。
+它具有可插入的注释支持，包括Feign注释和JAX-RS注释。 Feign支持可插拔编码器和解码器。 增加了对Spring MVC注释的支持，并默认使用与Spring Web相同HttpMessageConverters。 Spring Cloud集成了CircuitBreaker和Eureka，Spring Cloud LoadBalancer。 快速入门 引入依赖 implementation &#39;org.springframework.cloud:spring-cloud-starter-openfeign&#39; 注解开启 @SpringBootApplication @EnableFeignClients public class Application { public static void main(String[] args) { SpringApplication.run(Application.class, args); } } 客户端声明 @FeignClient(&#34;stores&#34;) public interface StoreClient { @RequestMapping(method = RequestMethod.GET, value = &#34;/stores&#34;) List&lt;Store&gt; getStores(); @RequestMapping(method = RequestMethod.POST, value = &#34;/stores/{storeId}&#34;, consumes = &#34;application/json&#34;) Store update(@PathVariable(&#34;storeId&#34;) Long storeId, Store store); } @FeignClient的值是服务的名称,主要用来负载均衡.当然也可以用url属性来指定具体的地址.该接口在上下文中注册的bean名称是完全限定名称,你可以使用qualifier属性来指定别名.
+上面的 load-balancer 客户端将要发现“strore”服务实际的物理地址。如果您的应用程序是Eureka客户端，那么它将解析Eureka服务注册表中的服务。如果您不想使用Eureka，则只需在外部配置中配置服务器列表即可.
+Spring Cloud OpenFeign 支持 Spring Cloud LoadBalancer 阻塞模式下所有可用的功能]]></description></item><item><title>loki</title><link>https://banrenshan.github.io/blog/2022/11/loki/</link><pubDate>Sun, 27 Nov 2022 19:52:20 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/loki/</guid><description>架构 Distributor 分发服务器服务负责处理客户端的传入流。这是日志数据写入路径的第一站。一旦分发服务器接收到一组流，就验证每个流的正确性，并确保其在配置的租户（或全局）限制内。然后将有效的块分割成批，并并行发送给多个ingesters。
+Validation distributor 采取的第一步是确保所有传入数据符合规范。这包括检查标签是否是有效的Prometheus标签，以及确保时间戳不是太旧或太新，或者日志行不是太长。
+Preprocessing 目前，distributor改变传入数据的唯一方法是规范标签。这意味着使{foo=“bar”，bazz=“buzz”}等同于{bazz=”buzz“，foo=”bar“}，或者换句话说，对标签进行排序。这使得Loki可以确定地缓存和散列它们。
+Rate limiting distributor还可以根据每个租户对传入日志进行速率限制。它通过检查每个租户的限额并将其除以当前的distributor来实现这一点。这允许在集群级别为每个租户指定速率限制，并使我们能够向上或向下扩展distributor，并相应地调整每个distributor的限额。例如，假设我们有10个distributor，租户A有10MB的费率限制。在限制之前，每个分配器最多允许1MB/秒。现在，假设另一个大租户加入集群，我们需要再组建10个distributor。现在的20家distributor将调整其租户A的费率限制为（10MB/20家distributor）=500KB/s！这就是为什么全局限制允许Loki集群更简单、更安全的操作。
+Forwarding 一旦distributor完成了所有的验证任务，它就会将数据转发给最终负责确认写入的ingester 组件。
+Replication factor 为了减少在任何单个ingester上丢失数据的可能性，distributor将在转发写操作时添加复制因子。通常情况下，这是3。复制允许在写入失败的情况下重新启动和rollouts ingester，并在某些情况下增加了防止数据丢失的额外保护。
+对于推送到distributor的每个标签集（称为流），它将对标签进行哈希，根据hash值查找环中的 ingesters （需要多个，根据replication_factor决定）。然后，它将尝试将相同的数据写入到多个ingesters。如果成功写入的次数少于法定人数（quorum ），则会出错。
+quorum 被定义为floor（replication_factor/2）+1。因此，对于replication_factor为3，我们需要两次写入成功。如果成功写入的次数少于两次，则distributor返回错误，可以重试写入。
+不过，复制因素并不是防止数据丢失的唯一方式。ingester 组件现在包括一个预写日志，该日志保存对磁盘的传入写入，以确保在磁盘未损坏的情况下不会丢失这些写入。复制因子和WAL的互补性确保了数据不会丢失，除非这两种机制都出现重大故障（即多个摄取者死亡并丢失/损坏其磁盘）。
+Hashing 分发服务器使用一致的哈希和可配置的复制因子来确定ingester 服务的哪些实例应该接收给定的流。
+流是与租户和唯一标签集相关联的一组日志。使用租户ID和标签集对流进行哈希，然后使用哈希查找要将流发送到的ingester 。
+为了进行哈希查找，分发者会找到值大于流哈希值的最小适当令牌。当复制因子大于1时，属于不同ingester 的下一个后续令牌（环中的顺时针方向）也将包含在结果中。
+这种哈希设置的效果是，ingester 拥有的每个令牌都负责一系列哈希。如果存在值为0、25和50的三个令牌，ingester 拥有令牌25负责1-25的哈希范围。
+Ingester ingester服务负责将日志数据写入写入路径上的长期存储后端（DynamoDB、S3、Cassandra等），并在读取路径上返回内存查询的日志数据。
+ingester接收的每个日志流都在内存中构建成一组多个“块”，并以可配置的间隔刷新到备份存储后端。在以下情况下，块将被压缩并标记为只读：
+当前区块已达到容量（可配置值）。 当前区块已过了太多时间没有更新 发生flush。 每当一个块被压缩并标记为只读时，一个可写块就会取代它。
+如果ingester进程突然崩溃或退出，所有尚未刷新的数据都将丢失。Loki通常被配置为复制每个日志的多个副本（通常为3个），以减轻此风险。
+当持久存储提供程序发生刷新时，将根据其租户、标签和内容对块进行哈希。这意味着具有相同数据副本的多个ingester不会将相同数据写入备份存储两次，但如果对其中一个副本的任何写入失败，将在备份存储中创建多个不同的块对象。有关如何消除重复数据的信息，请参阅查询器。
+Timestamp Ordering 当未配置为接受无序写入时，摄取器将验证摄取的日志行是否正常。当摄取者接收到不符合预期顺序的日志行时，该行将被拒绝，并向用户返回错误。 摄取器验证日志行是否按时间戳升序接收。每个日志都有一个时间戳，该时间戳发生的时间晚于之前的日志。当摄取器接收到不遵循此顺序的日志时，将拒绝日志行并返回错误。
+如果ingester 进程突然崩溃或退出，所有尚未刷新的数据都可能丢失。Loki通常配置有预写日志，该日志可以在ingester 重新启动时重播，并且每个日志的复制因子（通常为3）可以减轻此风险。
+当未配置为接受无序写入时，针对给定流（标签的唯一组合）推送到Loki的所有行必须具有比之前接收到的行更新的时间戳。然而，有两种情况可用于处理具有相同纳秒时间戳的同一流的日志：
+如果传入的行与先前接收的行完全匹配（同时匹配先前的时间戳和日志文本），则传入的行将被视为完全重复的行并被忽略。 如果传入行具有与前一行相同的时间戳，但内容不同，则接受日志行。这意味着可以对同一时间戳使用两个不同的日志行。 虽然ingesters 确实支持通过BoltDB写入文件系统，但这只在单进程模式下工作，因为查询者需要访问同一后端存储，而BoltDB只允许一个进程在给定时间锁定数据库。
+Query frontend 查询前端将较大的查询拆分为多个较小的查询，在下游查询器上并行执行这些查询，并再次将结果拼接在一起。这可以防止大型（多天等）查询在单个查询器中导致内存不足问题，并有助于更快地执行它们。
+查询前端在内部执行一些查询调整，并将查询保存在内部队列中。在此设置中，查询器充当从队列中提取作业、执行作业并将其返回到查询前端进行聚合的工作人员。查询器需要配置查询前端地址（通过-queries.frontend-address CLI标志），以允许它们连接到查询前端。
+查询前端排队机制用于：
+确保在失败时重试可能导致查询器内存不足（OOM）错误的大型查询。这允许管理员为查询提供不足的内存，或者乐观地并行运行更多的小查询，这有助于降低TCO。 通过使用先进先出队列（FIFO）将多个大型请求分发到所有查询器，防止在单个查询器上护送这些请求。 通过公平调度租户之间的查询，防止单个租户一直占用而拒绝服务（DOSing）其他租户。 查询前端支持缓存度量查询结果，并在后续查询中重用它们。如果缓存的结果不完整，查询前端将计算所需的子查询，并在下游查询器上并行执行它们。查询前端可以选择将查询与其步骤参数对齐，以提高查询结果的可缓存性。结果缓存与任何loki缓存后端兼容（当前为memcached、redis和内存缓存）。
+缓存日志（过滤器、正则表达式）查询正在积极开发中。
+Querier querier服务使用LogQL查询语言处理查询，从ingesters 和长期存储中获取日志。</description></item><item><title>grafana</title><link>https://banrenshan.github.io/blog/2022/11/grafana/</link><pubDate>Sun, 27 Nov 2022 19:49:23 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/grafana/</guid><description>报警 警报规则
+设置评估标准，确定警报实例是否触发。警报规则由一个或多个查询表达式、条件、求值频率以及满足条件的持续时间（可选）组成。
+Grafana支持多维警报，这意味着每个警报规则可以创建多个警报实例。如果您在一个表达式中观察多个序列，这是非常强大的。
+一旦创建了警报规则，它们将经历各种状态和转换。
+命名空间
+创建 Grafana 管理的规则时，该文件夹可用于访问控制。
+组
+组内的所有规则都以相同的时间间隔进行评估。
+组中的警报规则和记录规则将始终按顺序进行评估。
+警报实例
+Grafana 支持多维度警报。每个警报规则可以创建多个警报实例。如果您在单个表达式中观察多个序列，这将非常强大。
+请考虑以下 PromQL 表达式：
+sum by(cpu) ( rate(node_cpu_seconds_total{mode!=&amp;#34;idle&amp;#34;}[1m]) ) 使用此表达式的规则将创建与第一次评估后观察到的 CPU 数量一样多的警报实例，从而允许单个规则报告每个 CPU 的状态。
+标签
+将警报规则及其实例与通知策略和静默相匹配。它们还可以用于按严重程度对警报进行分组。
+通知策略
+设置警报路由的地点、时间和方式。每个通知策略都指定一组标签匹配器，以指示它们负责哪些警报。通知策略有一个分配给它的联络点，该联络点由一个或多个联系人组成。
+联络点
+定义警报触发时如何通知联系人。支持多种ChatOps工具。
+注解
+注释是键值对，提供有关警报的附加元信息。您可以使用以下注释：description、summary、runbook_url、alertId、dashboardUid和panelId。例如，description、summary和runbook URL。这些将显示在规则和警报详细信息的UI上，并且可以在联系人消息模板中使用。
+标签
+标签是键值对，包含有关警报的信息，用于唯一标识警报。警报的标签集将在整个警报评估生成并添加到通知进程中。
+在Grafana中，可以像在Prometheus中那样使用模板注释和标签。以前使用过Prometheus的人应该熟悉$labels变量，它保存警报实例的标签键/值对，以及$value变量，它保持警报实例的评估值。
+在Grafana中，即使您的警报不使用Prometheus数据源，也可以使用来自Promethes的相同变量来模板注释和标签。
+例如，假设我们想在Grafana中创建一个警报，当我们的一个实例停机超过5分钟时通知我们。就像在普罗米修斯中一样，我们可以添加一个摘要注释来显示已关闭的实例：
+Instance {{ $labels.instance }} has been down for more than 5 minutes 对于我们还想知道警报触发时的值，我们可以使用$labels和$value变量添加更多信息摘要：
+{{ $labels.instance }} has a 95th percentile request latency above 1s: {{ $value }}) Grafana和Prometheus的一个区别是，Prometheus使用$value来同时保存警报触发时的标签和条件值。例如 下面的 $value 内容：</description></item><item><title>Unbutu 使用</title><link>https://banrenshan.github.io/blog/2022/11/unbutu-%E4%BD%BF%E7%94%A8/</link><pubDate>Sun, 27 Nov 2022 19:21:30 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/unbutu-%E4%BD%BF%E7%94%A8/</guid><description>deb包 查看默认安装位置 查看deb包的安装位置：
+sudo dpkg-deb -c jdk-19_linux-x64_bin.deb 安装deb包 sudo apt-get install -y adduser libfontconfig1 wget https://dl.grafana.com/enterprise/release/grafana-enterprise_9.2.4_amd64.deb sudo dpkg -i grafana-enterprise_9.2.4_amd64.deb</description></item><item><title>jdk新特性</title><link>https://banrenshan.github.io/blog/2022/11/jdk%E6%96%B0%E7%89%B9%E6%80%A7/</link><pubDate>Sun, 27 Nov 2022 19:18:43 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/jdk%E6%96%B0%E7%89%B9%E6%80%A7/</guid><description><![CDATA[java9 模块化 接口里可以添加私有接口 JAVA 8 对接口增加了默认方法的支持，在 JAVA 9 中对该功能又来了一次升级，现在可以在接口里定义私有方法，然后在默认方法里调用接口的私有方法。
+public interface TestInterface { default void wrapMethod(){ innerMethod(); } private void innerMethod(){ System.out.println(&#34;&#34;); } } 匿名内部类也支持钻石（diamond）运算符 JAVA 5 就引入了泛型（generic），到了 JAVA 7 开始支持钻石（diamond）运算符：&lt;&gt;，可以自动推断泛型的类型：
+List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;(); 但是这个自动推断类型的钻石运算符可不支持匿名内部类，在 JAVA 9 中也对匿名内部类做了支持：
+Comparable&lt;Integer&gt; numbers = new Comparable&lt;&gt;() { // 9之前必须指定泛型 ... } 增强的 try-with-resources JAVA 7 中增加了try-with-resources的支持，可以自动关闭资源：
+try (BufferedReader bufferReader = new BufferedReader(...)) { return bufferReader.readLine(); } 但需要声明多个资源变量时，代码看着就有点恶心了，需要在 try 中写多个变量的创建过程：
+try (BufferedReader bufferReader0 = new BufferedReader(.]]></description></item><item><title>graphql java实现</title><link>https://banrenshan.github.io/blog/2022/11/graphql-java%E5%AE%9E%E7%8E%B0/</link><pubDate>Sun, 27 Nov 2022 19:02:18 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/graphql-java%E5%AE%9E%E7%8E%B0/</guid><description><![CDATA[执行 查询 要对schema执行查询，请使用适当的参数构建一个新的GraphQL对象，然后调用execute方法。查询的结果是ExecutionResult，它是查询数据和/或错误列表。
+GraphQLSchema schema = GraphQLSchema.newSchema() .query(queryType) .build(); GraphQL graphQL = GraphQL.newGraphQL(schema) .build(); ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(&#34;query { hero { name } }&#34;) .build(); ExecutionResult executionResult = graphQL.execute(executionInput); Object data = executionResult.getData(); List&lt;GraphQLError&gt; errors = executionResult.getErrors(); Data Fetchers 每个graphql字段类型都有一个graphql.schema.DataFetcher与其关联的。通常，您可以依赖graphql.schema.PropertyDataFetcher检查Java POJO对象，以从中提供字段值。如果您没有在字段上指定数据获取器，则将使用此选项。
+DataFetcher userDataFetcher = new DataFetcher() { @Override public Object get(DataFetchingEnvironment environment) { return fetchUserFromDatabase(environment.getArgument(&#34;userId&#34;)); } }; 在上面的示例中，执行将等待数据获取器返回，然后再继续。您可以通过向数据返回CompletionStage来实现DataFetcher的异步执行。
+获取数据的时候发生异常 如果在数据获取器调用期间发生异常，则默认情况下执行策略将生成一个graphql.ExceptionWhileDataFetching错误，并将其添加到结果的错误列表中。请记住，graphql允许有错误的部分结果。这是标准行为的代码：
+public class SimpleDataFetcherExceptionHandler implements DataFetcherExceptionHandler { private static final Logger log = LoggerFactory.]]></description></item><item><title>graphql规范</title><link>https://banrenshan.github.io/blog/2022/11/graphql%E8%A7%84%E8%8C%83/</link><pubDate>Sun, 27 Nov 2022 19:02:18 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/graphql%E8%A7%84%E8%8C%83/</guid><description>GraphQL 是一个用于 API 的查询语言，是一个使用基于类型系统来执行查询的服务端运行时。GraphQL 并没有和任何特定数据库或者存储引擎绑定，而是依靠你现有的代码和数据支撑。
+schema定义 schema定义由普通对象类型和内置类型组成。其中内置类型是query(用于查询)和mutation（用于修改） ，两者之一必须存在schema文件中（ 因为其是GraphQL 查询的入口）。有必要记住的是，除了作为 schema 的入口，Query 和 Mutation 类型与其它 GraphQL 对象类型别无二致，它们的字段也是一样的工作方式。
+下面是一个示例文件：
+scalar LocalDate type Query { #必须类型 queryUsers: [User] queryByBirth(birth:LocalDate):User queryByDetail(birth:LocalDate,name:String):User } type User { # 可选类型 id: String name: String age: Int birth: LocalDate } 类型 标量类型 GraphQL 自带一组默认标量类型：
+Int：有符号 32 位整数。 Float：有符号双精度浮点值。 String：UTF‐8 字符序列。 Boolean：true 或者 false。 ID：ID 标量类型表示一个唯一标识符，通常用以重新获取对象或者作为缓存中的键。ID 类型使用和 String 一样的方式序列化； 当然我们也可以自定义标量类型，例如上面的 LocalDate 。 除此之外，还需要在我们的实现中定义序列化、反序列化和验证等方法。
+枚举类型 enum Episode { NEWHOPE EMPIRE JEDI } 列表类型 在 GraphQL schema 语言中，我们通过将类型包在方括号（[ 和 ]）中的方式来标记列表：</description></item><item><title>graphql-spring</title><link>https://banrenshan.github.io/blog/2022/11/graphql-spring/</link><pubDate>Sun, 27 Nov 2022 19:02:13 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/graphql-spring/</guid><description><![CDATA[注解驱动 Spring for GraphQL提供了一个基于注释的编程模型，其中@Controller组件使用注释来声明具有灵活方法签名的处理程序方法，以获取特定GraphQL字段的数据。例如：
+@Controller public class GreetingController { @QueryMapping public String hello() { return &#34;Hello, world!&#34;; } } 将此方法绑定到查询，即查询类型下的字段。 如果未在注释上声明，则根据方法名确定查询。 Spring使用RuntimeWiring.Builder将上述处理程序方法注册为名为“hello”的查询graphql.schema.DataFetcher。
+AnnotatedControllerConfigurer 检测 @Controller bean 并通过 RuntimeWiring.Builder 将标注的方法注册为 DataFetchers。 它是 RuntimeWiringConfigurer 的一个实现，可以添加到 GraphQlSource.Builder。 Spring Boot 自动将 AnnotatedControllerConfigurer 声明为 bean，并将所有 RuntimeWiringConfigurer bean 添加到 GraphQlSource.Builder 并启用对带注释的 DataFetchers 的支持。
+@SchemaMapping @SchemaMapping 注解将方法映射到 GraphQL schema中的字段，并将其声明为该字段的 DataFetcher。 注解可以指定类型名称，以及字段名称：
+@Controller public class BookController { @SchemaMapping(typeName=&#34;Book&#34;, field=&#34;author&#34;) public Author getAuthor(Book book) { // ... } } @SchemaMapping 注解也可以省略这些属性，在这种情况下，字段名称默认为方法名称，而类型名称默认为方法参数的简单类名称。 例如，下面默认键入Book和字段author：]]></description></item><item><title>opentelemetry</title><link>https://banrenshan.github.io/blog/2022/11/opentelemetry/</link><pubDate>Sun, 27 Nov 2022 12:41:11 +0000</pubDate><guid>https://banrenshan.github.io/blog/2022/11/opentelemetry/</guid><description>collector基本组件 Receiver Filelog Receiver Field Default Description include required 匹配的文件列表，支持glob模式 exclude [] 排除的文件列表，支持glob模式 start_at end 启动时，从哪里开始读取日志。选项是beginning 或 end multiline 定义日志行，默认文件中的每行作为一个日志行，注意和操作符recombine的区别 。multiline定义了什么是日志行。 recombine是将多个日志行合并在一起。 force_flush_period 500ms 自上次从文件读取数据以来的时间，在此之后，当前缓冲的日志应发送到管道等待的时间。零意味着永远等待新数据 encoding utf-8 文件的编码 include_file_name true 是否添加文件名称到属性 log.file.name. include_file_path false 是否添加文件路径到属性 log.file.path. include_file_name_resolved false 是否将符号链接解析后的文件名添加到属性log.file.name_resolved。 include_file_path_resolved false 是否将符号链接解析后的文件路径添加到属性log.file.path_resolved。 poll_interval 200ms 文件系统轮询之间的持续时间 fingerprint_size 1kb 用于标识文件的字节数。 max_log_size 1MiB 日志行的最大大小 max_concurrent_files 1024 并发读取日志的最大日志文件数。如果包含模式中匹配的文件数超过此数，则将批量处理文件。每个poll_interval 处理一批 attributes {} 要添加到entry的 属性键：值对的映射 resource {} 要添加到entry 资源的键：值对的映射 operators [] 处理日志的操作 operators converter { max_flush_count: 100, flush_interval: 100ms, worker_count:max(1,runtime.</description></item><item><title/><link>https://banrenshan.github.io/blog/1/01/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://banrenshan.github.io/blog/1/01/</guid><description>实体图主要有两个作用：
+显示系统范围内的主要实体 显示实体之间的相互关系 实体是系统内可以定义的事物或概念，也就是数据库中的表。 在ER图，实现表示成圆角矩形
+实体还可以进一步分为弱实体和复合实体：
+弱实体必须依赖另一个实体存在，例如成绩单必须依赖学生存在，因此成绩单是弱实体。弱实体使用双线矩形表示。 复合常常用于实现两个多是个实体的M:N关系，他由每个关联实体的主键组成，用矩形内加菱形来表示 实体属性，对应数据表中的列，表示实体的特性
+复合属性 多值属性： 双线椭圆表示 派生属性：非永久性存储于数据库的属性，由其他属性或其他数据（如当前日期）派生出来，用虚线椭圆表示 可选属性： 在椭圆的文字后用（O）来表示 联系属性：联系属性用于表示多个实体之间联系所具有的属性，一般来讲M:N的两个实体具有联系属性，在1：1和1：M的实体联系中，联系属性并不需要。 主键，简写PK,用于界定数据表中记录的唯一性
+外键，用于识别实体之间的关系
+关系，表示两个实体之间以某种方式相互关联
+基数，定义一个实体与另一个实体的关系里面，某方可能出现的次数。
+ER图在以下的层次上抽象：
+概念数据模型 逻辑数据模型 物理数据模型 一般而言，业务分析人员使用概念和逻辑模型来展示系统中存在的业务对象，而数据库设计人员会为概念和逻辑模型加入更多的细节，进而生成物理模型，好为创建实际的数据库做准备。
+下面是三种模式的区别：
+ER对象 概念模型 逻辑模型 物理模型 实体【名称】 Y Y Y 关系 Y Y Y 列 Y Y 列的类型 随意 Y 主键 Y 外键 Y 概念模型定义了系统中存在的业务对象以及他们之间的关系。建立概念模型，是为了识别所涉及的业务对象，来呈现系统的宏观图像。概念模型定义了那些实体存在，而非那些表。例如，逻辑和物理模型中可能存在多对多关系的表，但在概念模型下，他们只会表示为无基数的关系。
+逻辑模型是概念模型的详细版本，通过明确定义每个实体中的列并引入操作和事务来让概念模型丰富起来。虽然逻辑模型仍是高层次的设计（非为特定数据库系统绘制），但是已经很接近了。
+物理模型是数据库的实际设计蓝图。物理数据模型通过为每列执行类型，长度，非空等信息来详细刻画逻辑模型。由于物理模型表达了如何在特定的DNMS中构造和关系数据，因此设计时需要考虑实际数据库的需要和限制。</description></item><item><title/><link>https://banrenshan.github.io/blog/1/01/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://banrenshan.github.io/blog/1/01/</guid><description><![CDATA[静态语言
+编译成可执行文件，部署简单
+语言层面的并发
+环境安装 配置下面的环境变量： GOROOT: 安装目录
+PATH: go可执行文件目录(bin)
+GOPATH: C:\Users\13675\GoProjects
+测试安装，执行下面的命令 C:\Users\13675&gt;go version go version go1.20.1 windows/amd64 安装vscode，安装go插件
+配置代理：
+C:\Users\13675&gt;go env -w GO111MODULE=on C:\Users\13675&gt;go env -w GOPROXY=https://goproxy.cn,direct Go1.12版本之后，开始使用go mod模式来管理依赖环境了, 要启用go module支持首先要设置环境变量GO111MODULE，它有三个可选值：off、on、auto，默认值是auto。
+GO111MODULE=off禁用模块支持，编译时会从GOPATH和vendor文件夹中查找包。 GO111MODULE=on启用模块支持，编译时会忽略GOPATH和vendor文件夹，只根据 go.mod下载依赖。 GO111MODULE=auto，当项目在$GOPATH/src外且项目根目录有go.mod文件时，开启模块支持。 vscode 安装go开发工具包（vs code就会提供诸如代码提示、代码自动补全等功能），Ctrl+Shift+P 打开命令窗口，输入Go:Install/Update Tools，就会弹出一个列表，然后全部勾选。
+编写代码 hello.go：
+package main import &#34;fmt&#34; func main() { fmt.Println(&#34;hello&#34;) } 运行 go run .\hello.go
+go build hello.go：编译
+go run hello.go ： 执行
+语法 package main表示一个可独立执行的程序，每个 Go 应用程序都包含一个名为 main 的包。main 函数是每一个可执行程序所必须包含的，一般来说都是在启动后第一个执行的函数（如果有 init() 函数则会先执行该函数）。]]></description></item><item><title>gradle 依赖解析</title><link>https://banrenshan.github.io/blog/1/01/gradle-%E4%BE%9D%E8%B5%96%E8%A7%A3%E6%9E%90/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://banrenshan.github.io/blog/1/01/gradle-%E4%BE%9D%E8%B5%96%E8%A7%A3%E6%9E%90/</guid><description><![CDATA[依赖解析 Gradle项目声明的每个依赖项都适用于特定范围。例如，一些依赖项应该用于编译源代码，而其他依赖项只需要在运行时可用。Gradle在Configuration的帮助下表示依赖项的范围。每个Configuration都可以用唯一的名称标识。
+下面是java 插件的一个示例：
+Configuration 配置可以扩展其他配置以形成继承层次结构。子配置拥有父配置声明的整个依赖项集。配置继承被Gradle核心插件（如Java插件）大量使用。例如，testImplementation配置扩展了 implementation 配置。
+假设你想写一套烟雾测试。每个烟雾测试都会发出一个HTTP调用来验证web服务端点。作为底层测试框架，项目已经使用了JUnit。您可以定义一个名为smokeTest的新配置，该配置从testImplementation配置扩展，以重用现有的测试框架依赖项。
+configurations { smokeTest.extendsFrom testImplementation } dependencies { testImplementation &#39;junit:junit:4.13&#39; smokeTest &#39;org.apache.httpcomponents:httpclient:4.5.5&#39; } 配置是Gradle中依赖关系解决的基本部分。在依赖解析的上下文中，区分消费者和生产者是很有用的。按照这些原则，配置至少具有3种不同的角色：
+声明依赖项 作为消费者，解析文件的一组依赖关系 作为一个生产者，暴露工件及其依赖关系，供其他项目使用 例如，为了表示app应用程序依赖于lib库，至少需要一种配置：
+configurations { // declare a &#34;configuration&#34; named &#34;someConfiguration&#34; someConfiguration } dependencies { // add a project dependency to the &#34;someConfiguration&#34; configuration someConfiguration project(&#34;:lib&#34;) } 配置可以通过从其他配置扩展来继承依赖关系。现在，请注意，上面的代码没有告诉我们任何有关此配置的预期消费者的信息。特别是，它没有告诉我们如何使用配置。假设lib是一个Java库：它可能会暴露不同的东西，例如它的API、实现或测试装置。根据我们正在执行的任务（根据lib的API编译、执行应用程序、编译测试等），可能需要更改我们如何解析app的依赖关系。为了解决这个问题，您通常会发现伴随配置，它们旨在明确地声明用法：
+configurations { // declare a configuration that is going to resolve the compile classpath of the application compileClasspath.extendsFrom(someConfiguration) // declare a configuration that is going to resolve the runtime classpath of the application runtimeClasspath.]]></description></item><item><title>gradle-java</title><link>https://banrenshan.github.io/blog/1/01/gradle-java/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://banrenshan.github.io/blog/1/01/gradle-java/</guid><description><![CDATA[插件的生命周期 Base插件提供了大多数构建通用的一些任务和约定，并为构建添加了一个结构，以提高它们运行方式的一致性。它最重要的贡献是一组生命周期任务，充当其他插件和具体任务的保护伞。
+主要任务和声明周期:
+clean — Delete: 删除build目录及其子目录下的所有内容，即Project.getBuildDir（）项目属性指定的路径。 check — lifecycle task：插件和构建作者应使用check.dependsOn(*task*)将验证任务（例如运行测试的任务）附加到此生命周期任务。 assemble — lifecycle task：插件和构建作者应该将生成发行版和其他可消费工件的任务附加到此生命周期任务。例如，jar为Java库生成可消费的工件。使用assemble.dependsOn(*task*)将任务附加到此生命周期任务 build — lifecycle task：依赖check, assemble。旨在构建一切，包括运行所有测试、生成生产工件和生成文档。您可能很少直接将具体任务附加到构建中，因为assemble和check通常更合适。 buildConfiguration — task rule： 组装附加到命名配置的那些工件。例如，buildArchives将执行任务，将所有工件绑定到archives 配置。 cleanTask — task rule： 删除任务的输出，例如cleanJar将删除Java插件的JAR任务生成的JAR文件。 base插件没有为依赖项添加配置，但它添加了以下配置：
+default: 消费者项目使用的回退配置。假设您的项目B依赖于项目A。Gradle使用一些内部逻辑来确定项目A的哪些工件和依赖项添加到项目B的指定配置中。如果没有其他因素适用-您不必担心这些因素是什么-那么Gradle会回到使用项目A的默认配置中的所有内容。新版本和插件不应使用默认配置！由于向后兼容的原因，它仍然存在。 archives: 项目生产工件的标准配置。 base插件将base扩展添加到项目中。这允许在专用DSL块内配置以下属性:
+base { archivesName = &#34;gradle&#34; distsDirectory = layout.buildDirectory.dir(&#39;custom-dist&#39;) libsDirectory = layout.buildDirectory.dir(&#39;custom-libs&#39;) } archivesName : 默认**$project.name** distsDirectory：默认**$buildDir/distributions** ：创建分发存档（即非JAR）的目录的默认名称。 libsDirectory： 默认**$buildDir/libs**： 创建库存档（即JAR）的目录的默认名称。 该插件还为任何扩展AbstractArchiveTask的任务提供以下属性的默认值：
+destinationDirectory：对于非JAR归档文件，默认为distsDirectory；对于JAR及其派生文件，例如WAR，默认为libsDirectory。 archiveVersion： 默认为$project.version或unspecified（如果项目没有版本）。 archiveBaseName： 默认值为$archivesBaseName。 构建java项目 Gradle使用约定优于配置的方法来构建基于JVM的项目，该方法借鉴了Apache Maven的一些约定。特别是，它对源文件和资源使用相同的默认目录结构，并与Maven兼容的存储库一起工作。
+入门项目 Java项目最简单的构建脚本 先从应用Java Library 插件开始，设置项目版本并选择要使用的Java工具链：]]></description></item><item><title>知识片段</title><link>https://banrenshan.github.io/blog/1/01/%E7%9F%A5%E8%AF%86%E7%89%87%E6%AE%B5/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://banrenshan.github.io/blog/1/01/%E7%9F%A5%E8%AF%86%E7%89%87%E6%AE%B5/</guid><description><![CDATA[学习新技术，要抓住以下要点：
+技术出现的背景和要解决的问题 （2.5%）
+优势和劣势 ,对比已有实现 （5%）
+使用的场景，分业务场景和技术场景 （2.5%）
+组成部分和关键点 （80%）
+底层原理和关键实现 （10%）
+java 日志打印之前要检查日志级别 如下面的代码（不正确的）：
+LOGGER.info(&#34;the DTO info: {}&#34;, JSON.toJSONString(DTO)); DTO可能是一个大对象，JSON序列化要消耗服务器资源。此时，生产日志级别为warn，也就是说这行代码不会打印，但是却执行了json序列化。解决方案如下：
+if(LOGGER.isInfoEnabled()) { LOGGER.info(&#34;the DTO info: {}&#34;, JSON.toJSONString(DTO)); } 不必对所有的logger使用前都要判定日志级别，只对那些可能会损耗性能的开启即可。
+mysql IP地址的存储方式 通常，在保存IPv4地址时，一个IPv4最小需要7个字符，最大需要15个字符，所以，使用VARCHAR(15)即可。MySQL在保存变长的字符串时，还需要额外的一个字节来保存此字符串的长度。而如果使用无符号整数来存储，只需要4个字节即可。
+mysql&gt; select inet_aton(&#39;192.168.0.1&#39;); +--------------------------+ | inet_aton(&#39;192.168.0.1&#39;) | +--------------------------+ | 3232235521 | +--------------------------+ 1 row in set (0.00 sec) mysql&gt; select inet_ntoa(3232235521); +-----------------------+ | inet_ntoa(3232235521) | +-----------------------+ | 192.168.0.1 | +-----------------------+ 1 row in set (0.00 sec) public class IpLongUtils { /** * 把字符串IP转换成long * * @param ipStr 字符串IP * @return IP对应的long值 */ public static long ip2Long(String ipStr) { String[] ip = ipStr.]]></description></item></channel></rss>
