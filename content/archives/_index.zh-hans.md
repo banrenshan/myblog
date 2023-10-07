@@ -2,8 +2,10 @@
 title: 归档
 menu:
   main:
-    parent: blog
-    weight: 1
+    weight: 4
     params:
-      icon: <i class="fas fa-fw fa-file-archive text-primary"></i>
+      icon: <i class="fas fa-fw fa-file-archive"></i>
+      description: List of series.
+
+      
 ---

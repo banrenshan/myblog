@@ -1,11 +1,10 @@
 mainSections:
   - blog
   - posts
-  - news
 
 # titleSeparator: '|' # Title separator. Default to -.
 
-description: An extreme fast, responsive and feature-rich blog theme for Hugo
+description: 
 keywords: Hugo, Bootstrap, Blog Theme
 # images:
 #   - site-feature-image.jpg
@@ -15,7 +14,7 @@ keywords: Hugo, Bootstrap, Blog Theme
 
 # logo: images/logo.png # Logo image. Default to images/logo.webp.
 # logo: false # Disable Logo
-brand: HBS
+brand: 
 
 palette: purple # Default palette. Optional. You'll need to clear the browser cache after modifying this.
 # Available palettes. Default to ALL. Empty array means disable.
@@ -86,26 +85,26 @@ viewer: true # Image Viewer
 # rss: home # link the RSS button to homepage all the times.
 
 sidebar:
-  # fixed: true
-  # archives: true # Enable archives widget
+  fixed: false
+  archives: false # Enable archives widget
   # taxonomiesToggle: false # Disable taxonomy toggle
-  # categories: true # Enable categories widget
-  # tags: true # Enable tags widget
+  categories: false # Enable categories widget
+  tags: false # Enable tags widget
   # series: true # Enable series widget
   # authors: true # Enable authors widget
   # postsToggle: false # Disable posts toggle
   # featuredPosts: true # Enable featured posts widget
-  # recentPosts: true # Enable featured posts widget
-  # collapsed: true # Collapse sidebar widgets by default on small screens.
+  recentPosts: false # Enable featured posts widget
+  collapsed: true # Collapse sidebar widgets by default on small screens.
 
 codeBlock:
-  # maxLines: 8
-  lineNos: false # true/false represents that show/hide the line numbers by default.
+  maxLines: 8
+  lineNos: true 
 
 post:
   # excerpt: description
   # excerptMaxLength: 120
-  # copyright: false # Whether to display copyright section on each post.
+  copyright: false # Whether to display copyright section on each post.
   # plainifyExcerpt: false # Format excerpt in HTML if false.
   featuredImage: true # Show the featured image above the content.
   numberifyHeadings: true # Count headings automatically.
@@ -120,7 +119,7 @@ post:
   # readMoreFromContent: true
 
 archive:
-  paginate: 20 # Archive pagination. Default to 100.
+  paginate: 100 # Archive pagination. Default to 100.
   # basePath = "/archiv" # The base path of archive pages.
   # dateFormat: 01-02 # Archive date format. Default to Jan 2.
 
@@ -168,22 +167,10 @@ creativeCommons:
   #paginate: 5 # Default to 10.
   #moderation: false # Same as Staticman's moderation.
 
-# See https://giscus.app
-giscus:
-  repo: "razonyang/hugo-theme-bootstrap-skeleton" # required.
-  repoId: "R_kgDOHJi95g" # required.
-  category: "General" # required.
-  categoryId: "DIC_kwDOHJi95s4CTy6q" # required.
-  # theme: "dark" # Default to auto.
-  # mapping: "title" # Default to pathname.
-  # inputPosition: "bottom" # Default to top.
-  # reactions: false # Disable reactions.
-  # metadata: true # Emit discussion metadata.
-  # lang: "en" # Specify language, default to site language.
-  # lazyLoading: false # Default to true.
+
 
 search:
-  paginate: 5 # Pagination. Default to 10.
+  paginate: 10 # Pagination. Default to 10.
   # resultContentWordCount: 240 # The maximum word count of result content for displaying.
   # Fuse.js options. See https://fusejs.io/api/options.html.
   fuse:
@@ -204,8 +191,6 @@ search:
   # debug: true
 
 reward:
-  alipay: images/reward/alipay.png
-  wechat: images/reward/wechat.png
   #paypal: images/reward/paypal.png
   #patreon: images/reward/patreon.png
   #liberapay: images/reward/liberapay.png
@@ -241,24 +226,20 @@ pwa:
     #   src: /images/icons/icon-144x144.png
 
 contact:
-  endpoint: https://getform.io/f/56041c81-9e03-4c24-b9c5-61238854d4cd # Backend endpoint, remove this line if you're using Netlify.
+  # endpoint: https://getform.io/f/56041c81-9e03-4c24-b9c5-61238854d4cd # Backend endpoint, remove this line if you're using Netlify.
   # file: true # Enable file upload
   # fileField: image # The name of file field.
   # reCaptcha:
     # siteKey: ""
 
 repo:
-  url: https://github.com/razonyang/hugo-theme-bootstrap-skeleton
-  branch: main
+  # url: https://github.com/razonyang/hugo-theme-bootstrap-skeleton
+  # branch: main
   # subPath: exampleSite
   # dateFormat: 02/01/2006, 15:04:05 PM
 
 topAppBar:
-  # See https://hbs.razonyang.com/v1/en/docs/widgets/social-links/.
   social:
-    github: razonyang/hugo-theme-bootstrap
-    patreon: razonyang
-    paypal: razonyang
 
 #docs:
   # nav:
